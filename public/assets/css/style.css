@@ -1,0 +1,247 @@
+:root {
+    --bg-dark-green-color: #08a045;
+    --bg-green-color: #29bf12;
+    --bg-light-green-color: #abff4f;
+    --yellow-color: #f3de2c;
+    --blue-color: #08bdbd;
+    --light-blue-color: #a8d5e2;
+    --red-color: #f21b3f;
+    --orange-color: #ff9914;
+    --while-color: #FFFFFF;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* navbar */
+.bg-nav {
+    background-color: var(--bg-dark-green-color);
+}
+
+.form-search {
+    position: relative;
+}
+
+.form-search input {
+    width: 300px;
+    padding-right: 3rem;
+}
+
+.form-search button {
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.orange-color {
+    color: var(--orange-color) !important;
+}
+
+.nav {
+    width: 94%;
+    margin: 0 auto;
+    padding: auto;
+}
+
+.nav a img {
+    height: 60px;
+}
+
+.nav a {
+    text-decoration: none;
+    font-weight: bold;
+    color: var(--bg-dark-green-color);
+}
+
+
+.right-div div * {
+    margin: 2px;
+}
+
+.badge {
+    font-size: 0.4em;
+    padding: 0.3em 0.5em;
+}
+
+a:hover,
+.nav-link:hover {
+    color: var(--orange-color) !important;
+}
+
+header .nav::after {
+    content: '';
+    display: block;
+    margin-top: 5px;
+    width: 100%;
+    height: 3px;
+    background: repeating-linear-gradient(90deg,
+            #00a651,
+            #00a651 33px,
+            #fff 33px,
+            #fff 35px,
+            #ffcc00 35px,
+            #ffcc00 68px,
+            #fff 68px,
+            #fff 70px);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+
+/* FOOTER */
+
+.footer {
+    height: auto;
+    background-image: url('/assets/image/footer-bg.png');
+    background-repeat: repeat-y;
+    /* Lặp lại theo chiều dọc */
+    /* background-size: contain; Đảm bảo hình ảnh vừa vặn trong phần tử */
+    background-position: center top;
+    /* Đặt vị trí hình ảnh ở trên cùng, giữa */
+    /* min-height: calc(3 * var(--image-height)); Chiều cao tối thiểu gấp đôi chiều cao của hình ảnh */
+    padding-top: 220px;
+}
+
+.footer p {
+    text-align: justify;
+}
+
+.footer img {
+    height: 75px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.nav-link:hover {
+    color: var(--orange-color) !important;
+}
+
+.follow-icon i {
+    margin: 4px 10px;
+    font-size: 3em;
+    color: var(--bg-dark-green-color);
+}
+
+.contact-info i {
+    margin: 0 10px;
+    font-size: 2em;
+}
+
+footer {
+    position: relative;
+}
+
+.footer-car {
+    position: absolute;
+    /* Đặt phần tử con với vị trí tuyệt đối */
+    top: -2%;
+    left: 40%;
+    /* Khoảng cách từ bên trái của phần tử cha */
+}
+
+@media (min-width: 1200px) {
+    .footer-car {
+        top: -10%;
+        left: 75%;
+        /* Giá trị cho màn hình lớn hơn hoặc bằng 1200px */
+        width: 20%;
+    }
+}
+
+.footer-flower {
+    width: 100%;
+    position: bottom;
+}
+
+.footer *,
+footer .nav-link {
+    color: var(--while-color);
+}
+
+.my-btn {
+    background-color: var(--while-color);
+    border-color: var(--bg-dark-green-color);
+    color: var(--bg-dark-green-color);
+}
+
+.my-btn:hover {
+    background-color: var(--bg-dark-green-color);
+    border-color: var(--while-color);
+}
+
+/* HOME PAGE */
+.homepage img,
+.card {
+    border-radius: 15px;
+}
+
+h1 {
+    margin: 16px 20%;
+    text-align: center;
+    padding: 8px 0;
+    background-color: var(--bg-dark-green-color);
+    color: var(--while-color);
+    border-radius: 15px;
+}
+
+.sale-box .card {
+    /* max-width: 98%; */
+    height: 250px;
+    position: relative;
+}
+
+.font-card {
+    height: 30%;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.75);
+    color: var(--bg-dark-green-color);
+    transition: height 0.5s ease;
+}
+
+.font-card:hover {
+    height: 65%;
+}
+
+.hidden {
+    display: none;
+    transition: height 0.5s ease;
+}
+
+.font-card:hover .hidden {
+    display: block;
+}
+
+.new-price {
+    font-size: 35px;
+    color: var(--red-color);
+}
+
+.old-price {
+    font-size: 20px;
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.font-card p, .font-card button {
+    margin-top: -10px;
+}
+
+@media (max-width: 768px) {
+    h2 {
+        font-size: large;
+    }
+}
