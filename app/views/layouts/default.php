@@ -20,49 +20,6 @@
 </head>
 
 <body>
-  <!-- <nav class="navbar navbar-expand-md sticky-top navbar-light bg-light">
-    <div class="container-fluid">
-      Branding Image
-      <a class="navbar-brand" href="/">
-        
-      </a>
-
-      Collapsed Hamburger
-      <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#app-navbar-collapse">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="app-navbar-collapse">
-        Left Side Of Navbar
-        <div class="navbar-nav">
-          &nbsp;
-        </div>
-
-        Right Side Of Navbar
-        <ul class="navbar-nav ms-auto">
-          Authentication Links
-          
-            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-          
-            <li class="nav-item dropstart">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                 <span class="caret"></span>
-              </a>
-
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="/logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                  Logout
-                </a>
-                <form id="logout-form" class="d-none" action="/logout" method="POST">
-                </form>
-              </div>
-            </li>
-          
-        </ul>
-      </div>
-    </div>
-  </nav> -->
 
   <header>
     <div class="container-fluid bg-nav row pb-2 mb-2">
@@ -86,20 +43,37 @@
         </button>
         <div class="collapse navbar-collapse col-sm-5" id="collapsibleNavbar">
           <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="#">TRANG CHỦ</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">SẢN PHẨM</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">GIỚI THIỆU</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/home">TRANG CHỦ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
+            <li class="nav-item"><a class="nav-link" href="/introduction">GIỚI THIỆU</a></li>
+            <li class="nav-item"><a class="nav-link" href="contacts">LIÊN HỆ</a></li>
           </ul>
         </div>
         <a class="navbar-brand col-sm-2 d-flex justify-content-center align-items-center" href="#"><img
             src="/assets/image/full-logo.png" alt=""></a>
         <div class="right-div mb-2 col-sm-5 d-flex justify-content-end align-items-center">
-          <div class="border mx-2 rounded d-flex justify-content-center align-items-center">
-            <i class="fas fa-user"></i>
-            <a href="#" class="mx-2">ĐĂNG NHẬP</a> /
-            <a href="#" class="orange-color mx-2">ĐĂNG KÍ</a>
-          </div>
+          <?php if (!AUTHGUARD()->isUserLoggedIn()): ?>
+            <div class="border mx-2 rounded d-flex justify-content-center align-items-center">
+              <i class="fas fa-user"></i>
+              <a href="/login" class="mx-2">ĐĂNG NHẬP</a> /
+              <a href="/register" class="orange-color mx-2">ĐĂNG KÍ</a>
+            </div>
+          <?php else: ?>
+            <li class="nav-item dropstart">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <?= $this->e(AUTHGUARD()->user()->name) ?> <span class="caret"></span>
+              </a>
+
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/logout"
+                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                  Logout
+                </a>
+                <form id="logout-form" class="d-none" action="/logout" method="POST">
+                </form>
+              </div>
+            </li>
+          <?php endif ?>
           <a href="#" class="border mx-2 rounded d-flex justify-content-center align-items-center">
             <i class="fas fa-shopping-cart position-relative">
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
@@ -112,8 +86,9 @@
   </header>
 
   <?= $this->section("page") ?>
+  <button id="back-to-top" title="Go to top">Top</button>
 
-  <footer class="mt-5">
+  <footer>
     <img src="/assets/image/footer-car.png" class="footer-car" alt="">
     <div class="container-fluid text-center row mx-auto footer">
 
@@ -140,12 +115,12 @@
           <p class="fs-4">Huyện Phong Điền, TP Cần Thơ</p>
         </div>
         <div class="phone d-flex justify-content-center align-items-center">
-          <i class="fa fa-phone"style="color: black;"></i>
+          <i class="fa fa-phone" style="color: black;"></i>
           <p class="fs-4">0775097409</p>
         </div>
         <div class="email d-flex justify-content-center align-items-center">
           <i class="fas fa-envelope" style="color: red;"></i>
-          <p class="fs-4" >mint1224@gmail.com</p>
+          <p class="fs-4">mint1224@gmail.com</p>
         </div>
       </div>
       <div class="store col-sm-12 col-lg-4 mt-2">
@@ -183,8 +158,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  <script src="/assets/js/js.js"></script>
 
   <?= $this->section("page_specific_js") ?>
+
 </body>
 
 </html>

@@ -8,6 +8,8 @@
     --red-color: #f21b3f;
     --orange-color: #ff9914;
     --while-color: #FFFFFF;
+    --bg-1-color: #e8fccf;
+    --bg-2-color: #f5fdc6;
 }
 
 body {
@@ -83,12 +85,12 @@ header .nav::after {
     width: 100%;
     height: 3px;
     background: repeating-linear-gradient(90deg,
-            #00a651,
-            #00a651 33px,
+            var(--bg-dark-green-color),
+            var(--bg-dark-green-color) 33px,
             #fff 33px,
             #fff 35px,
-            #ffcc00 35px,
-            #ffcc00 68px,
+            var(--yellow-color) 35px,
+            var(--yellow-color) 68px,
             #fff 68px,
             #fff 70px);
     position: absolute;
@@ -96,6 +98,28 @@ header .nav::after {
     left: 0;
 }
 
+/* TOP */
+#back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: var(--bg-dark-green-color); /* Màu xanh lá cây */
+    color: white; /* Chữ màu trắng */
+    border: none;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#back-to-top:hover {
+    background-color: var(--bg-green-color); /* Màu xanh lá cây đậm khi hover */
+}
 
 /* FOOTER */
 
@@ -141,6 +165,7 @@ header .nav::after {
 
 footer {
     position: relative;
+    margin-top: 80px;
 }
 
 .footer-car {
@@ -187,19 +212,25 @@ footer .nav-link {
     border-radius: 15px;
 }
 
+
 h1 {
     margin: 16px 20%;
     text-align: center;
-    padding: 8px 0;
+    padding: 10px 20px;
     background-color: var(--bg-dark-green-color);
     color: var(--while-color);
     border-radius: 15px;
 }
 
 .sale-box .card {
-    /* max-width: 98%; */
     height: 250px;
     position: relative;
+    margin-bottom: 20px;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
 }
 
 .font-card {
@@ -207,18 +238,24 @@ h1 {
     position: absolute;
     width: 100%;
     bottom: 0;
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(255, 255, 255, 0.85);
     color: var(--bg-dark-green-color);
-    transition: height 0.5s ease;
+    transition: height 0.5s ease, background-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s;
 }
 
-.font-card:hover {
-    height: 65%;
+.card:hover .font-card {
+    height: 70%;
+    background-color: rgba(255, 255, 255, 0.95);
 }
 
 .hidden {
     display: none;
-    transition: height 0.5s ease;
+    transition: display 0.5s ease;
 }
 
 .font-card:hover .hidden {
@@ -226,22 +263,125 @@ h1 {
 }
 
 .new-price {
-    font-size: 35px;
+    font-size: 27px;
     color: var(--red-color);
 }
 
 .old-price {
-    font-size: 20px;
+    font-size: 18px;
     text-decoration: line-through;
     color: rgba(0, 0, 0, 0.5);
 }
 
-.font-card p, .font-card button {
+.font-card p,
+.font-card button {
     margin-top: -10px;
 }
 
+.font-card button {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.font-card button:hover {
+    background-color: var(--bg-dark-green-color);
+    color: white;
+}
+
+.VN-box {
+    background-color: var(--bg-1-color);
+    margin-top: 60px;
+    padding-top: 60px;
+    position: relative;
+}
+
+.other-box {
+    background-color: var(--bg-1-color);
+    padding-bottom: 100px;
+}
+
+.VN-box h1 {
+    position: absolute;
+    top: -50px;
+}
+
+.heart-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: gray;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.heart-icon.clicked {
+    color: red;
+}
+
+.product-card p {
+    color: var(--bg-dark-green-color);
+    font-weight: bold;
+}
+
+.product-card:hover {
+    scale: 1.03;
+}
+
+.quality-commitment {
+    background-color: var(--bg-2-color);
+}
+
+.quality-commitment .logo {
+    background-color: var(--bg-2-color);
+    width: 300px;
+    margin-top: -2em;
+    margin-left: auto;
+    margin-right: auto;
+}
+.image-box {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .image-box img {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .organic {
+    position: absolute;
+    width: 170px !important;
+    top: 62%;
+    left: 35%;
+  }
+  
+  .organic img {
+    width: 100%;
+    max-width: 170px;
+  }
+  
+.quality-commitment-box{
+    padding: auto;
+}
+.quality-commitment-box h2{
+    color: var(--orange-color);
+    font-family: 'Nunito', sans-serif;
+}
+
+.quality-commitment-box h3{
+ color: var(--bg-dark-green-color);
+}
 @media (max-width: 768px) {
     h2 {
         font-size: large;
     }
+
+    .sale-box {
+        min-height: 100vh;
+    }
+
+    .quality-commitment-box img{
+        width: 270px;
+    }
+
 }
