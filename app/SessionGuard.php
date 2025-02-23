@@ -12,7 +12,7 @@ class SessionGuard
   {
     $verified = password_verify($credentials['password'], $user->password);
     if ($verified) {
-      $_SESSION['user_id'] = $user->id;
+      $_SESSION['user_id'] = $user->id_account;
     }
     return $verified;
   }
@@ -20,7 +20,7 @@ class SessionGuard
   public function user()
   {
     if (!$this->user && $this->isUserLoggedIn()) {
-      $this->user = (new User(PDO()))->where('id', $_SESSION['user_id']);
+      $this->user = (new User(PDO()))->where('id_account', $_SESSION['user_id']);
     }
     return $this->user;
   }

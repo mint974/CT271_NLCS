@@ -6,117 +6,149 @@ use PDO;
 
 class User
 {
-  private PDO $db;
+    private PDO $db;
 
-  public int $id = -1;
-  public string $email;
-  public string $name;
-  public string $password;
+    public int $id_account = -1;
+    public string $email;
+    public string $username;
+    public string $password;
+    public ?string $phone_number = null;
+    public ?string $address = null;
+    public int $role = 0; // 0: Khách hàng, 1: Nhân viên, 2: Admin
+    public string $created_at;
 
-  public function __construct(PDO $pdo)
-  {
-    $this->db = $pdo;
-  }
-
-  public function findContact(int $id): ?Contact
-  {
-    $contact = new Contact($this->db);
-    $contact = $contact->find($id);
-    if ($contact->user_id == $this->id) {
-      return $contact;
-    }
-    return null;
-  }
-
-  public function contacts(): array
-  {
-    $contact = new Contact($this->db);
-    return $contact->contactsForUser($this);
-  }
-
-  public function where(string $column, string $value): User
-  {
-    $statement = $this->db->prepare("select * from users where $column = :value");
-    $statement->execute(['value' => $value]);
-    $row = $statement->fetch();
-    if ($row) {
-      $this->fillFromDbRow($row);
-    }
-    return $this;
-  }
-
-  public function save(): bool
-  {
-    $result = false;
-
-    if ($this->id >= 0) {
-      $statement = $this->db->prepare(
-        'update users set email = :email, name = :name, password = :password,
-          updated_at = now() where id = :id'
-      );
-      $result = $statement->execute([
-        'id' => $this->id,
-        'email' => $this->email,
-        'name' => $this->name,
-        'password' => $this->password
-      ]);
-    } else {
-      $statement = $this->db->prepare(
-        'insert into users (email, name, password, created_at, updated_at)
-          values (:email, :name, :password, now(), now())'
-      );
-      $result = $statement->execute([
-        'email' => $this->email,
-        'name' => $this->name,
-        'password' => $this->password
-      ]);
-      if ($result) {
-        $this->id = $this->db->lastInsertId();
-      }
+    public function __construct(PDO $pdo)
+    {
+        $this->db = $pdo;
     }
 
-    return $result;
-  }
+    public function where(string $column, string $value): User
+    {
+        $allowedColumns = ['id_account', 'email', 'username', 'phone_number'];
+        if (!in_array($column, $allowedColumns)) {
+            throw new \Exception("Invalid column: " . htmlspecialchars($column));
+        }
 
-  public function fill(array $data): User
-  {
-    $this->email = $data['email'];
-    $this->name = $data['name'];
-    $this->password = password_hash($data['password'], PASSWORD_DEFAULT);
-    return $this;
-  }
+        $statement = $this->db->prepare("SELECT * FROM accounts WHERE $column = :value LIMIT 1");
+        $statement->execute(['value' => $value]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-  private function fillFromDbRow(array $row)
-  {
-    $this->id = $row['id'];
-    $this->email = $row['email'];
-    $this->name = $row['name'];
-    $this->password = $row['password'];
-  }
-
-  private function isEmailInUse(string $email): bool
-  {
-    $statement = $this->db->prepare('select count(*) from users where email = :email');
-    $statement->execute(['email' => $email]);
-    return $statement->fetchColumn() > 0;
-  }
-
-  public function validate(array $data): array
-  {
-    $errors = [];
-
-    if (!$data['email']) {
-      $errors['email'] = 'Invalid email.';
-    } elseif ($this->isEmailInUse($data['email'])) {
-      $errors['email'] = 'Email already in use.';
+        if ($row) {
+            $this->fillFromDbRow($row);
+        }
+        return $this;
     }
 
-    if (strlen($data['password']) < 6) {
-      $errors['password'] = 'Password must be at least 6 characters.';
-    } elseif ($data['password'] != $data['password_confirmation']) {
-      $errors['password'] = 'Password confirmation does not match.';
+    public function save(): bool
+    {
+        if ($this->id_account >= 0) {
+            $statement = $this->db->prepare(
+                'UPDATE accounts 
+                 SET email = :email, username = :username, password = :password, 
+                     phone_number = :phone_number, address = :address, role = :role 
+                 WHERE id_account = :id_account'
+            );
+            return $statement->execute([
+                'id_account' => $this->id_account,
+                'email' => $this->email,
+                'username' => $this->username,
+                'password' => $this->password,
+                'phone_number' => $this->phone_number,
+                'address' => $this->address,
+                'role' => $this->role
+            ]);
+        } else {
+            $statement = $this->db->prepare(
+                'INSERT INTO accounts (email, username, password, phone_number, address, role, created_at) 
+                 VALUES (:email, :username, :password, :phone_number, :address, :role, NOW())'
+            );
+            $result = $statement->execute([
+                'email' => $this->email,
+                'username' => $this->username,
+                'password' => $this->password,
+                'phone_number' => $this->phone_number,
+                'address' => $this->address,
+                'role' => $this->role
+            ]);
+            if ($result) {
+                $this->id_account = $this->db->lastInsertId();
+            }
+            return $result;
+        }
     }
 
-    return $errors;
-  }
+    public function fill(array $data): User
+    {
+        $this->email = $data['email'];
+        $this->username = $data['username'];
+
+        if (!str_starts_with($data['password'], '$2y$')) {
+            $this->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        } else {
+            $this->password = $data['password'];
+        }
+
+        $this->phone_number = $data['phone_number'] ?? null;
+        $this->address = $data['address'] ?? null;
+
+        if ($this->id_account >= 0) { // Chỉ admin mới có quyền chỉnh role
+            $this->role = $data['role'] ?? 0;
+        }
+
+        return $this;
+    }
+
+    private function fillFromDbRow(array $row)
+    {
+        $this->id_account = $row['id_account'];
+        $this->email = $row['email'];
+        $this->username = $row['username'];
+        $this->password = $row['password'];
+        $this->phone_number = $row['phone_number'];
+        $this->address = $row['address'];
+        $this->role = $row['role'];
+        $this->created_at = $row['created_at'];
+    }
+
+    public function isEmailInUse(string $email, ?int $ignoreId = null): bool
+    {
+        $query = 'SELECT COUNT(*) FROM accounts WHERE email = :email';
+        $params = ['email' => $email];
+
+        if ($ignoreId !== null) {
+            $query .= ' AND id_account != :ignoreId';
+            $params['ignoreId'] = $ignoreId;
+        }
+
+        $statement = $this->db->prepare($query);
+        $statement->execute($params);
+        return $statement->fetchColumn() > 0;
+    }
+
+    public function validate(array $data): array
+    {
+        $errors = [];
+
+        if (empty($data['email'])) {
+            $errors['email'] = 'Email không hợp lệ.';
+        } elseif ($this->isEmailInUse($data['email'], $this->id_account)) {
+            $errors['email'] = 'Email đã được sử dụng.';
+        }
+
+        if (empty($data['username']) || strlen($data['username']) < 3) {
+            $errors['username'] = 'Tên người dùng phải có ít nhất 3 ký tự.';
+        }
+
+        if (strlen($data['password']) < 6) {
+            $errors['password'] = 'Mật khẩu phải có ít nhất 6 ký tự.';
+        } elseif (!isset($data['password_confirm']) || $data['password'] !== $data['password_confirm']) {
+            $errors['password'] = 'Mật khẩu xác nhận không khớp.';
+        }
+
+        if (!empty($data['phone_number']) && !preg_match('/^[0-9]{10,15}$/', $data['phone_number'])) {
+            $errors['phone_number'] = 'Số điện thoại không hợp lệ.';
+        }
+
+        return $errors;
+    }
 }

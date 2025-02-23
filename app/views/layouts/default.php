@@ -61,7 +61,7 @@
           <?php else: ?>
             <li class="nav-item dropstart">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <?= $this->e(AUTHGUARD()->user()->name) ?> <span class="caret"></span>
+                <?= $this->e(AUTHGUARD()->user()->username) ?> <span class="caret"></span>
               </a>
 
               <div class="dropdown-menu">

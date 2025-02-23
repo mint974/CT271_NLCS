@@ -36,7 +36,10 @@
     <div class="row row-cols-2 row-cols-md-4 g-5">
       <div class="col">
         <div class="card h-100">
-          <img src="/assets/image/cheri.jpg" class="card-img-top" alt="...">
+          <img src="/assets/image/products/OT01A-cheri.jpg" class="card-img-top" alt="...">
+          <div class="discount_rate">
+            <p class="fs-5 m-1">10%</p>
+          </div>
           <div class="font-card">
             <h2 class="mt-3 mx-2"><b>ANH ĐÀO</b></h2>
             <div class="hidden">
@@ -53,7 +56,7 @@
       </div>
       <div class="col">
         <div class="card h-100">
-          <img src="/assets/image/cheri.jpg" class="card-img-top" alt="...">
+          <img src="/assets/image/products/OT01A-cheri.jpg" class="card-img-top" alt="...">
           <div class="font-card">
             <h2 class="mt-3 mx-2"><b>ANH ĐÀO</b></h2>
             <div class="hidden">
@@ -70,7 +73,7 @@
       </div>
       <div class="col">
         <div class="card h-100">
-          <img src="/assets/image/cheri.jpg" class="card-img-top" alt="...">
+          <img src="/assets/image/products/OT01A-cheri.jpg" class="card-img-top" alt="...">
           <div class="font-card">
             <h2 class="mt-3 mx-2"><b>ANH ĐÀO</b></h2>
             <div class="hidden">
@@ -87,7 +90,7 @@
       </div>
       <div class="col">
         <div class="card h-100">
-          <img src="/assets/image/cheri.jpg" class="card-img-top" alt="...">
+          <img src="/assets/image/products/OT01A-cheri.jpg" class="card-img-top" alt="...">
           <div class="font-card">
             <h2 class="mt-3 mx-2"><b>ANH ĐÀO</b></h2>
             <div class="hidden">
@@ -112,11 +115,9 @@
   <div class=" container-fluid VN-box d-flex flex-column align-items-center justify-content-center pb-4">
     <h1><b>TRÁI CÂY VIỆT NAM</b></h1>
     <div class="row row-cols-sm-2 row-cols-md-5 g-4">
+
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -131,9 +132,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -147,42 +145,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -197,25 +159,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -230,9 +173,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -246,92 +186,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -353,9 +207,6 @@
     <div class="row row-cols-sm-2 row-cols-md-5 g-4">
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -370,9 +221,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -386,42 +234,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -436,25 +248,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -469,9 +262,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -485,92 +275,6 @@
 
       <div class="col product-card p-3">
         <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
-          <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
-          <div class="card-body">
-            <h5 class="card-title fs-4">Quả na</h5>
-            <p class="card-text fs-5">30.000 đ</p>
-            <button type="button" class="btn my-btn btn-outline-success">
-              <i class="fa fa-plus orange-color"></i> Thêm vào giỏ hàng
-            </button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col product-card p-3">
-        <div class="card h-100 position-relative">
-          <div class="heart-icon">
-            <i class="fa fa-heart"></i>
-          </div>
           <img src="/assets/image/na.jpg" class="card-img-top" alt="quả na">
           <div class="card-body">
             <h5 class="card-title fs-4">Quả na</h5>
@@ -582,6 +286,7 @@
         </div>
       </div>
     </div>
+
     <button type="button" class="btn my-btn btn-outline-success mt-3 ">
       <i class="fas fa-angle-down"></i> XEM THÊM
     </button>
