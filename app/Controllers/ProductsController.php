@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Product;
+use App\Models\Catalog;
 
 class ProductsController extends Controller
 {
@@ -13,14 +14,51 @@ class ProductsController extends Controller
 
     public function index()
     {
-        $success = session_get_once('success');
-        $products = (new Product(PDO()))->getAll();
-        
+
+        // $productModel = new Product(PDO());
+        $catalogModel = new Catalog(PDO());
+        $discountedProducts = new Product(PDO());
+
+        $catalogs = $catalogModel->getAllCatalog();
+
+        // echo "<pre>";
+        // print_r($catalogs);
+        // echo "</pre>";
+        // exit();
+
+        $discountedProducts = $discountedProducts->getDiscountedProducts();
+
+        // Gửi dữ liệu đến view
         $this->sendPage('products/index', [
-            'products' => $products,
-            'success' => $success
+            'catalogs' => $catalogs,
+            'discountedProducts' => $discountedProducts
         ]);
     }
+
+
+
+    public function getprodcatabyid()
+    {
+        if (!isset($_POST['id_catalog']) || empty($_POST['id_catalog'])) {
+            die("Thiếu ID danh mục!"); // Hoặc chuyển hướng với thông báo lỗi
+        }
+        $catalogMode = new Catalog(PDO());
+        $catalogs = $catalogMode->getAllCatalog();
+        $catalogModel = new Catalog(PDO());
+        $catalogname = $catalogModel->where('id_catalog', $_POST['id_catalog']);
+
+        // Kiểm tra nếu danh mục không tồn tại
+        if (!$catalogname || empty($catalogname->id_catalog)) {
+            die("Danh mục không tồn tại!"); // Hoặc chuyển hướng với thông báo lỗi
+        }
+        
+        $this->sendPage('products/index', [
+            'productbycata' => $catalogname,
+            'catalogs' => $catalogs
+        ]);
+    }
+
+    
 
     public function create()
     {
@@ -35,49 +73,14 @@ class ProductsController extends Controller
         $data = $this->filterProductData($_POST);
         $newProduct = new Product(PDO());
         $model_errors = $newProduct->validate($data);
-        
+
         if (empty($model_errors)) {
             $newProduct->fill($data)->save();
             redirect('/products', ['success' => 'Product has been created successfully.']);
         }
-        
+
         $this->saveFormValues($_POST);
         redirect('/products/create', ['errors' => $model_errors]);
-    }
-
-    public function edit($productId)
-    {
-        $product = (new Product(PDO()))->find($productId);
-        if (!$product) {
-            $this->sendNotFound();
-        }
-        
-        $form_values = $this->getSavedFormValues();
-        $data = [
-            'errors' => session_get_once('errors'),
-            'product' => !empty($form_values) ? array_merge($form_values, ['id_product' => $product->id_product]) : (array) $product
-        ];
-        
-        $this->sendPage('products/edit', $data);
-    }
-
-    public function update($productId)
-    {
-        $product = (new Product(PDO()))->find($productId);
-        if (!$product) {
-            $this->sendNotFound();
-        }
-        
-        $data = $this->filterProductData($_POST);
-        $model_errors = $product->validate($data);
-        
-        if (empty($model_errors)) {
-            $product->fill($data)->save();
-            redirect('/products', ['success' => 'Product has been updated successfully.']);
-        }
-        
-        $this->saveFormValues($_POST);
-        redirect('/products/edit/' . $productId, ['errors' => $model_errors]);
     }
 
     public function destroy($productId)
@@ -86,7 +89,7 @@ class ProductsController extends Controller
         if (!$product) {
             $this->sendNotFound();
         }
-        
+
         $product->delete();
         redirect('/products', ['success' => 'Product has been deleted successfully.']);
     }
@@ -94,13 +97,16 @@ class ProductsController extends Controller
     protected function filterProductData(array $data)
     {
         return [
+            'id_product' => $data['id_product'] ?? uniqid('"PROD_"'),
             'name' => $data['name'] ?? '',
             'description' => $data['description'] ?? null,
             'quantity' => isset($data['quantity']) ? (int) $data['quantity'] : 0,
             'price' => isset($data['price']) ? (float) $data['price'] : 0.00,
             'delivery_limit' => isset($data['delivery_limit']) ? (int) $data['delivery_limit'] : 0,
             'unit' => $data['unit'] ?? '',
-            'id_promotion' => isset($data['id_promotion']) ? (int) $data['id_promotion'] : null
+            'id_promotion' => isset($data['id_promotion']) ? (string) $data['id_promotion'] : null
         ];
     }
+
+
 }

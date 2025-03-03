@@ -33,10 +33,17 @@ $router->get(
 );
 $router->post('/contacts', '\App\Controllers\ContactsController@store');
 
-$router->set404('\App\Controllers\Controller@sendNotFound');
 $router->get('/contacts/edit/(\d+)', '\App\Controllers\ContactsController@edit');
 
 $router->post('/contacts/(\d+)', '\App\Controllers\ContactsController@update');
 $router->post('/contacts/delete/(\d+)','\App\Controllers\ContactsController@destroy');
 
+
+// product routes
+$router->get('/products', '\App\Controllers\productsController@index');
+$router->POST('/products/load_prod_cata', '\App\Controllers\productsController@getprodcatabyid');
+$router->get('/products/products', '\App\Controllers\productsController@index');
+
+
+$router->set404('\App\Controllers\Controller@sendNotFound');
 $router->run();

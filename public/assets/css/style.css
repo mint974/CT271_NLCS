@@ -207,11 +207,9 @@ footer .nav-link {
 }
 
 /* HOME PAGE */
-.homepage img,
-.card {
+ .homepage img, .card {
     border-radius: 15px;
 }
-
 
 h1 {
     margin: 16px 20%;
@@ -237,7 +235,7 @@ h1 {
     position: absolute;
     background-color: var(--red-color);
     color: var(--while-color);
-    width: 60px;
+    width: 80px;
     /* padding: 2px; */
     border-radius: 0 0 10px 0;
     text-align: center;
@@ -297,18 +295,21 @@ h1 {
     color: white;
 }
 
-.VN-box {
-    background-color: var(--bg-1-color);
+.homepage .VN-box {
     margin-top: 60px;
     padding-top: 60px;
     position: relative;
 }
 
-.other-box {
-    background-color: var(--bg-1-color);
+
+.homepage .other-box {
+   
     padding-bottom: 100px;
 }
 
+.homepage_index .VN-box + .other-box{
+     background-color: var(--bg-1-color);
+}
 .VN-box h1 {
     position: absolute;
     top: -50px;
@@ -368,6 +369,49 @@ h1 {
 .quality-commitment-box h3{
  color: var(--bg-dark-green-color);
 }
+
+.banner-heading {
+    max-width: 50%;
+}
+
+
+.catalog > div{
+    text-align: center;
+    border-radius: 15px;
+    padding: 1em 0.5em;
+    margin: auto;
+    background-color: var(--bg-dark-green-color);
+    color: var(--while-color);
+
+}
+
+.catalog_detail{
+    background-color: var(--while-color);
+    color: black;
+    border-radius: 15px;
+    padding: 1em;
+}
+
+.catalog-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+}
+.catalog-btn:hover {
+    scale: 1.13;
+    color: var(--bg-dark-green-color);
+}
+
+
+
+
+
+
+
 @media (max-width: 768px) {
     h2 {
         font-size: large;

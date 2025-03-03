@@ -44,7 +44,7 @@
         <div class="collapse navbar-collapse col-sm-5" id="collapsibleNavbar">
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="/home">TRANG CHỦ</a></li>
-            <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
+            <li class="nav-item"><a class="nav-link" href="products">SẢN PHẨM</a></li>
             <li class="nav-item"><a class="nav-link" href="/introduction">GIỚI THIỆU</a></li>
             <li class="nav-item"><a class="nav-link" href="contacts">LIÊN HỆ</a></li>
           </ul>

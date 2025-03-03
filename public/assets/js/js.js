@@ -16,5 +16,3 @@ document.getElementById('back-to-top').addEventListener('click', function() {
         behavior: 'smooth'
     });
 });
-
-
