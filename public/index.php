@@ -42,7 +42,13 @@ $router->post('/contacts/delete/(\d+)','\App\Controllers\ContactsController@dest
 // product routes
 $router->get('/products', '\App\Controllers\productsController@index');
 $router->POST('/products/load_prod_cata', '\App\Controllers\productsController@getprodcatabyid');
-$router->get('/products/products', '\App\Controllers\productsController@index');
+
+$router->POST('/products/addprod/([\w-]+)', '\App\Controllers\OrdersController@addprod');
+$router->get('/products/proddetail/([\w-]+)', '\App\Controllers\productsController@getproductbyid');
+
+$router->get('/products/shoppingcard', '\App\Controllers\OrdersController@shoppingcart');
+$router->POST('/orders/update/([\w-]+)', '\App\Controllers\OrdersController@updateprod');
+$router->get('/orders/delete/([\w-]+)', '\App\Controllers\OrdersController@deletebyIDProd');
 
 
 $router->set404('\App\Controllers\Controller@sendNotFound');

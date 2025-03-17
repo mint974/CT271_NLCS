@@ -16,6 +16,11 @@ body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
+    padding-top: 30px;
+}
+
+.main{
+    padding-top: 130px;
 }
 
 /* navbar */
@@ -23,6 +28,9 @@ body {
     background-color: var(--bg-dark-green-color);
 }
 
+header .navbar{
+    background-color: var(--while-color);
+}
 .form-search {
     position: relative;
 }
@@ -271,12 +279,12 @@ h1 {
 }
 
 .new-price {
-    font-size: 27px;
+    font-size: 22px;
     color: var(--red-color);
 }
 
 .old-price {
-    font-size: 18px;
+    font-size: 14px;
     text-decoration: line-through;
     color: rgba(0, 0, 0, 0.5);
 }
@@ -299,6 +307,7 @@ h1 {
     margin-top: 60px;
     padding-top: 60px;
     position: relative;
+    background-color: var(--bg-1-color);
 }
 
 
@@ -406,11 +415,146 @@ h1 {
     color: var(--bg-dark-green-color);
 }
 
+a {
+    text-decoration: none;
+}
+
+/* product detai */
+.product-detail-page{
+    /* background-color: var(--bg-1-color); */
+    padding: 20px;
+    margin-top: -30px;
+}
+.price{
+    color: var(--bg-dark-green-color);
+}
+
+/* nút tăng giảm */
+.number-input {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    border: 2px solid #08a045; /* Viền màu xanh lá */
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.number-input button {
+    width: 35px;
+    height: 40px;
+    background-color: #08a045; /* Nút màu xanh lá */
+    color: white;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.number-input button:hover {
+    background-color: #065e2d; /* Màu xanh đậm hơn khi hover */
+}
+
+.number-input input {
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
 
 
+/* delivery */
+.delivery-policy {
+    background: var(--bg-2-color);
+    border-left: 5px solid var(--bg-green-color);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.delivery-policy h3 {
+    color: var(--bg-dark-green-color);
+    font-weight: bold;
+}
+
+.delivery-policy ul {
+    padding-left: 0;
+}
+
+.delivery-policy li {
+    font-size: 18px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+}
+
+.delivery-policy .icon {
+    font-size: 22px;
+    margin-right: 10px;
+}
+
+.delivery-policy-list li {
+    line-height: 1.5;
+    letter-spacing: 1px;
+    margin-bottom: 10px; /* Tạo khoảng cách giữa các dòng */
+}
+
+.custom-hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* discount box */
+.promotion-box {
+    padding: 20px;
+    text-align: center;
+    background: var(--while-color); /* Nền trắng */
+    border: 1px solid #ddd; /* Viền xám nhạt */
+    border-radius: 10px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.promotion-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.promo-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333; /* Màu xám đậm */
+}
+
+.promotion-box h5 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #222; /* Màu đen nhạt */
+}
+
+.promotion-box p {
+    color: #555; /* Màu xám trung tính */
+    font-size: 1rem;
+}
+
+.discount {
+    color: #d9534f; /* Màu đỏ nhạt */
+    font-weight: bold;
+    font-size: 1.2rem;
+}
 
 
-
+/* SHOPPING CARD */
+.shopping-card{
+    margin-top: -10px;
+}
 
 @media (max-width: 768px) {
     h2 {
@@ -425,4 +569,8 @@ h1 {
         width: 270px;
     }
 
+    .main{
+        padding-top: 180px;
+        margin-top: 40px;
+    }
 }

@@ -16,6 +16,8 @@ class Product
     public int $delivery_limit;
     public ?string $unit = null;
     public ?string $id_promotion = null;
+    public array $images = []; // Khai báo trước, tránh lỗi deprecated
+    public ?array $promotion = null;
 
     public function __construct(PDO $pdo)
     {
@@ -29,7 +31,19 @@ class Product
             throw new \Exception("Invalid column: " . htmlspecialchars($column));
         }
 
-        $statement = $this->db->prepare("SELECT * FROM Products WHERE $column = :value LIMIT 1");
+        $query = "
+            SELECT p.*, 
+                   GROUP_CONCAT(ip.URL_image) AS images, 
+                   pr.name AS promotion_name, pr.description AS promotion_description, 
+                   pr.start_day, pr.end_day, pr.discount_rate
+            FROM Products p
+            LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+            LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
+            WHERE p.$column = :value 
+            LIMIT 1
+        ";
+
+        $statement = $this->db->prepare($query);
         $statement->execute(['value' => $value]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -38,6 +52,7 @@ class Product
         }
         return $this;
     }
+
 
     public function save(): bool
     {
@@ -101,8 +116,25 @@ class Product
         $this->price = $row['price'];
         $this->delivery_limit = $row['delivery_limit'];
         $this->unit = $row['unit'];
-        $this->id_promotion = $row['id_promotion'];
+        $this->id_promotion = $row['id_promotion'] ?? null;
+
+        // Chuyển chuỗi images thnành mảg (nếu có ảnh)
+        $this->images = !empty($row['images']) ? explode(',', $row['images']) : [];
+
+        // Thêm thông tin khuyến mãi (nếu có)
+        if (!empty($row['promotion_name'])) {
+            $this->promotion = [
+                'name' => $row['promotion_name'],
+                'description' => $row['promotion_description'],
+                'start_day' => $row['start_day'],
+                'end_day' => $row['end_day'],
+                'discount_rate' => $row['discount_rate']
+            ];
+        } else {
+            $this->promotion = null;
+        }
     }
+
 
     public function getByCatalogId(string $catalog_id): array
     {
@@ -113,7 +145,7 @@ class Product
             FROM Products p
             JOIN Product_Catalog_details pcd ON p.id_product = pcd.id_product
             LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
-            WHERE pcd.id_catalog = :catalog_id
+            WHERE pcd.id_catalog = :catalog_id and p.id_promotion is null
             GROUP BY p.id_product
         ");
         $statement->execute(['catalog_id' => $catalog_id]);
@@ -122,8 +154,8 @@ class Product
     }
 
     public function getDiscountedProducts(): array
-{
-    $query = "
+    {
+        $query = "
         SELECT 
             p.id_product,
             p.name,
@@ -146,21 +178,51 @@ class Product
         GROUP BY p.id_product
     ";
 
-    $statement = $this->db->prepare($query);
-    $statement->execute();
+        $statement = $this->db->prepare($query);
+        $statement->execute();
 
-    $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $products = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-    // Xử lý dữ liệu trước khi trả về
-    foreach ($products as &$product) {
-        $product['name'] = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
-        $product['description'] = htmlspecialchars($product['description'] ?? '', ENT_QUOTES, 'UTF-8');
-        $product['promotion_name'] = htmlspecialchars($product['promotion_name'], ENT_QUOTES, 'UTF-8');
-        $product['promotion_description'] = htmlspecialchars($product['promotion_description'] ?? '', ENT_QUOTES, 'UTF-8');
+        // Xử lý dữ liệu trước khi trả về
+        foreach ($products as &$product) {
+            $product['name'] = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
+            $product['description'] = htmlspecialchars($product['description'] ?? '', ENT_QUOTES, 'UTF-8');
+            $product['promotion_name'] = htmlspecialchars($product['promotion_name'], ENT_QUOTES, 'UTF-8');
+            $product['promotion_description'] = htmlspecialchars($product['promotion_description'] ?? '', ENT_QUOTES, 'UTF-8');
+        }
+
+        return $products;
     }
 
-    return $products;
+    // Lấy danh sách product theo một mảng chứa id_product
+    public function getProductsByIds(array $productIds): array
+{
+    if (empty($productIds)) {
+        return [];
+    }
+
+    // Tạo chuỗi placeholder cho truy vấn chuẩn bị
+    $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+
+    $statement = $this->db->prepare(
+        "SELECT 
+            p.id_product,
+            p.name,
+            p.price,
+            p.unit,
+            pr.discount_rate,
+            GROUP_CONCAT(ip.URL_image) AS images
+         FROM Products p
+         LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
+         LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+         WHERE p.id_product IN ($placeholders)
+         GROUP BY p.id_product"
+    );
+
+    $statement->execute($productIds);
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 

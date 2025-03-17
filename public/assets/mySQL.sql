@@ -1,9 +1,7 @@
 -- Tạo bảng Accounts
 CREATE TABLE Accounts (
-    id_account INT(11) PRIMARY KEY AUTO_INCREMENT,
+    id_account INT(11) PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(20),
-    address TEXT,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role TINYINT NOT NULL DEFAULT 0,  
@@ -31,12 +29,6 @@ CREATE TABLE Promotions (
     FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO Promotions (id_promotion, name, description, start_day, end_day, discount_rate, id_account) 
-VALUES 
-    ('PROMO_TET', 'Khuyến mãi Tết Nguyên Đán', 'Giảm giá đặc biệt nhân dịp Tết Nguyên Đán', '2025-02-25', '2025-04-25', 15.00, 1),
-    ('PROMO_SUMMER', 'Giảm giá mùa hè', 'Ưu đãi mùa hè sôi động', '2025-02-25', '2025-06-30', 10.00, 1),
-    ('PROMO_VIP', 'Ưu đãi chóp nhoáng', 'Giảm giá đặc biệt cho các sản phẩm tồn kho', '2025-02-25', '2025-03-31', 20.00, 1);
-
 -- Tạo bảng Products
 CREATE TABLE Products (
     id_product VARCHAR(20) PRIMARY KEY,
@@ -50,48 +42,6 @@ CREATE TABLE Products (
     FOREIGN KEY (id_promotion) REFERENCES Promotions(id_promotion) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO Products (id_product, name, description, quantity, price, delivery_limit, unit, id_promotion) VALUES 
-    ('prod001', 'Anh đào', 'Quả anh đào là loại quả nhỏ có hạt cứng, có nhiều màu sắc và hương vị khác nhau. Trái cây màu đỏ tươi này là sự kết hợp tuyệt vời giữa vị ngọt ngào và chút chua nhẹ, tạo điểm nhấn hoàn hảo cho các món tráng miệng. Quả anh đào có thể ăn tươi hoặc được sử dụng trong nhiều công thức nấu ăn như bánh ngọt, tart, bánh pie và bánh cheesecake.', 50, 120000, 10, 'Kg', NULL),
-    ('prod002', 'Táo', 'Táo là loại trái cây giòn, ngọt, chứa nhiều chất xơ và vitamin. Có thể ăn tươi hoặc dùng làm nước ép, salad, bánh táo.', 100, 80000, 5, 'Kg', NULL),
-    ('prod003', 'Việt quốc', 'Việt quốc là loại quả mọng nhỏ có màu xanh đậm, chứa nhiều chất chống oxy hóa, giúp tăng cường sức khỏe tim mạch.', 75, 150000, 4, 'Kg', NULL),
-    ('prod004', 'Dâu tằm', 'Dâu tằm có vị chua ngọt đặc trưng, giàu vitamin C, giúp tăng cường miễn dịch và cải thiện làn da.', 60, 90000, 4, 'Kg', NULL),
-    ('prod005', 'Mâm sôi', 'Mâm sôi có màu đỏ tươi, vị chua thanh, giàu chất xơ và vitamin giúp hỗ trợ tiêu hóa và sức khỏe tim mạch.', 50, 130000, 4, 'Kg', NULL),
-    ('prod006', 'Quả lê', 'Lê là loại quả mọng nước, vị ngọt thanh, rất tốt cho hệ tiêu hóa và cung cấp độ ẩm cho cơ thể.', 80, 70000, 5, 'Kg', NULL),
-    ('prod007', 'Quả đào', 'Đào có vị ngọt dịu, thịt quả mềm, chứa nhiều chất chống oxy hóa giúp làm đẹp da.', 65, 110000, 5, 'Kg', NULL),
-    ('prod008', 'Kiwi vàng', 'Kiwi vàng có vị ngọt đậm hơn kiwi xanh, chứa nhiều vitamin C và chất xơ giúp tăng cường sức khỏe.', 55, 160000, 6, 'Kg', NULL),
-    ('prod009', 'Nho ngón tay đen', 'Nho ngón tay đen có hình dáng thuôn dài độc đáo, vỏ mỏng, vị ngọt đậm, thích hợp ăn tươi hoặc làm rượu vang.', 70, 180000, 6, 'Kg', NULL),
-    ('prod010', 'Cam', 'Cam là loại trái cây giàu vitamin C, giúp tăng cường miễn dịch, có thể ăn tươi hoặc ép lấy nước.', 90, 60000, 6, 'Kg', NULL),
-    ('prod011', 'Nho mẫu đơn', 'Nho mẫu đơn có hương thơm đặc trưng, vị ngọt thanh, thịt giòn, giàu dinh dưỡng.', 40, 200000, 5, 'Kg', NULL),
-    ('prod012', 'Táo đỏ', 'Táo đỏ là loại táo giòn, ngọt, giàu chất xơ, rất tốt cho sức khỏe.', 85, 85000, 4, 'Kg', NULL),
-    ('prod013', 'Táo xanh', 'Táo xanh có vị chua nhẹ, giòn, giúp kiểm soát cân nặng và cung cấp vitamin C.', 90, 75000, 4, 'Kg', NULL),
-    ('prod014', 'Chuối', 'Chuối là nguồn cung cấp năng lượng dồi dào, chứa nhiều kali tốt cho hệ tim mạch.', 120, 40000, 5, 'Kg', NULL),
-    ('prod015', 'Kiwi xanh', 'Kiwi xanh có vị chua ngọt cân bằng, giàu vitamin C và chất xơ tốt cho tiêu hóa.', 60, 140000, 3, 'Kg', NULL),
-    ('prod016', 'Quả na', 'Quả na có vị ngọt, thịt mềm, chứa nhiều vitamin C và chất xơ, tốt cho hệ tiêu hóa.', 50, 90000, 3, 'Kg', NULL),
-    ('prod017', 'Bưởi da xanh', 'Bưởi da xanh có vỏ xanh, ruột hồng, vị ngọt thanh, giàu vitamin C, tốt cho sức khỏe.', 60, 120000, 10, 'Kg', NULL),
-    ('prod018', 'Nhãn xuồng', 'Nhãn xuồng có hạt nhỏ, thịt dày, vị ngọt đậm, giàu năng lượng.', 70, 110000, 10, 'Kg', NULL),
-    ('prod019', 'Vải thiều', 'Vải thiều có vỏ mỏng, ruột trắng, vị ngọt lịm, giàu vitamin C.', 80, 130000, 10, 'Kg', NULL),
-    ('prod020', 'Măng cụt', 'Măng cụt có vỏ dày màu tím, ruột trắng mềm, vị chua ngọt, rất bổ dưỡng.', 50, 140000, 10, 'Kg', NULL),
-    ('prod021', 'Chôm Chôm', 'Chôm chôm có lớp vỏ gai mềm, thịt trắng ngọt, giàu vitamin và khoáng chất.', 90, 95000, 10, 'Kg', NULL),
-    ('prod022', 'Sầu riêng Ri 6', 'Sầu riêng Ri 6 có hương thơm đậm, cơm vàng dày, vị béo ngọt đặc trưng.', 30, 250000, 20, 'Kg', NULL),
-    ('prod023', 'Thanh long', 'Thanh long có vỏ hồng, ruột trắng hoặc đỏ, vị ngọt thanh, giàu chất xơ.', 100, 60000, 7, 'Kg', NULL),
-    ('prod024', 'Dâu tây', 'Dâu tây có màu đỏ rực rỡ, vị chua ngọt, giàu chất chống oxy hóa.', 40, 180000, 5, 'Kg', NULL),
-    ('prod025', 'Nho kẹo', 'Nho kẹo có vị ngọt đậm, giòn, không hạt, rất được ưa chuộng.', 50, 190000, 5, 'Kg', NULL),
-    ('prod026', 'Nho xanh', 'Nho xanh không hạt, vị chua nhẹ, giòn, giàu vitamin và khoáng chất.', 60, 170000, 5, 'Kg', NULL),
-    ('prod027', 'Xoài cát', 'Xoài cát có thịt vàng, thơm, ngọt đậm, rất được ưa chuộng.', 80, 90000, 10, 'Kg', NULL),
-    ('prod028', 'Mận Hà Nội', 'Mận Hà Nội có vị chua ngọt, giòn, giàu vitamin C.', 50, 100000, 8, 'Kg', NULL),
-    ('prod029', 'Táo nhỏ', 'Táo nhỏ có vị ngọt thanh, giòn, rất thích hợp ăn vặt.', 90, 75000, 5, 'Kg', NULL),
-    ('prod030', 'Ổi ruột hồng', 'Ổi ruột hồng có thịt mềm, vị ngọt dịu, chứa nhiều vitamin C.', 100, 55000, 10, 'Kg', NULL),
-    ('prod031', 'Bơ Đà Lạt', 'Bơ Đà Lạt có thịt dẻo, béo ngậy, rất tốt cho sức khỏe.', 70, 130000, 10, 'Kg', NULL),
-    ('prod032', 'Cam sành', 'Cam sành có vỏ sần, ruột mọng nước, vị ngọt thanh, giàu vitamin C.', 110, 70000, 20, 'Kg', NULL),
-    ('prod033', 'Dưa hấu ruột vàng', 'Dưa hấu ruột vàng có vị ngọt mát, chứa nhiều nước, giúp giải khát.', 120, 50000, 15, 'Kg', NULL),
-    ('prod034', 'Dưa lưới', 'Dưa lưới có vỏ lưới đặc trưng, vị ngọt thơm, nhiều nước.', 60, 150000, 10, 'Kg', NULL),
-    ('prod035', 'Vú sữa tím', 'Vú sữa tím có lớp vỏ mỏng, thịt mềm, vị ngọt thanh.', 55, 125000, 15, 'Kg', NULL);
-
-
-UPDATE Products SET id_promotion = 'PROMO_TET' WHERE id_product IN ('prod002', 'prod007', 'prod013');
-UPDATE Products SET id_promotion = 'PROMO_SUMMER' WHERE id_product IN ('prod005', 'prod011', 'prod019', 'prod025');
-UPDATE Products SET id_promotion = 'PROMO_VIP' WHERE id_product IN ('prod008', 'prod023', 'prod035');
-
 -- Tạo bảng Image_Product
 CREATE TABLE Image_Product (
     id_image VARCHAR(20) PRIMARY KEY,
@@ -100,94 +50,12 @@ CREATE TABLE Image_Product (
     FOREIGN KEY (id_product) REFERENCES Products(id_product) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT into Image_Product (id_image, URL_image, id_product) VALUES
-('imaprod001A', '/assets/image/products/OT01A-cheri.jpg', 'prod001'),
-('imaprod001B', '/assets/image/products/OT01B-cheri.jpg', 'prod001'),
-('imaprod002A', '/assets/image/products/OT02A-taodo.jpg', 'prod002'),
-('imaprod002B', '/assets/image/products/OT02B-taodo.jpg', 'prod002'),
-('imaprod003A', '/assets/image/products/OT03A-vietquoc.jpg', 'prod003'),
-('imaprod003B', '/assets/image/products/OT03B-vietquoc.jpg', 'prod003'),
-('imaprod004A', '/assets/image/products/OT04A-dautam.jpg', 'prod004'),
-('imaprod004B', '/assets/image/products/OT04B-dautam.jpg', 'prod004'),
-('imaprod005A', '/assets/image/products/OT05A-mamsoi.jpg', 'prod005'),
-('imaprod005B', '/assets/image/products/OT05B-mamsoi.jpg', 'prod005'),
-('imaprod006A', '/assets/image/products/OT06A-quale.jpg', 'prod006'),
-('imaprod006B', '/assets/image/products/OT06B-quale.jpg', 'prod006'),
-('imaprod007A', '/assets/image/products/OT07A-quadao.jpg', 'prod007'),
-('imaprod007B', '/assets/image/products/OT07B-quadao.jpg', 'prod007'),
-('imaprod008A', '/assets/image/products/OT08A-kiwi.jpg', 'prod008'),
-('imaprod008B', '/assets/image/products/OT08B-kiwi.jpg', 'prod008'),
-('imaprod009A', '/assets/image/products/OT09A-nhoden.jpg', 'prod009'),
-('imaprod009B', '/assets/image/products/OT09B-nhoden.jpg', 'prod009'),
-('imaprod010A', '/assets/image/products/OT10A-cam.jpg', 'prod010'),
-('imaprod010B', '/assets/image/products/OT10B-cam.jpg', 'prod010'),
-('imaprod011A', '/assets/image/products/OT11A-nhomaudon.jpg', 'prod011'),
-('imaprod011B', '/assets/image/products/OT11B-nhomaudon.jpg', 'prod011'),
-('imaprod012A', '/assets/image/products/OT12A-taodo.jpg', 'prod012'),
-('imaprod012B', '/assets/image/products/OT12B-taodo.jpg', 'prod012'),
-('imaprod013A', '/assets/image/products/OT13A-taoxanh.jpg', 'prod013'),
-('imaprod013B', '/assets/image/products/OT13B-taoxanh.jpg', 'prod013'),
-('imaprod014A', '/assets/image/products/OT14A-chuoi.jpg', 'prod014'),
-('imaprod014B', '/assets/image/products/OT14B-chuoi.jpg', 'prod014'),
-('imaprod015A', '/assets/image/products/OT15A-kiwixanh.jpg', 'prod015'),
-('imaprod015B', '/assets/image/products/OT15B-kiwixanh.jpg', 'prod015'),
-('imaprod016A', '/assets/image/products/VN001A-na.jpg', 'prod016'),
-('imaprod016B', '/assets/image/products/VN001B-na.jpg', 'prod016'),
-('imaprod017A', '/assets/image/products/VN002A-buoi.jpg', 'prod017'),
-('imaprod017B', '/assets/image/products/VN002B-buoi.jpg', 'prod017'),
-('imaprod018A', '/assets/image/products/VN003A-nhan.jpg', 'prod018'),
-('imaprod018B', '/assets/image/products/VN003B-nhan.jpg', 'prod018'),
-('imaprod019A', '/assets/image/products/VN004A-vai.jpg', 'prod019'),
-('imaprod019B', '/assets/image/products/VN004B-vai.jpg', 'prod019'),
-('imaprod020A', '/assets/image/products/VN005A-mangcut.jpg', 'prod020'),
-('imaprod020B', '/assets/image/products/VN005B-mangcut.jpg', 'prod020'),
-('imaprod021A', '/assets/image/products/VN006A-chom.jpg', 'prod021'),
-('imaprod021B', '/assets/image/products/VN006B-chom.jpg', 'prod021'),
-('imaprod022A', '/assets/image/products/VN007A-saurieng.jpg', 'prod022'),
-('imaprod022B', '/assets/image/products/VN007B-saurieng.jpg', 'prod022'),
-('imaprod023A', '/assets/image/products/VN008A-thanhlongtrang.jpg', 'prod023'),
-('imaprod023B', '/assets/image/products/VN008B-thanhlongtrang.jpg', 'prod023'),
-('imaprod024A', '/assets/image/products/VN009A-daytay.jpg', 'prod024'),
-('imaprod024B', '/assets/image/products/VN009B-daytay.jpg', 'prod024'),
-('imaprod025A', '/assets/image/products/VN010A-nhokeo.jpg', 'prod025'),
-('imaprod025B', '/assets/image/products/VN010B-nhokeo.jpg', 'prod025'),
-('imaprod026A', '/assets/image/products/VN011A-nhoxanh.jpg', 'prod026'),
-('imaprod026B', '/assets/image/products/VN011B-nhoxanh.jpg', 'prod026'),
-('imaprod027A', '/assets/image/products/VN012A-xoai.jpg', 'prod027'),
-('imaprod027B', '/assets/image/products/VN012B-xoai.jpg', 'prod027'),
-('imaprod028A', '/assets/image/products/VN013A-manhn.jpg', 'prod028'),
-('imaprod028B', '/assets/image/products/VN013B-manhn.jpg', 'prod028'),
-('imaprod029A', '/assets/image/products/VN014A-taoxanh.jpg', 'prod029'),
-('imaprod029B', '/assets/image/products/VN014B-taoxanh.jpg', 'prod029'),
-('imaprod030A', '/assets/image/products/VN015A-oi.jpg', 'prod030'),
-('imaprod030B', '/assets/image/products/VN015B-oi.jpg', 'prod030'),
-('imaprod031A', '/assets/image/products/VN016A-bo.jpg', 'prod031'),
-('imaprod031B', '/assets/image/products/VN016B-bo.jpg', 'prod031'),
-('imaprod032A', '/assets/image/products/VN017A-cam.jpg', 'prod032'),
-('imaprod032B', '/assets/image/products/VN017B-cam.jpg', 'prod032'),
-('imaprod033A', '/assets/image/products/VN018A-duahauvang.jpg', 'prod033'),
-('imaprod033B', '/assets/image/products/VN018B-duahauvang.jpg', 'prod033'),
-('imaprod034A', '/assets/image/products/VN019A-dualuoi.jpg', 'prod034'),
-('imaprod034B', '/assets/image/products/VN019B-dualuoi.jpg', 'prod034'),
-('imaprod035A', '/assets/image/products/VN020A-vusuatim.jpg', 'prod035'),
-('imaprod035B', '/assets/image/products/VN020B-vusuatim.jpg', 'prod035');
-
-
 
 -- Tạo bảng Product_Catalog
 CREATE TABLE Product_Catalog (
     id_catalog VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-INSERT INTO Product_Catalog (id_catalog, name) VALUES
-('prodcata001', 'Trái cây Việt Nam'),
-('prodcata002', 'Trái cây nhập khẩu'),
-('prodcata003', 'Trái cây có múi'),
-('prodcata004', 'Trái cây nhiệt đới'),
-('prodcata005', 'Trái cây cận nhiệt đới'),
-('prodcata006', 'Trái cây làm nước ép'),
-('prodcata007', 'Trái cây làm mứt');
 
 -- Tạo bảng Product_Catalog_details (Nhiều - Nhiều)
 CREATE TABLE Product_Catalog_details (
@@ -198,117 +66,38 @@ CREATE TABLE Product_Catalog_details (
     FOREIGN KEY (id_catalog) REFERENCES Product_Catalog(id_catalog) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO Product_Catalog_details (id_product, id_catalog) VALUES
-('prod001', 'prodcata002'),
-('prod002', 'prodcata002'),
-('prod003', 'prodcata002'),
-('prod004', 'prodcata002'),
-('prod005', 'prodcata002'),
-('prod006', 'prodcata002'),
-('prod007', 'prodcata002'),
-('prod008', 'prodcata002'),
-('prod009', 'prodcata002'),
-('prod010', 'prodcata002'),
-('prod011', 'prodcata002'),
-('prod012', 'prodcata002'),
-('prod013', 'prodcata002'),
-('prod014', 'prodcata002'),
-('prod015', 'prodcata002'),
-('prod016', 'prodcata001'),
-('prod017', 'prodcata001'),
-('prod018', 'prodcata001'),
-('prod019', 'prodcata001'),
-('prod020', 'prodcata001'),
-('prod021', 'prodcata001'),
-('prod022', 'prodcata001'),
-('prod023', 'prodcata001'),
-('prod024', 'prodcata001'),
-('prod025', 'prodcata001'),
-('prod026', 'prodcata001'),
-('prod027', 'prodcata001'),
-('prod028', 'prodcata001'),
-('prod029', 'prodcata001'),
-('prod030', 'prodcata001'),
-('prod031', 'prodcata001'),
-('prod032', 'prodcata001'),
-('prod033', 'prodcata001'),
-('prod034', 'prodcata001'),
-('prod035', 'prodcata001'),
---trái cây có múi
-('prod010', 'prodcata003'),
-('prod017', 'prodcata003'),
-('prod032', 'prodcata003'),
--- Trái cây nhiệt đới (prodcata004)
-('prod016', 'prodcata004'),
-('prod017', 'prodcata004'),
-('prod018', 'prodcata004'),
-('prod019', 'prodcata004'),
-('prod020', 'prodcata004'),
-('prod021', 'prodcata004'),
-('prod022', 'prodcata004'),
-('prod023', 'prodcata004'),
-('prod027', 'prodcata004'),
-('prod028', 'prodcata004'),
-('prod030', 'prodcata004'),
-('prod031', 'prodcata004'),
-('prod035', 'prodcata004'),
-
--- Trái cây cận nhiệt đới (prodcata005)
-('prod001', 'prodcata005'),
-('prod002', 'prodcata005'),
-('prod003', 'prodcata005'),
-('prod006', 'prodcata005'),
-('prod007', 'prodcata005'),
-('prod008', 'prodcata005'),
-('prod012', 'prodcata005'),
-('prod014', 'prodcata005'),
-('prod025', 'prodcata005'),
-('prod026', 'prodcata005'),
-('prod009', 'prodcata005'),
-('prod011', 'prodcata005'),
-('prod029', 'prodcata005'),
-
--- Trái cây làm nước ép (prodcata006)
-('prod010', 'prodcata006'),
-('prod032', 'prodcata006'),
-('prod033', 'prodcata006'),
-('prod034', 'prodcata006'),
-('prod013', 'prodcata006'),
-
--- Trái cây làm mứt (prodcata007)
-('prod004', 'prodcata007'),
-('prod005', 'prodcata007'),
-('prod024', 'prodcata007');
-
 
 -- Tạo bảng Payments
-CREATE TABLE Payments (
-    id_payment VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    qr_code_url VARCHAR(255) NULL 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+-- CREATE TABLE Payments (
+--     id_payment VARCHAR(20) PRIMARY KEY,
+--     name VARCHAR(100) NOT NULL,
+--     qr_code_url VARCHAR(255) NULL 
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 CREATE TABLE Orders (
     id_order VARCHAR(20) PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_payment VARCHAR(50) NOT NULL,
     id_account INT(11) NOT NULL,
-    id_payment VARCHAR(20) NOT NULL,
+    id_delivery VARCHAR(20) NULL,
+    -- status_payment VARCHAR(50) NOT NULL,
+    -- id_payment VARCHAR(20) NOT NULL,
+    -- FOREIGN KEY (id_payment) REFERENCES Payments(id_payment) ON DELETE CASCADE
     FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE,
-    FOREIGN KEY (id_payment) REFERENCES Payments(id_payment) ON DELETE CASCADE
+    FOREIGN KEY (id_delivery) REFERENCES delivery_information(id_delivery) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Tạo bảng Delivery_Information
 CREATE TABLE Delivery_Information (
-    id_address VARCHAR(20) PRIMARY KEY,
-    city VARCHAR(100) NOT NULL,
-    district VARCHAR(100) NOT NULL,
+    id_delivery varchar(20) PRIMARY KEY ,
+    id_account INT(11),
+    house_number VARCHAR(50),
     ward VARCHAR(100),
-    apartment_number VARCHAR(255),
-    phone_number VARCHAR(20) NOT NULL,
-    consignee_name VARCHAR(100) NOT NULL,
-    id_order VARCHAR(20) NOT NULL,
-    FOREIGN KEY (id_order) REFERENCES Orders(id_order) ON DELETE CASCADE
+    district VARCHAR(100),
+    city VARCHAR(100),
+    receiver_name VARCHAR(100),
+    receiver_phone VARCHAR(20),
+    FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Tạo bảng Order_details

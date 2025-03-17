@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Product;
 use App\Models\Catalog;
+use App\Models\Promotion;
 
 class ProductsController extends Controller
 {
@@ -21,11 +22,6 @@ class ProductsController extends Controller
 
         $catalogs = $catalogModel->getAllCatalog();
 
-        // echo "<pre>";
-        // print_r($catalogs);
-        // echo "</pre>";
-        // exit();
-
         $discountedProducts = $discountedProducts->getDiscountedProducts();
 
         // Gửi dữ liệu đến view
@@ -39,26 +35,38 @@ class ProductsController extends Controller
 
     public function getprodcatabyid()
     {
-        if (!isset($_POST['id_catalog']) || empty($_POST['id_catalog'])) {
-            die("Thiếu ID danh mục!"); // Hoặc chuyển hướng với thông báo lỗi
-        }
         $catalogMode = new Catalog(PDO());
         $catalogs = $catalogMode->getAllCatalog();
-        $catalogModel = new Catalog(PDO());
-        $catalogname = $catalogModel->where('id_catalog', $_POST['id_catalog']);
 
-        // Kiểm tra nếu danh mục không tồn tại
-        if (!$catalogname || empty($catalogname->id_catalog)) {
-            die("Danh mục không tồn tại!"); // Hoặc chuyển hướng với thông báo lỗi
+        // truy xuất giảm giá 
+        if (isset(($_POST['discountproduct']))) {
+            $productModel = new Product(PDO());
+            $discountedProducts = $productModel->getDiscountedProducts();
+            $this->sendPage('products/index', [
+                'catalogs' => $catalogs,
+                'discounted_Products' => $discountedProducts,
+            ]);
         }
-        
-        $this->sendPage('products/index', [
-            'productbycata' => $catalogname,
-            'catalogs' => $catalogs
-        ]);
+        // truy xuất snar phẩm thường
+        else if (isset($_POST['id_catalog']) || !empty($_POST['id_catalog'])) {
+
+            $catalogModel = new Catalog(PDO());
+            $catalogname = $catalogModel->where('id_catalog', $_POST['id_catalog']);
+            $this->sendPage('products/index', [
+                'productbycata' => $catalogname,
+                'catalogs' => $catalogs
+            ]);
+        } else {
+            $error = 'Không có doanh mục';
+            $this->sendPage('products/index', [
+                'catalogs' => $catalogs,
+                'error' => $error
+            ]);
+        }
+
     }
 
-    
+
 
     public function create()
     {
@@ -108,5 +116,26 @@ class ProductsController extends Controller
         ];
     }
 
+    public function getproductbyid(string $id_product)
+    {
+
+        $productmodel = new Product(PDO());
+        $product = $productmodel->where('id_product', $id_product);
+        if ($product) {
+    
+            $this->sendPage('products/product_detail', [
+                'products' => $product
+            ]);
+
+
+        } else {
+            $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
+            if($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata'){
+                $redirectUrl = 'http://ct271-mintfreshfruit.localhost/products';
+            }
+            redirect($redirectUrl, ['error' => 'Lỗi truy xuất sản phẩm, Thử lại sao!']);
+        }
+
+    }
 
 }

@@ -18,14 +18,14 @@ class Catalog
     }
 
     // Tìm danh mục theo điều kiện
-    public function where(string $column, string $value): Catalog
+    public function where(string $column, string $value, $operator = "="): Catalog
     {
         $allowedColumns = ['id_catalog', 'name'];
         if (!in_array($column, $allowedColumns)) {
             throw new \Exception("Invalid column: " . htmlspecialchars($column));
         }
 
-        $statement = $this->db->prepare("SELECT * FROM Product_Catalog WHERE $column = :value LIMIT 1");
+        $statement = $this->db->prepare("SELECT * FROM Product_Catalog WHERE $column $operator :value LIMIT 1");
         $statement->execute(['value' => $value]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 

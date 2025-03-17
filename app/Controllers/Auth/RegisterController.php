@@ -3,6 +3,9 @@
 namespace App\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Order;
+use App\Models\DeliveryInformation;
+
 use App\Controllers\Controller;
 
 class RegisterController extends Controller
@@ -28,38 +31,59 @@ class RegisterController extends Controller
 
     public function store()
     {
-      //dd($_POST);
         $this->saveFormValues($_POST, ['password', 'password_confirm']);
 
-        $data = $this->filterUserData($_POST);
-        $newUser = new User(PDO()); // Sử dụng kết nối có sẵn
-        
-        $model_errors = $newUser->validate($data);
-        //dd($model_errors);
-        //dd($_POST);
-        if (empty($model_errors)) {
-            // Đảm bảo role luôn là 0 (khách hàng) khi đăng ký
-            $data['role'] = 0;
-            $newUser->fill($data)->save();
-            //dd($_POST);
-            $message = ['success' => 'User has been created successfully.'];
-            redirect('/login', $message);
+        $user_fields = ["username", "email", "password", "password_confirm"];
+
+        $data = [];
+        $data_delivery = [];
+
+        foreach ($_POST as $key => $value) {
+            if (in_array($key, $user_fields)) {
+                $data[$key] = $value;
+            } else {
+                $data_delivery[$key] = $value;
+            }
         }
-        
-        // Dữ liệu không hợp lệ...
-        redirect('/register', ['errors' => $model_errors]);
-        
+
+        $datauser = $this->filterDataUser($data);
+        $newUser = new User(PDO());
+        $model_errorsUser = $newUser->validate($datauser);
+
+        if (empty($model_errorsUser)) {
+            $newUser->fill($datauser)->save();
+
+            // Tạo thông tin giao hàng
+            $data_delivery['id_account'] = $newUser->id_account;
+            $data_delivery['receiver_name'] = $newUser->username;
+
+            $newDelivery = new DeliveryInformation(PDO());
+            $model_errorsDe = $newDelivery->validate($data_delivery);
+
+            if (!empty($model_errorsDe)) {
+                redirect('/register', ['errors' => $model_errorsDe]);
+            }
+
+            $newDelivery->fill($data_delivery)->save();
+
+            // Tạo đơn hàng
+            $order = new Order(PDO());
+            $order->id_order = sprintf("REORD%05d", $newUser->id_account);
+            $order->id_account = $newUser->id_account;
+            $order->save_def();
+
+            redirect('/login', ['success' => 'User created successfully.']);
+        }
+        redirect('/register', ['errors' => $model_errorsUser]);
     }
 
-    protected function filterUserData(array $data)
+    protected function filterDataUser(array $data)
     {
         return [
             'username' => $data['username'] ?? null,
             'email' => filter_var($data['email'], FILTER_VALIDATE_EMAIL),
-            'phone_number' => $data['phone_number'] ?? null,
             'password' => $data['password'] ?? null,
             'password_confirm' => $data['password_confirm'] ?? null
-            
         ];
     }
 }

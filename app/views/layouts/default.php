@@ -21,8 +21,8 @@
 
 <body>
 
-  <header>
-    <div class="container-fluid bg-nav row pb-2 mb-2">
+  <header class="fixed-top">
+    <div class="container-fluid bg-nav row ">
       <div class="col-lg-4"></div>
       <div class=" mt-2 mb-1 search-group col-lg-4 d-flex justify-content-center align-items-center">
         <form class="d-flex form-search">
@@ -44,9 +44,9 @@
         <div class="collapse navbar-collapse col-sm-5" id="collapsibleNavbar">
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="/home">TRANG CHỦ</a></li>
-            <li class="nav-item"><a class="nav-link" href="products">SẢN PHẨM</a></li>
+            <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
             <li class="nav-item"><a class="nav-link" href="/introduction">GIỚI THIỆU</a></li>
-            <li class="nav-item"><a class="nav-link" href="contacts">LIÊN HỆ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/contacts">LIÊN HỆ</a></li>
           </ul>
         </div>
         <a class="navbar-brand col-sm-2 d-flex justify-content-center align-items-center" href="#"><img
@@ -74,18 +74,41 @@
               </div>
             </li>
           <?php endif ?>
-          <a href="#" class="border mx-2 rounded d-flex justify-content-center align-items-center">
-            <i class="fas fa-shopping-cart position-relative">
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-            </i>
+          <a href="/products/shoppingcard" class="border mx-2 rounded d-flex justify-content-center align-items-center">
+            <?php if (!AUTHGUARD()->isUserLoggedIn()): ?>
+              <i class="fas fa-shopping-cart position-relative">
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+              </i>
+            <?php else: ?>
+              <i class="fas fa-shopping-cart position-relative">
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <?= $this->e(AUTHGUARD()->showQuantity()) ?>
+                </span>
+              </i>
+
+            <?php endif ?>
             <p class="mx-2 my-auto">Giỏ Hàng</p>
           </a>
         </div>
       </div>
     </nav>
-  </header>
+    <?php
+    if (isset($_SESSION['error'])) {
+      echo '<script>alert("' . $_SESSION['error'] . '")</script>';
+      unset($_SESSION['error']);
+    }
+    if (isset($_SESSION['success'])) {
+      echo '<script>alert("' . $_SESSION['success'] . '")</script>';
+      unset($_SESSION['success']);
+    }
+    ?>
 
-  <?= $this->section("page") ?>
+
+  </header>
+    <div class="container-fluid main" >
+    <?= $this->section("page") ?>
+    </div>
+ 
   <button id="back-to-top" title="Go to top">Top</button>
 
   <footer>

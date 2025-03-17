@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\User;
+use App\Models\OrderDetail;
 
 class SessionGuard
 {
@@ -36,4 +37,16 @@ class SessionGuard
   {
     return isset($_SESSION['user_id']);
   }
+
+  public function showQuantity(): int
+    {
+
+        $id_account = $this->user()->id_account;
+        $id_order = sprintf('REORD%05d', $id_account);
+        $orderDetailModel = new OrderDetail(PDO());
+        return $orderDetailModel->getTotalQuantity($id_order);
+        // DD($orderDetailModel->getTotalQuantity($id_order));
+        // exit();
+
+    }
 }

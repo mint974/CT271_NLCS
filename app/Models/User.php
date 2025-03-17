@@ -8,12 +8,10 @@ class User
 {
     private PDO $db;
 
-    public int $id_account = -1;
+    public ?int $id_account = null;
     public string $email;
     public string $username;
     public string $password;
-    public ?string $phone_number = null;
-    public ?string $address = null;
     public int $role = 0; // 0: Khách hàng, 1: Nhân viên, 2: Admin
     public string $created_at;
 
@@ -24,7 +22,7 @@ class User
 
     public function where(string $column, string $value): User
     {
-        $allowedColumns = ['id_account', 'email', 'username', 'phone_number'];
+        $allowedColumns = ['id_account', 'email', 'username'];
         if (!in_array($column, $allowedColumns)) {
             throw new \Exception("Invalid column: " . htmlspecialchars($column));
         }
@@ -41,41 +39,49 @@ class User
 
     public function save(): bool
     {
-        if ($this->id_account >= 0) {
+        if (!empty($this->id_account)) {
+            // Cập nhật tài khoản nếu đã có ID
             $statement = $this->db->prepare(
-                'UPDATE accounts 
-                 SET email = :email, username = :username, password = :password, 
-                     phone_number = :phone_number, address = :address, role = :role 
+                'UPDATE Accounts 
+                 SET username = :username, email = :email, password = :password, role = :role
                  WHERE id_account = :id_account'
             );
-            return $statement->execute([
+            $result = $statement->execute([
                 'id_account' => $this->id_account,
-                'email' => $this->email,
                 'username' => $this->username,
+                'email' => $this->email,
                 'password' => $this->password,
-                'phone_number' => $this->phone_number,
-                'address' => $this->address,
                 'role' => $this->role
             ]);
         } else {
             $statement = $this->db->prepare(
-                'INSERT INTO accounts (email, username, password, phone_number, address, role, created_at) 
-                 VALUES (:email, :username, :password, :phone_number, :address, :role, NOW())'
+                'INSERT INTO Accounts (username, email, password, role) 
+                 VALUES (:username, :email, :password, :role)'
             );
             $result = $statement->execute([
-                'email' => $this->email,
                 'username' => $this->username,
+                'email' => $this->email,
                 'password' => $this->password,
-                'phone_number' => $this->phone_number,
-                'address' => $this->address,
                 'role' => $this->role
             ]);
+
             if ($result) {
-                $this->id_account = $this->db->lastInsertId();
+                // Truy vấn lại id_account từ database
+                $query = $this->db->prepare("SELECT id_account FROM Accounts WHERE email = :email");
+                $query->execute(['email' => $this->email]);
+                $account = $query->fetch(PDO::FETCH_ASSOC);
+
+                if ($account) {
+                    $this->id_account = $account['id_account'];
+                } else {
+                    throw new \Exception("Lỗi: Không lấy được id_account.");
+                }
             }
-            return $result;
         }
+        return $result;
     }
+
+
 
     public function fill(array $data): User
     {
@@ -87,9 +93,6 @@ class User
         } else {
             $this->password = $data['password'];
         }
-
-        $this->phone_number = $data['phone_number'] ?? null;
-        $this->address = $data['address'] ?? null;
 
         if ($this->id_account >= 0) { // Chỉ admin mới có quyền chỉnh role
             $this->role = $data['role'] ?? 0;
@@ -104,8 +107,6 @@ class User
         $this->email = $row['email'];
         $this->username = $row['username'];
         $this->password = $row['password'];
-        $this->phone_number = $row['phone_number'];
-        $this->address = $row['address'];
         $this->role = $row['role'];
         $this->created_at = $row['created_at'];
     }
@@ -115,15 +116,16 @@ class User
         $query = 'SELECT COUNT(*) FROM accounts WHERE email = :email';
         $params = ['email' => $email];
 
-        if ($ignoreId !== null) {
+        if (!is_null($ignoreId)) {
             $query .= ' AND id_account != :ignoreId';
-            $params['ignoreId'] = $ignoreId;
+            $params['ignoreId'] = $ignoreId; 
         }
 
         $statement = $this->db->prepare($query);
         $statement->execute($params);
         return $statement->fetchColumn() > 0;
     }
+
 
     public function validate(array $data): array
     {
@@ -143,10 +145,6 @@ class User
             $errors['password'] = 'Mật khẩu phải có ít nhất 6 ký tự.';
         } elseif (!isset($data['password_confirm']) || $data['password'] !== $data['password_confirm']) {
             $errors['password'] = 'Mật khẩu xác nhận không khớp.';
-        }
-
-        if (!empty($data['phone_number']) && !preg_match('/^[0-9]{10,15}$/', $data['phone_number'])) {
-            $errors['phone_number'] = 'Số điện thoại không hợp lệ.';
         }
 
         return $errors;
