@@ -49,9 +49,10 @@
             <li class="nav-item"><a class="nav-link" href="/contacts">LIÊN HỆ</a></li>
           </ul>
         </div>
-        <a class="navbar-brand col-sm-2 d-flex justify-content-center align-items-center" href="#"><img
-            src="/assets/image/full-logo.png" alt=""></a>
-        <div class="right-div mb-2 col-sm-5 d-flex justify-content-end align-items-center">
+        <a class="navbar-brand col-sm-2 d-flex justify-content-center align-items-center" href="#">
+          <img src="/assets/image/full-logo.png" alt="">
+        </a>
+        <div class="right-div mb-2 col-sm-5 d-flex justify-content-end align-items-center ">
           <?php if (!AUTHGUARD()->isUserLoggedIn()): ?>
             <div class="border mx-2 rounded d-flex justify-content-center align-items-center">
               <i class="fas fa-user"></i>
@@ -59,37 +60,36 @@
               <a href="/register" class="orange-color mx-2">ĐĂNG KÍ</a>
             </div>
           <?php else: ?>
-            <li class="nav-item dropstart">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <?= $this->e(AUTHGUARD()->user()->username) ?> <span class="caret"></span>
-              </a>
 
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="/logout"
-                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                  Logout
-                </a>
-                <form id="logout-form" class="d-none" action="/logout" method="POST">
-                </form>
-              </div>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <?= $this->e(AUTHGUARD()->user()->username) ?>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="/orders/index">Quản lý đơn hàng</a></li>
+                <li><a class="dropdown-item" href="/">h</a></li>
+                <li>
+                  <a class="dropdown-item" href="/logout"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Đăng xuất
+                  </a>
+                  <form id="logout-form" class="d-none" action="/logout" method="POST"></form>
+                </li>
+              </ul>
             </li>
+
           <?php endif ?>
           <a href="/products/shoppingcard" class="border mx-2 rounded d-flex justify-content-center align-items-center">
-            <?php if (!AUTHGUARD()->isUserLoggedIn()): ?>
-              <i class="fas fa-shopping-cart position-relative">
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-              </i>
-            <?php else: ?>
-              <i class="fas fa-shopping-cart position-relative">
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  <?= $this->e(AUTHGUARD()->showQuantity()) ?>
-                </span>
-              </i>
-
-            <?php endif ?>
+            <i class="fas fa-shopping-cart position-relative">
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $this->e(AUTHGUARD()->isUserLoggedIn() ? AUTHGUARD()->showQuantity() : 0) ?>
+              </span>
+            </i>
             <p class="mx-2 my-auto">Giỏ Hàng</p>
           </a>
         </div>
+
       </div>
     </nav>
     <?php
@@ -105,13 +105,14 @@
 
 
   </header>
-    <div class="container-fluid main" >
+  <div class="container-fluid main">
     <?= $this->section("page") ?>
-    </div>
- 
+  </div>
+
   <button id="back-to-top" title="Go to top">Top</button>
 
-  <footer>
+  <footer class="container-fluid">
+
     <img src="/assets/image/footer-car.png" class="footer-car" alt="">
     <div class="container-fluid text-center row mx-auto footer">
 
@@ -172,6 +173,7 @@
         </div>
       </div>
       <img src="/assets/image/footer-flower.png" class="footer-flower" alt="">
+
     </div>
 
   </footer>

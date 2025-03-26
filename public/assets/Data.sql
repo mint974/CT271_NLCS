@@ -6,43 +6,42 @@ VALUES
 
 
 --chèn dữ liệu vào bản 
-INSERT INTO Products (id_product, name, description, quantity, price, delivery_limit, unit, id_promotion) VALUES 
-    ('prod001', 'Anh đào', 'Quả anh đào là loại quả nhỏ có hạt cứng, có nhiều màu sắc và hương vị khác nhau. Trái cây màu đỏ tươi này là sự kết hợp tuyệt vời giữa vị ngọt ngào và chút chua nhẹ, tạo điểm nhấn hoàn hảo cho các món tráng miệng. Quả anh đào có thể ăn tươi hoặc được sử dụng trong nhiều công thức nấu ăn như bánh ngọt, tart, bánh pie và bánh cheesecake.', 50, 120000, 10, 'Kg', NULL),
-    ('prod002', 'Táo', 'Táo là loại trái cây giòn, ngọt, chứa nhiều chất xơ và vitamin. Có thể ăn tươi hoặc dùng làm nước ép, salad, bánh táo.', 100, 80000, 5, 'Kg', NULL),
-    ('prod003', 'Việt quốc', 'Việt quốc là loại quả mọng nhỏ có màu xanh đậm, chứa nhiều chất chống oxy hóa, giúp tăng cường sức khỏe tim mạch.', 75, 150000, 4, 'Kg', NULL),
-    ('prod004', 'Dâu tằm', 'Dâu tằm có vị chua ngọt đặc trưng, giàu vitamin C, giúp tăng cường miễn dịch và cải thiện làn da.', 60, 90000, 4, 'Kg', NULL),
-    ('prod005', 'Mâm sôi', 'Mâm sôi có màu đỏ tươi, vị chua thanh, giàu chất xơ và vitamin giúp hỗ trợ tiêu hóa và sức khỏe tim mạch.', 50, 130000, 4, 'Kg', NULL),
-    ('prod006', 'Quả lê', 'Lê là loại quả mọng nước, vị ngọt thanh, rất tốt cho hệ tiêu hóa và cung cấp độ ẩm cho cơ thể.', 80, 70000, 5, 'Kg', NULL),
-    ('prod007', 'Quả đào', 'Đào có vị ngọt dịu, thịt quả mềm, chứa nhiều chất chống oxy hóa giúp làm đẹp da.', 65, 110000, 5, 'Kg', NULL),
-    ('prod008', 'Kiwi vàng', 'Kiwi vàng có vị ngọt đậm hơn kiwi xanh, chứa nhiều vitamin C và chất xơ giúp tăng cường sức khỏe.', 55, 160000, 6, 'Kg', NULL),
-    ('prod009', 'Nho ngón tay đen', 'Nho ngón tay đen có hình dáng thuôn dài độc đáo, vỏ mỏng, vị ngọt đậm, thích hợp ăn tươi hoặc làm rượu vang.', 70, 180000, 6, 'Kg', NULL),
-    ('prod010', 'Cam', 'Cam là loại trái cây giàu vitamin C, giúp tăng cường miễn dịch, có thể ăn tươi hoặc ép lấy nước.', 90, 60000, 6, 'Kg', NULL),
-    ('prod011', 'Nho mẫu đơn', 'Nho mẫu đơn có hương thơm đặc trưng, vị ngọt thanh, thịt giòn, giàu dinh dưỡng.', 40, 200000, 5, 'Kg', NULL),
-    ('prod012', 'Táo đỏ', 'Táo đỏ là loại táo giòn, ngọt, giàu chất xơ, rất tốt cho sức khỏe.', 85, 85000, 4, 'Kg', NULL),
-    ('prod013', 'Táo xanh', 'Táo xanh có vị chua nhẹ, giòn, giúp kiểm soát cân nặng và cung cấp vitamin C.', 90, 75000, 4, 'Kg', NULL),
-    ('prod014', 'Chuối', 'Chuối là nguồn cung cấp năng lượng dồi dào, chứa nhiều kali tốt cho hệ tim mạch.', 120, 40000, 5, 'Kg', NULL),
-    ('prod015', 'Kiwi xanh', 'Kiwi xanh có vị chua ngọt cân bằng, giàu vitamin C và chất xơ tốt cho tiêu hóa.', 60, 140000, 3, 'Kg', NULL),
-    ('prod016', 'Quả na', 'Quả na có vị ngọt, thịt mềm, chứa nhiều vitamin C và chất xơ, tốt cho hệ tiêu hóa.', 50, 90000, 3, 'Kg', NULL),
-    ('prod017', 'Bưởi da xanh', 'Bưởi da xanh có vỏ xanh, ruột hồng, vị ngọt thanh, giàu vitamin C, tốt cho sức khỏe.', 60, 120000, 10, 'Kg', NULL),
-    ('prod018', 'Nhãn xuồng', 'Nhãn xuồng có hạt nhỏ, thịt dày, vị ngọt đậm, giàu năng lượng.', 70, 110000, 10, 'Kg', NULL),
-    ('prod019', 'Vải thiều', 'Vải thiều có vỏ mỏng, ruột trắng, vị ngọt lịm, giàu vitamin C.', 80, 130000, 10, 'Kg', NULL),
-    ('prod020', 'Măng cụt', 'Măng cụt có vỏ dày màu tím, ruột trắng mềm, vị chua ngọt, rất bổ dưỡng.', 50, 140000, 10, 'Kg', NULL),
-    ('prod021', 'Chôm Chôm', 'Chôm chôm có lớp vỏ gai mềm, thịt trắng ngọt, giàu vitamin và khoáng chất.', 90, 95000, 10, 'Kg', NULL),
-    ('prod022', 'Sầu riêng Ri 6', 'Sầu riêng Ri 6 có hương thơm đậm, cơm vàng dày, vị béo ngọt đặc trưng.', 30, 250000, 20, 'Kg', NULL),
-    ('prod023', 'Thanh long', 'Thanh long có vỏ hồng, ruột trắng hoặc đỏ, vị ngọt thanh, giàu chất xơ.', 100, 60000, 7, 'Kg', NULL),
-    ('prod024', 'Dâu tây', 'Dâu tây có màu đỏ rực rỡ, vị chua ngọt, giàu chất chống oxy hóa.', 40, 180000, 5, 'Kg', NULL),
-    ('prod025', 'Nho kẹo', 'Nho kẹo có vị ngọt đậm, giòn, không hạt, rất được ưa chuộng.', 50, 190000, 5, 'Kg', NULL),
-    ('prod026', 'Nho xanh', 'Nho xanh không hạt, vị chua nhẹ, giòn, giàu vitamin và khoáng chất.', 60, 170000, 5, 'Kg', NULL),
-    ('prod027', 'Xoài cát', 'Xoài cát có thịt vàng, thơm, ngọt đậm, rất được ưa chuộng.', 80, 90000, 10, 'Kg', NULL),
-    ('prod028', 'Mận Hà Nội', 'Mận Hà Nội có vị chua ngọt, giòn, giàu vitamin C.', 50, 100000, 8, 'Kg', NULL),
-    ('prod029', 'Táo nhỏ', 'Táo nhỏ có vị ngọt thanh, giòn, rất thích hợp ăn vặt.', 90, 75000, 5, 'Kg', NULL),
-    ('prod030', 'Ổi ruột hồng', 'Ổi ruột hồng có thịt mềm, vị ngọt dịu, chứa nhiều vitamin C.', 100, 55000, 10, 'Kg', NULL),
-    ('prod031', 'Bơ Đà Lạt', 'Bơ Đà Lạt có thịt dẻo, béo ngậy, rất tốt cho sức khỏe.', 70, 130000, 10, 'Kg', NULL),
-    ('prod032', 'Cam sành', 'Cam sành có vỏ sần, ruột mọng nước, vị ngọt thanh, giàu vitamin C.', 110, 70000, 20, 'Kg', NULL),
-    ('prod033', 'Dưa hấu ruột vàng', 'Dưa hấu ruột vàng có vị ngọt mát, chứa nhiều nước, giúp giải khát.', 120, 50000, 15, 'Kg', NULL),
-    ('prod034', 'Dưa lưới', 'Dưa lưới có vỏ lưới đặc trưng, vị ngọt thơm, nhiều nước.', 60, 150000, 10, 'Kg', NULL),
-    ('prod035', 'Vú sữa tím', 'Vú sữa tím có lớp vỏ mỏng, thịt mềm, vị ngọt thanh.', 55, 125000, 15, 'Kg', NULL);
-
+INSERT INTO Products (id_product, name, description, quantity, price, unit, id_promotion) VALUES 
+    ('prod001', 'Anh đào', 'Quả anh đào là loại quả nhỏ có hạt cứng, có nhiều màu sắc và hương vị khác nhau. Trái cây màu đỏ tươi này là sự kết hợp tuyệt vời giữa vị ngọt ngào và chút chua nhẹ, tạo điểm nhấn hoàn hảo cho các món tráng miệng. Quả anh đào có thể ăn tươi hoặc được sử dụng trong nhiều công thức nấu ăn như bánh ngọt, tart, bánh pie và bánh cheesecake.', 50, 75000, 'Kg', NULL),
+    ('prod002', 'Táo', 'Táo là loại trái cây giòn, ngọt, chứa nhiều chất xơ và vitamin. Có thể ăn tươi hoặc dùng làm nước ép, salad, bánh táo.', 100, 50000, 'Kg', NULL),
+    ('prod003', 'Việt quốc', 'Việt quốc là loại quả mọng nhỏ có màu xanh đậm, chứa nhiều chất chống oxy hóa, giúp tăng cường sức khỏe tim mạch.', 75, 90000, 'Kg', NULL),
+    ('prod004', 'Dâu tằm', 'Dâu tằm có vị chua ngọt đặc trưng, giàu vitamin C, giúp tăng cường miễn dịch và cải thiện làn da.', 60, 60000, 'Kg', NULL),
+    ('prod005', 'Mâm sôi', 'Mâm sôi có màu đỏ tươi, vị chua thanh, giàu chất xơ và vitamin giúp hỗ trợ tiêu hóa và sức khỏe tim mạch.', 50, 85000, 'Kg', NULL),
+    ('prod006', 'Quả lê', 'Lê là loại quả mọng nước, vị ngọt thanh, rất tốt cho hệ tiêu hóa và cung cấp độ ẩm cho cơ thể.', 80, 45000, 'Kg', NULL),
+    ('prod007', 'Quả đào', 'Đào có vị ngọt dịu, thịt quả mềm, chứa nhiều chất chống oxy hóa giúp làm đẹp da.', 65, 70000, 'Kg', NULL),
+    ('prod008', 'Kiwi vàng', 'Kiwi vàng có vị ngọt đậm hơn kiwi xanh, chứa nhiều vitamin C và chất xơ giúp tăng cường sức khỏe.', 55, 100000, 'Kg', NULL),
+    ('prod009', 'Nho ngón tay đen', 'Nho ngón tay đen có hình dáng thuôn dài độc đáo, vỏ mỏng, vị ngọt đậm, thích hợp ăn tươi hoặc làm rượu vang.', 70, 120000, 'Kg', NULL),
+    ('prod010', 'Cam', 'Cam là loại trái cây giàu vitamin C, giúp tăng cường miễn dịch, có thể ăn tươi hoặc ép lấy nước.', 90, 40000, 'Kg', NULL),
+    ('prod011', 'Nho mẫu đơn', 'Nho mẫu đơn có hương thơm đặc trưng, vị ngọt thanh, thịt giòn, giàu dinh dưỡng.', 40, 130000, 'Kg', NULL),
+    ('prod012', 'Táo đỏ', 'Táo đỏ là loại táo giòn, ngọt, giàu chất xơ, rất tốt cho sức khỏe.', 85, 60000, 'Kg', NULL),
+    ('prod013', 'Táo xanh', 'Táo xanh có vị chua nhẹ, giòn, giúp kiểm soát cân nặng và cung cấp vitamin C.', 90, 50000, 'Kg', NULL),
+    ('prod014', 'Chuối', 'Chuối là nguồn cung cấp năng lượng dồi dào, chứa nhiều kali tốt cho hệ tim mạch.', 120, 25000, 'Kg', NULL),
+    ('prod015', 'Kiwi xanh', 'Kiwi xanh có vị chua ngọt cân bằng, giàu vitamin C và chất xơ tốt cho tiêu hóa.', 60, 85000, 'Kg', NULL),
+    ('prod016', 'Quả na', 'Quả na có vị ngọt, thịt mềm, chứa nhiều vitamin C và chất xơ, tốt cho hệ tiêu hóa.', 50, 60000, 'Kg', NULL),
+    ('prod017', 'Bưởi da xanh', 'Bưởi da xanh có vỏ xanh, ruột hồng, vị ngọt thanh, giàu vitamin C, tốt cho sức khỏe.', 60, 80000, 'Kg', NULL),
+    ('prod018', 'Nhãn xuồng', 'Nhãn xuồng có hạt nhỏ, thịt dày, vị ngọt đậm, giàu năng lượng.', 70, 75000, 'Kg', NULL),
+    ('prod019', 'Vải thiều', 'Vải thiều có vỏ mỏng, ruột trắng, vị ngọt lịm, giàu vitamin C.', 80, 90000, 'Kg', NULL),
+    ('prod020', 'Măng cụt', 'Măng cụt có vỏ dày màu tím, ruột trắng mềm, vị chua ngọt, rất bổ dưỡng.', 50, 100000, 'Kg', NULL),
+    ('prod021', 'Chôm Chôm', 'Chôm chôm có lớp vỏ gai mềm, thịt trắng ngọt, giàu vitamin và khoáng chất.', 90, 70000, 'Kg', NULL),
+    ('prod022', 'Sầu riêng Ri 6', 'Sầu riêng Ri 6 có hương thơm đậm, cơm vàng dày, vị béo ngọt đặc trưng.', 30, 180000, 'Kg', NULL),
+    ('prod023', 'Thanh long', 'Thanh long có vỏ hồng, ruột trắng hoặc đỏ, vị ngọt thanh, giàu chất xơ.', 100, 40000, 'Kg', NULL),
+    ('prod024', 'Dâu tây', 'Dâu tây có màu đỏ rực rỡ, vị chua ngọt, giàu chất chống oxy hóa.', 40, 120000, 'Kg', NULL),
+    ('prod025', 'Nho kẹo', 'Nho kẹo có vị ngọt đậm, giòn, không hạt, rất được ưa chuộng.', 50, 130000, 'Kg', NULL),
+    ('prod026', 'Nho xanh', 'Nho xanh không hạt, vị chua nhẹ, giòn, giàu vitamin và khoáng chất.', 60, 110000, 'Kg', NULL),
+    ('prod027', 'Xoài cát', 'Xoài cát có thịt vàng, thơm, ngọt đậm, rất được ưa chuộng.', 80, 70000, 'Kg', NULL),
+    ('prod028', 'Mận Hà Nội', 'Mận Hà Nội có vị chua ngọt, giòn, giàu vitamin C.', 50, 75000, 'Kg', NULL),
+    ('prod029', 'Táo nhỏ', 'Táo nhỏ có vị ngọt thanh, giòn, rất thích hợp ăn vặt.', 90, 50000, 'Kg', NULL),
+    ('prod030', 'Ổi ruột hồng', 'Ổi ruột hồng có thịt mềm, vị ngọt dịu, chứa nhiều vitamin C.', 100, 35000, 'Kg', NULL),
+    ('prod031', 'Bơ Đà Lạt', 'Bơ Đà Lạt có thịt dẻo, béo ngậy, rất tốt cho sức khỏe.', 70, 85000, 'Kg', NULL),
+    ('prod032', 'Cam sành', 'Cam sành có vỏ sần, ruột mọng nước, vị ngọt thanh, giàu vitamin C.', 110, 50000, 'Kg', NULL),
+    ('prod033', 'Dưa hấu ruột vàng', 'Dưa hấu ruột vàng có vị ngọt mát, chứa nhiều nước, giúp giải khát.', 120, 35000, 'Kg', NULL),
+    ('prod034', 'Dưa lưới', 'Dưa lưới có vỏ lưới đặc trưng, vị ngọt thơm, nhiều nước.', 60, 90000, 'Kg', NULL),
+    ('prod035', 'Vú sữa tím', 'Vú sữa tím có lớp vỏ mỏng, thịt mềm, vị ngọt thanh.', 55, 80000, 'Kg', NULL);
 
 UPDATE Products SET id_promotion = 'PROMO_TET' WHERE id_product IN ('prod002', 'prod007', 'prod013');
 UPDATE Products SET id_promotion = 'PROMO_SUMMER' WHERE id_product IN ('prod005', 'prod011', 'prod019', 'prod025');
@@ -213,3 +212,10 @@ INSERT INTO Product_Catalog_details (id_product, id_catalog) VALUES
 ('prod005', 'prodcata007'),
 ('prod024', 'prodcata007');
 
+
+-- thông tin giao hàng
+INSERT INTO delivery_information (id_delivery, id_account, house_number, ward, district, city, receiver_name, receiver_phone) 
+VALUES 
+    ('DEL2', 1, 'số 25', 'Bến Nghé', 'Quận 1', 'TP. Hồ Chí Minh', 'Hoàng An', '0912345678'),
+    ('DEL3', 1, 'số 88', 'Hòa Cường Bắc', 'Hải Châu', 'Đà Nẵng', 'Thanh Tùng', '0923456789'),
+    ('DEL4', 1, 'số 56', 'Dịch Vọng', 'Cầu Giấy', 'Hà Nội', 'Mai Hương', '0934567890');

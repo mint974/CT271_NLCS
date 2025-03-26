@@ -29,9 +29,9 @@ class LoginController extends Controller
 
         $user = (new User(PDO()))->where('email', $user_credentials['email']); // Sử dụng kết nối có sẵn
 
-        if ($user->id_account == -1) { 
+        if ($user->id_account == null) { 
             // Người dùng không tồn tại
-            $errors['email'] = 'Invalid email or password.';
+            $errors['email'] = 'Email chưa được đăng kí tài khoản, vui lòng đăng kí!';
         } elseif (!password_verify($user_credentials['password'], $user->password)) { 
             // Sai mật khẩu
             $errors['password'] = 'Invalid email or password.';

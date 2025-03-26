@@ -46,10 +46,31 @@ $router->POST('/products/load_prod_cata', '\App\Controllers\productsController@g
 $router->POST('/products/addprod/([\w-]+)', '\App\Controllers\OrdersController@addprod');
 $router->get('/products/proddetail/([\w-]+)', '\App\Controllers\productsController@getproductbyid');
 
+// load trang gio hang
 $router->get('/products/shoppingcard', '\App\Controllers\OrdersController@shoppingcart');
+
+// order routes
+$router->get('/orders/index', '\App\Controllers\OrdersController@index');
+
+//xem chi tiết đơn hàng
+$router->get('/orders/order_detail/([\w-]+)', '\App\Controllers\OrdersController@orderdetail');
+
 $router->POST('/orders/update/([\w-]+)', '\App\Controllers\OrdersController@updateprod');
 $router->get('/orders/delete/([\w-]+)', '\App\Controllers\OrdersController@deletebyIDProd');
 
+$router->POST('/orders/start_order', '\App\Controllers\DeliveryController@index');
+
+//đặt hàng
+$router->POST('/orders/save', '\App\Controllers\OrdersController@store');
+
+$router->POST('/orders/search', '\App\Controllers\OrdersController@search');
+
+//order cancel
+$router->POST('/orders/cancel', '\App\Controllers\OrdersController@cancel');
+
+
+$router->POST('/delivery/update', '\App\Controllers\DeliveryController@update');
+$router->POST('/delivery/add', '\App\Controllers\DeliveryController@store');
 
 $router->set404('\App\Controllers\Controller@sendNotFound');
 $router->run();

@@ -80,12 +80,17 @@ CREATE TABLE Orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_account INT(11) NOT NULL,
     id_delivery VARCHAR(20) NULL,
-    -- status_payment VARCHAR(50) NOT NULL,
-    -- id_payment VARCHAR(20) NOT NULL,
-    -- FOREIGN KEY (id_payment) REFERENCES Payments(id_payment) ON DELETE CASCADE
+    status ENUM(
+        'Đã gửi đơn đặt hàng', 
+        'Shop đang đóng gói đơn hàng', 
+        'Đơn hàng đang giao tới bạn', 
+        'Giao hàng thành công', 
+        'Đơn hàng đã bị hủy'
+    ) DEFAULT 'Đã gửi đơn đặt hàng',
     FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE,
     FOREIGN KEY (id_delivery) REFERENCES delivery_information(id_delivery) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 -- Tạo bảng Delivery_Information
 CREATE TABLE Delivery_Information (
@@ -97,6 +102,7 @@ CREATE TABLE Delivery_Information (
     city VARCHAR(100),
     receiver_name VARCHAR(100),
     receiver_phone VARCHAR(20),
+    shipping_fee INT(11) NOT NULL DEFAULT 30000,
     FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -108,6 +114,16 @@ CREATE TABLE Order_details (
     PRIMARY KEY (id_order, id_product),
     FOREIGN KEY (id_order) REFERENCES Orders(id_order) ON DELETE CASCADE,
     FOREIGN KEY (id_product) REFERENCES Products(id_product) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE Order_Cancellations (
+    id_cancel VARCHAR(20) PRIMARY KEY,  
+    id_order VARCHAR(20) NOT NULL UNIQUE,  
+    reason TEXT NOT NULL,  
+    canceled_by INT(11) NOT NULL,  -- Ai đã hủy (user hoặc admin)
+    canceled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    FOREIGN KEY (id_order) REFERENCES Orders(id_order) ON DELETE CASCADE,
+    FOREIGN KEY (canceled_by) REFERENCES Accounts(id_account) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Tạo bảng Feedbacks

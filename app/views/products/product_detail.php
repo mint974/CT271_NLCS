@@ -111,8 +111,7 @@
 
             <ul class="list-unstyled delivery-policy-list">
                 <li><span class="icon">✅</span> Giao hàng nội thành trong vòng 24h.</li>
-                <li><span class="icon">✅</span> Miễn phí giao hàng cho đơn từ <strong>400.000 VND</strong>.</li>
-                <li><span class="icon">✅</span> Giao hàng liên tỉnh khi đơn hàng từ <strong> 1.000.000 VND</strong>.
+                <li><span class="icon">✅</span> Giao hàng liên tỉnh khi đơn hàng từ <strong> 800.000 VND</strong>.
                 </li>
                 <li><span class="icon">✅</span> Đóng gói kỹ lưỡng, đảm bảo độ tươi ngon.</li>
             </ul>

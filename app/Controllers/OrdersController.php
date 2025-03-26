@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Models\DeliveryInformation;
 use App\Models\Order;
+use App\Models\OrderCancellation;
 use App\Models\Product;
 use App\Models\OrderDetail;
 
@@ -17,71 +19,99 @@ class OrdersController extends Controller
         parent::__construct();
     }
 
-    public function index()
+    public function index(string $error = null)
     {
-        $success = session_get_once('success');
-        $ordermodel = new Order(PDO());
-        $order = $ordermodel->where('id_order', sprintf("REORD%05d",AUTHGUARD()->user()->id_account));
-       
-        $orderdetail = new orderdetail(PDO());
+        $id_account = AUTHGUARD()->user()->id_account;
+        $orderModel = new Order(PDO());
+        $orderDetailModel = new OrderDetail(PDO());
 
-        $orders = $orderdetail->getAllOrderDetails($order->id_order);
+        $orders = $orderModel->getUserOrders($id_account); // Lấy danh sách đơn hàng của user
+        foreach ($orders as &$order) {
+            $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']); // Tính tổng tiền từng đơn hàng
+        }
+
+        $orderIds = array_column($orders, 'id_order');
+        $orderDetails = $orderModel->getOrderDetails($orderIds); // Lấy thông tin chi tiết từng đơn hàng
 
         $this->sendPage('orders/index', [
-            'orders' => $order
+            'orders' => $orders,
+            'order_details' => $orderDetails,
+            'errors' => $error
         ]);
     }
 
-    public function shoppingcart(){
-    $ordermodel = new Order(PDO());
-    $reorder = $ordermodel->where('id_order', sprintf("REORD%05d", AUTHGUARD()->user()->id_account));
-
-    if (!$reorder) {
-        redirect('/orders', ['error' => 'Không tìm thấy đơn hàng.']);
-    }
-
-    $orderdetail = new OrderDetail(PDO());
-    $orders_detail = $orderdetail->getAllOrderDetails($reorder->id_order);
-
-    // Lấy danh sách id_product từ orders_detail
-    $productIds = array_map(fn($order) => $order->id_product, $orders_detail);
-
-    if (empty($productIds)) {
-        redirect('/orders', ['error' => 'Giỏ hàng trống.']);
-    }
-
-    // Truy vấn danh sách sản phẩm theo id_product
-    $productModel = new Product(PDO());
-    $products = $productModel->getProductsByIds($productIds);
-
-    // dd($products);
-    // exit();
-    $this->sendPage('orders/shopping_cart', [
-        'orders_detail' => $orders_detail,
-        'products' => $products
-    ]);
-}
-
-
-
-    public function create()
+    public function shoppingcart($errors = null, $success = null)
     {
-        $this->sendPage('orders/create', [
-            'errors' => session_get_once('errors'),
-            'old' => $this->getSavedFormValues()
-        ]);
+        $ordermodel = new Order(PDO());
+        $reorder = $ordermodel->where('id_order', sprintf("REORD%05d", AUTHGUARD()->user()->id_account));
+
+        $orderdetail = new OrderDetail(PDO());
+        $orders_detail = $orderdetail->getAllOrderDetails($reorder->id_order);
+
+        // Lấy danh sách id_product từ orders_detail
+        $productIds = array_map(fn($order) => $order->id_product, $orders_detail);
+
+        if (empty($productIds)) {
+            $null = 'Giỏ hàng của bạn đang trống.';
+            $this->sendPage('orders/shopping_cart', [
+                'null' => $null
+            ]);
+        } else {
+            // Truy vấn danh sách sản phẩm theo id_product
+            $productModel = new Product(PDO());
+            $products = $productModel->getProductsByIds($productIds);
+
+            $this->sendPage('orders/shopping_cart', [
+                'orders_detail' => $orders_detail,
+                'products' => $products,
+                'errors' => $errors,
+                'success' => $success
+            ]);
+        }
+
+
     }
 
     public function store()
     {
-        $newOrder = new Order(PDO());
-        $newOrder->id_order = uniqid('ORD_'); // Tạo ID đơn hàng tự động
-        $newOrder->created_at = date('Y-m-d H:i:s'); // Thời gian tạo đơn hàng
+        $data = explode(",", $_POST['product_ids']);
 
+        $modelproduct = new Product(PDO());
+        $product_list = $modelproduct->getProductsByIds($data);
+
+        //kiểm tra số lượng sản phẩm trong kho
+        $id_order = sprintf("REORD%05d", AUTHGUARD()->user()->id_account);
+        $modelorderdetail = new OrderDetail(PDO());
+        $error = [];
+        foreach ($product_list as $product) {
+            $orderedQuantity = $modelorderdetail->getTotalQuantity($id_order, $product['id_product']); // Chỉ truyền ID sản phẩm
+
+            if ($product['quantity'] <= $orderedQuantity) {
+                $error[] = "Số lượng sản phẩm " . htmlspecialchars($product['name']) . " không đủ để bán. vui lòng chọn lại!";
+            }
+        }
+        if (!empty($error)) {
+            $this->shoppingcart($error);
+        }
+
+        $newOrder = new Order(PDO());
+        $newOrder->id_account = AUTHGUARD()->user()->id_account;
+        $newOrder->id_delivery = $_POST['id_delivery'];
+
+        //tạo đơn hàng
         if ($newOrder->save()) {
-            redirect('/', ['success' => 'Order has been created successfully.']);
+
+            if ($modelorderdetail->Orders($newOrder->id_order, $data)) {
+                $orders = $this->getUserOrdersWithTotal(AUTHGUARD()->user()->id_account);
+                redirect('/orders/index', ['orders' => $orders]);
+
+            } else {
+                $this->shoppingcart('Lỗi đặt hàng!', null);
+            }
+
         } else {
-            redirect('/orders/create', ['errors' => ['Failed to create order.']]);
+            $this->shoppingcart('Lỗi tạo đơn đặt hàng!', null);
+
         }
     }
 
@@ -113,44 +143,31 @@ class OrdersController extends Controller
         }
     }
 
-    public function destroy($orderId)
+    public function updateprod($id_product)
     {
-        $order = AUTHGUARD()->user()->findOrder($orderId);
-        if (!$order) {
-            $this->sendNotFound();
-        }
-
-        if ($order->delete()) {
-            redirect('/', ['success' => 'Order has been deleted successfully.']);
-        } else {
-            redirect('/', ['errors' => ['Failed to delete order.']]);
-        }
-    }
-
-
-    public function updateprod($id_product){
         $quantity = $_POST['quantity'] ?? 1;
         $order = new OrderDetail(PDO());
 
         $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
-        if($order->updateProduct($id_product, $quantity)){
+        if ($order->updateProduct($id_product, $quantity)) {
             redirect($redirectUrl, ['success' => 'Đã sửa số lượng sản phẩm, kiểm tra ngay!']);
         } else {
             redirect($redirectUrl, ['error' => 'Lỗi sửa số lượng sản phẩm, Thử lại sao!']);
         }
-        
+
 
     }
 
 
-    public function addprod($id_product){
+    public function addprod($id_product)
+    {
         $quantity = $_POST['quantity'] ?? 1;
         $order = new OrderDetail(PDO());
         $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
-        if($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata'){
+        if ($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata') {
             $redirectUrl = 'http://ct271-mintfreshfruit.localhost/products';
         }
-        if($order->addproduct($id_product, $quantity)){
+        if ($order->addproduct($id_product, $quantity)) {
             redirect($redirectUrl, ['success' => 'Đã thêm sản phẩm vào giỏ hàng, kiểm tra ngay!']);
         } else {
             redirect($redirectUrl, ['error' => 'Lỗi thêm sản phẩm vào giỏ hàng, Thử lại sao!']);
@@ -158,15 +175,98 @@ class OrdersController extends Controller
 
     }
 
-    public function deletebyIDProd(String $id_Product){
-       
+    public function deletebyIDProd(string $id_Product)
+    {
+
         $order = new OrderDetail(PDO());
 
         $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
-        if($order->delete($id_Product)){
+        if ($order->delete($id_Product)) {
             redirect($redirectUrl, ['success' => 'Đã xóa sản phẩm!']);
         } else {
             redirect($redirectUrl, ['error' => 'Lỗi xóa sản phẩm, Thử lại sao!']);
         }
     }
+
+    public function getUserOrdersWithTotal($id_account)
+    {
+        $orderModel = new Order(PDO());
+        $orderDetailModel = new OrderDetail(PDO());
+
+        $orders = $orderModel->getUserOrders($id_account); // Lấy danh sách đơn hàng của user
+
+        foreach ($orders as &$order) {
+            $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']); // Tính tổng tiền từng đơn hàng
+        }
+
+        return $orders;
+    }
+
+    public function search()
+    {
+        $date = $_POST['search_date'] ?? null;
+        $totalRange = $_POST['search_total'] ?? null;
+        $status = $_POST['search_status'] ?? null;
+
+        // Lấy danh sách đơn hàng dựa trên bộ lọc
+        $modelorder = new Order(PDO());
+
+        $orders = $modelorder->searchOrders(AUTHGUARD()->user()->id_account, $date, $totalRange, $status);
+
+        // Hiển thị danh sách đơn hàng
+        $this->sendPage('/orders/index', [
+            'orders' => $orders
+        ]);
+
+    }
+
+    public function orderdetail($id_order)
+    {
+        // Khởi tạo model
+        $orderModel = new Order(pdo());
+        $orderDetailModel = new OrderDetail(pdo());
+        $deliveryModel = new DeliveryInformation(PDO());
+
+        // Lấy thông tin đơn hàng
+        $order = $orderModel->where('id_order', $id_order);
+        if (!$order) {
+            return $this->sendPage('/orders/error', ['message' => 'Không tìm thấy đơn hàng!']);
+        }
+
+        $delivery = $deliveryModel->where('id_delivery', $order->id_delivery);
+        // Lấy danh sách sản phẩm trong đơn hàng
+
+        $orderProducts = $orderDetailModel->getAllProductsOrderDetails($id_order);
+        // dd($orderProducts);
+        // exit();
+
+        // Tính tổng tiền đơn hàng
+        $totalPrice = array_sum(array_column($orderProducts, 'total_price'));
+
+        // Gửi dữ liệu đến view
+        return $this->sendPage('/orders/order_details', [
+            'orderInfo' => $delivery,
+            'orderProducts' => $orderProducts,
+            'totalPrice' => $totalPrice + $delivery->shipping_fee
+        ]);
+    }
+
+    public function cancel(){
+
+        $order = (new Order(PDO()))->where('id_order', $_POST['id_order']);
+
+        if($order->status == "Đã gửi đơn đặt hàng"){
+            //$modelcancel = new OrderCancellation(PDO());
+            $data
+            if($modelcancel->)
+
+
+        } else {
+            $error = "Lỗi hủy đơn hàng, bạn chỉ có thể hủy đơn trước khi shop xác nhận đơn hàng!";
+            $this->index($error);
+            return;
+          }
+
+    }
+
 }
