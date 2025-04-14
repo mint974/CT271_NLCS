@@ -34,54 +34,68 @@ class Order
     }
 
     public function save(): bool
-{
-    date_default_timezone_set('Asia/Ho_Chi_Minh');
-    $this->created_at = date('Y-m-d H:i:s');
+    {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $this->created_at = date('Y-m-d H:i:s');
 
-    if (!empty($this->id_order)) {
-        // Cập nhật đơn hàng đã có
-        $statement = $this->db->prepare(
-            'UPDATE Orders 
+        if (!empty($this->id_order)) {
+            // Cập nhật đơn hàng đã có
+            $statement = $this->db->prepare(
+                'UPDATE Orders 
              SET id_account = :id_account, id_delivery = :id_delivery, created_at = :created_at, status = :status
              WHERE id_order = :id_order'
-        );
-        return $statement->execute([
-            'id_order' => $this->id_order,
-            'id_account' => $this->id_account,
-            'id_delivery' => $this->id_delivery,
-            'created_at' => $this->created_at,
-            'status' => $this->status
-        ]);
-    } else {
-        // Chèn đơn hàng mới (id_order sẽ được trigger tạo tự động)
-        $statement = $this->db->prepare(
-            'INSERT INTO Orders (id_account, id_delivery, created_at, status) 
+            );
+            return $statement->execute([
+                'id_order' => $this->id_order,
+                'id_account' => $this->id_account,
+                'id_delivery' => $this->id_delivery,
+                'created_at' => $this->created_at,
+                'status' => $this->status
+            ]);
+        } else {
+            // Chèn đơn hàng mới (id_order sẽ được trigger tạo tự động)
+            $statement = $this->db->prepare(
+                'INSERT INTO Orders (id_account, id_delivery, created_at, status) 
              VALUES (:id_account, :id_delivery, :created_at, :status)'
-        );
-        $success = $statement->execute([
-            'id_account' => $this->id_account,
-            'id_delivery' => $this->id_delivery,
-            'created_at' => $this->created_at,
-            'status' => $this->status
-        ]);
+            );
+            $success = $statement->execute([
+                'id_account' => $this->id_account,
+                'id_delivery' => $this->id_delivery,
+                'created_at' => $this->created_at,
+                'status' => $this->status
+            ]);
 
-        if ($success) {
-            // Lấy id_order mới nhất của tài khoản này từ DB
-            $query = $this->db->prepare(
-                'SELECT id_order FROM Orders 
+            if ($success) {
+                // Lấy id_order mới nhất của tài khoản này từ DB
+                $query = $this->db->prepare(
+                    'SELECT id_order FROM Orders 
                  WHERE id_account = :id_account 
                  ORDER BY created_at DESC 
                  LIMIT 1'
-            );
-            $query->execute(['id_account' => $this->id_account]);
-            $this->id_order = $query->fetchColumn();
+                );
+                $query->execute(['id_account' => $this->id_account]);
+                $this->id_order = $query->fetchColumn();
+            }
+
+            return $success;
         }
-
-        return $success;
     }
-}
 
 
+    public function save_def(): bool
+    {
+        $this->created_at = date('Y-m-d H:i:s');
+
+        $statement = $this->db->prepare(
+            'INSERT INTO Orders ( id_account, created_at) 
+                  VALUES ( :id_account, :created_at)'
+        );
+        return $statement->execute([
+           
+            'id_account' => $this->id_account,
+            'created_at' => $this->created_at
+        ]);
+    }
     public function fill(array $data): Order
     {
         $this->id_account = $data['id_account'];
@@ -130,7 +144,7 @@ class Order
     }
 
     //  Lấy tất cả chi tiết đơn hàng theo danh sách id_order
-    
+
     public function getOrderDetails(array $orderIds): array
     {
         if (empty($orderIds)) {
@@ -148,7 +162,8 @@ class Order
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array {
+    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array
+    {
         $query = "SELECT o.*, 
                          (SELECT SUM(od.quantity * 
                                 CASE 
@@ -167,25 +182,25 @@ class Order
                   LEFT JOIN delivery_information d ON o.id_delivery = d.id_delivery
                   WHERE o.id_account = :id_account
                   AND o.id_order NOT LIKE '%REORD%'";
-    
+
         $params = ['id_account' => $id_account];
-    
+
         // Lọc theo ngày tạo đơn hàng nếu có
         if (!empty($date)) {
             $query .= " AND DATE(o.created_at) = :date";
             $params['date'] = $date;
         }
-    
+
         // Lọc theo trạng thái đơn hàng nếu có
         if (!empty($status)) {
             $query .= " AND o.status = :status";
             $params['status'] = $status;
         }
-    
+
         // Nếu lọc theo tổng giá trị đơn hàng thì sử dụng subquery để lọc
         if (!empty($totalRange)) {
             $query = "SELECT * FROM ($query) AS filtered_orders WHERE 1 = 1";
-            
+
             if ($totalRange === 'under_300') {
                 $query .= " AND total_price < 300000";
             } elseif ($totalRange === 'between_300_800') {
@@ -194,14 +209,14 @@ class Order
                 $query .= " AND total_price > 800000";
             }
         }
-    
+
         $statement = $this->db->prepare($query);
         $statement->execute($params);
-    
+
         return $statement->fetchAll(PDO::FETCH_ASSOC);
-        
+
     }
-    
-    
-    
+
+
+
 }

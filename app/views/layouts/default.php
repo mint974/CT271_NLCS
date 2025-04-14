@@ -20,14 +20,19 @@
 </head>
 
 <body>
-
+  <?php
+  if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  }
+  ?>
   <header class="fixed-top">
     <div class="container-fluid bg-nav row ">
       <div class="col-lg-4"></div>
       <div class=" mt-2 mb-1 search-group col-lg-4 d-flex justify-content-center align-items-center">
-        <form class="d-flex form-search">
-          <input class="form-control" type="text" placeholder="Search">
-          <button class="button" type="button"><i class="fas fa-search"></i></button>
+        <form action="/search" method="post" class="d-flex form-search">
+          <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+          <input class="form-control" type="text" placeholder="Search" name="search">
+          <button class="button" type="submit"><i class="fas fa-search"></i></button>
         </form>
       </div>
       <div class="content col-lg-4 d-flex justify-content-center align-items-center">
@@ -50,7 +55,7 @@
           </ul>
         </div>
         <a class="navbar-brand col-sm-2 d-flex justify-content-center align-items-center" href="#">
-          <img src="/assets/image/full-logo.png" alt="">
+          <img src="/assets/image/full-logo.png" style="height: 50px;" alt="">
         </a>
         <div class="right-div mb-2 col-sm-5 d-flex justify-content-end align-items-center ">
           <?php if (!AUTHGUARD()->isUserLoggedIn()): ?>
@@ -62,22 +67,31 @@
           <?php else: ?>
 
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <?= $this->e(AUTHGUARD()->user()->username) ?>
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <!-- Avatar and Username -->
+                <img class="avatar rounded-circle me-2" src="/<?= $this->e(AUTHGUARD()->user()->url) ?>" alt="Avatar"
+                  style="width: 30px; height: 30px;">
+                <span><?= $this->e(AUTHGUARD()->user()->username) ?></span>
               </a>
-              <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="/orders/index">Quản lý đơn hàng</a></li>
-                <li><a class="dropdown-item" href="/">h</a></li>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <!-- User management link -->
+                <li><a class="dropdown-item" href="/orders/index">
+                    <i class="bi bi-boxes"></i> Quản lý đơn hàng
+                  </a></li>
+                <li><a class="dropdown-item" href="<?= '/account/detail/' .htmlspecialchars(AUTHGUARD()->user()->id_account) ?>">
+                    <i class="bi bi-person"></i> Quản lý tài khoản
+                  </a></li>
                 <li>
                   <a class="dropdown-item" href="/logout"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Đăng xuất
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
                   </a>
                   <form id="logout-form" class="d-none" action="/logout" method="POST"></form>
                 </li>
               </ul>
             </li>
+
 
           <?php endif ?>
           <a href="/products/shoppingcard" class="border mx-2 rounded d-flex justify-content-center align-items-center">

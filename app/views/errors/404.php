@@ -1,5 +1,10 @@
-<?php $this->layout("layouts/default", ["title" => APPNAME]) ?>
-
+<?php
+if (AUTHGUARD()->user()->role === 'khách hàng') {
+    $this->layout("layouts/default", ["title" => APPNAME]);
+} else {
+    $this->layout("layouts/admin", ["title" => APPNAME]);
+}
+?>
 <?php $this->start("page") ?>
 <div class="container">
     <div class="row">
@@ -11,7 +16,7 @@
                     The page you requested could not be found.
                 </div>
                 <div class="my-1">
-                    <a href="/" class="btn btn-primary btn-lg me-1">
+                    <a href="<?php if(AUTHGUARD()->user()->role === 'khách hàng'): ?>/<?php else: ?>/adminhome<?php endif;?>" class="btn btn-primary btn-lg me-1">
                         <i class="fa fa-home"></i> Take Me Home</a>
                 </div>
             </div>

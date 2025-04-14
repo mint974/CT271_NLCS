@@ -6,149 +6,115 @@ use PDO;
 
 class Contact
 {
-  private PDO $db;
+    private PDO $db;
 
-  public int $id = -1;
-  public int $user_id;
-  public string $name;
-  public string $phone;
-  public string $notes;
-  public string $created_at;
-  public string $updated_at;
+    public string $id_contact;
+    public string $subject;
+    public string $content;
+    public string $status;
+    public string $created_at;
+    public ?int $id_account;
+    public string $phone;
 
-  public function __construct(PDO $pdo)
-  {
-    $this->db = $pdo;
-  }
-
-  public function setUser(User $user): Contact
-  {
-    $this->user_id = $user->id;
-    return $this;
-  }
-
-  public function contactsForUser(User $user): array
-  {
-    $contacts = [];
-
-    $statement = $this->db->prepare(
-      'select * from contacts where user_id = :user_id'
-    );
-    $statement->execute(['user_id' => $user->id]);
-    while ($row = $statement->fetch()) {
-      $contact = new Contact($this->db);
-      $contact->fillFromDbRow($row);
-      $contacts[] = $contact;
+    public function __construct(PDO $pdo)
+    {
+        $this->db = $pdo;
     }
 
-    return $contacts;
-  }
+    public function save(): bool
+    {
+        $result = false;
 
-  public function save(): bool
-  {
-    $result = false;
+        if (!empty($this->id_contact)) {
+            $statement = $this->db->prepare(
+                'UPDATE Contacts SET subject = :subject, content = :content, 
+                 status = :status, id_account = :id_account, phone = :phone
+                 WHERE id_contact = :id_contact'
+            );
 
-    if ($this->id >= 0) {
-      $statement = $this->db->prepare(
-        'update contacts set name = :name, phone = :phone, 
-					notes = :notes, user_id = :user_id, updated_at = now() where id = :id'
-      );
-      $result = $statement->execute([
-        'name' => $this->name,
-        'phone' => $this->phone,
-        'notes' => $this->notes,
-        'id' => $this->id,
-        'user_id' => $this->user_id
-      ]);
-    } else {
-      $statement = $this->db->prepare(
-        'insert into contacts
-				(name, phone, notes, user_id, created_at, updated_at)
-				values (:name, :phone, :notes, :user_id, now(), now())'
-      );
-      $result = $statement->execute(
-        [
-          'name' => $this->name,
-          'phone' => $this->phone,
-          'notes' => $this->notes,
-          'user_id' => $this->user_id
-        ]
-      );
-      if ($result) {
-        $this->id = $this->db->lastInsertId();
+            $result = $statement->execute([
+                'subject' => $this->subject,
+                'content' => $this->content,
+                'status' => $this->status,
+                'id_account' => $this->id_account,
+                'phone' => $this->phone,
+                'id_contact' => $this->id_contact
+            ]);
+        } else {
+            $statement = $this->db->prepare(
+                'INSERT INTO Contacts ( subject, content, status, id_account, phone, created_at)
+                 VALUES ( :subject, :content, :status, :id_account, :phone, NOW())'
+            );
+
+            $result = $statement->execute([
+                'subject' => $this->subject,
+                'content' => $this->content,
+                'status' => $this->status,
+                'id_account' => $this->id_account,
+                'phone' => $this->phone
+            ]);
+        }
+
+        return $result;
+    }
+
+    public function find(string $id): ?Contact
+    {
+        $statement = $this->db->prepare(
+            'SELECT * FROM Contacts WHERE id_contact = :id_contact'
+        );
+        $statement->execute(['id_contact' => $id]);
+
+        if ($row = $statement->fetch()) {
+            return $this->fillFromDbRow($row);
+        }
+
+        return null;
+    }
+
+    public function delete(): bool
+    {
+        $statement = $this->db->prepare(
+            'DELETE FROM Contacts WHERE id_contact = :id_contact'
+        );
+        return $statement->execute(['id_contact' => $this->id_contact]);
+    }
+
+    public function fill(array $data): Contact
+    {
+        $this->id_contact = $data['id_contact'] ?? '';
+        $this->subject = $data['subject'] ?? 'Góp ý chung';
+        $this->content = $data['content'] ?? '';
+        $this->status = $data['status'] ?? 'Chưa phản hồi';
+        $this->id_account = AUTHGUARD()->user()->id_account;
+        $this->phone = $data['phone'] ?? '';
+        return $this;
+    }
+
+    public function validate(array $data): array
+    {
+        $errors = [];
+
+        if (empty($data['phone']) || !preg_match('/^\d{10,20}$/', $data['phone'])) {
+          $errors['phone'] = 'Số điện thoại không hợp lệ.';
       }
+
+        if (empty(trim($data['content'] ?? ''))) {
+            $errors['content'] = 'Nội dung không được để trống.';
+        }
+
+        return $errors;
     }
 
-    return $result;
-  }
-
-  public function find(int $id): ?Contact
-  {
-    $statement = $this->db->prepare(
-      'select * from contacts where id = :id'
-    );
-    $statement->execute(['id' => $id]);
-
-    if ($row = $statement->fetch()) {
-      $this->fillFromDbRow($row);
-      return $this;
+    private function fillFromDbRow(array $row): Contact
+    {
+        $this->id_contact = $row['id_contact'];
+        $this->subject = $row['subject'];
+        $this->content = $row['content'];
+        $this->status = $row['status'];
+        $this->created_at = $row['created_at'];
+        $this->id_account = $row['id_account'];
+        $this->phone = $row['phone'];
+        return $this;
     }
-
-    return null;
-  }
-
-  public function delete(): bool
-  {
-    $statement = $this->db->prepare(
-      'delete from contacts where id = :id'
-    );
-    return $statement->execute(['id' => $this->id]);
-  }
-
-  public function fill(array $data): Contact
-  {
-    $this->name = $data['name'] ?? '';
-    $this->phone = $data['phone'] ?? '';
-    $this->notes = $data['notes'] ?? '';
-    return $this;
-  }
-
-  public function validate(array $data): array
-  {
-    $errors = [];
-
-    $name = trim($data['name'] ?? '');
-    if (!$name) {
-      $errors['name'] = 'Invalid name.';
-    }
-
-    $validPhone = preg_match(
-      '/^(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b$/',
-      $data['phone'] ?? ''
-    );
-    if (!$validPhone) {
-      $errors['phone'] = 'Invalid phone number.';
-    }
-
-    $notes = trim($data['notes'] ?? '');
-    if (strlen($notes) > 255) {
-      $errors['notes'] = 'Notes must be at most 255 characters.';
-    }
-
-    return $errors;
-  }
-
-  private function fillFromDbRow(array $row): Contact
-  {
-    [
-      'id' => $this->id,
-      'user_id' => $this->user_id,
-      'name' => $this->name,
-      'phone' => $this->phone,
-      'notes' => $this->notes,
-      'created_at' => $this->created_at,
-      'updated_at' => $this->updated_at
-    ] = $row;
-    return $this;
-  }
 }

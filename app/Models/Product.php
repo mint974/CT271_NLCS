@@ -33,7 +33,7 @@ class Product
 
         $query = "
             SELECT p.*, 
-                   GROUP_CONCAT(ip.URL_image) AS images, 
+                   GROUP_CONCAT(ip.URL_image) AS images,
                    pr.name AS promotion_name, pr.description AS promotion_description, 
                    pr.start_day, pr.end_day, pr.discount_rate
             FROM Products p
@@ -53,6 +53,50 @@ class Product
         return $this;
     }
 
+    public function searchadmin(string $column, string $value): array
+    {
+        $allowedColumns = ['id_product', 'name', 'id_promotion'];
+        if (!in_array($column, $allowedColumns)) {
+            throw new \Exception("Invalid column: " . htmlspecialchars($column));
+        }
+
+        $query = null;
+        $results = [];
+
+        if ($column === 'id_promotion' && $value === 'on') {
+            return $this->getDiscountedProducts();
+        } elseif ($column === 'id_promotion' && $value === 'off') {
+            $query = "
+            SELECT p.*, 
+                   GROUP_CONCAT(ip.URL_image) AS images 
+            FROM Products p
+            LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+            WHERE p.id_promotion IS NULL
+            GROUP BY p.id_product
+        ";
+        } elseif ($column === 'name') {
+            return $this->searchProductsByKeyword($value);
+        } else {
+            $query = "
+            SELECT p.*, 
+                   GROUP_CONCAT(ip.URL_image) AS images 
+            FROM Products p
+            LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+            WHERE p.$column = :value
+            GROUP BY p.id_product
+        ";
+        }
+
+        $statement = $this->db->prepare($query);
+        if ($column === 'id_promotion') {
+            $statement->execute();
+        } else {
+            $statement->execute(['value' => $value]);
+        }
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
 
     public function save(): bool
     {
@@ -69,7 +113,7 @@ class Product
                 'description' => $this->description,
                 'quantity' => $this->quantity,
                 'price' => $this->price,
-                
+
                 'unit' => $this->unit,
                 'id_promotion' => $this->id_promotion
             ]);
@@ -85,7 +129,7 @@ class Product
                 'description' => $this->description,
                 'quantity' => $this->quantity,
                 'price' => $this->price,
-                
+
                 'unit' => $this->unit,
                 'id_promotion' => $this->id_promotion
             ]);
@@ -100,7 +144,7 @@ class Product
         $this->description = $data['description'] ?? null;
         $this->quantity = $data['quantity'];
         $this->price = $data['price'];
-        
+
         $this->unit = $data['unit'] ?? null;
         $this->id_promotion = $data['id_promotion'] ?? null;
 
@@ -114,7 +158,7 @@ class Product
         $this->description = $row['description'];
         $this->quantity = $row['quantity'];
         $this->price = $row['price'];
-       
+
         $this->unit = $row['unit'];
         $this->id_promotion = $row['id_promotion'] ?? null;
 
@@ -182,29 +226,21 @@ class Product
 
         $products = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        // Xử lý dữ liệu trước khi trả về
-        foreach ($products as &$product) {
-            $product['name'] = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
-            $product['description'] = htmlspecialchars($product['description'] ?? '', ENT_QUOTES, 'UTF-8');
-            $product['promotion_name'] = htmlspecialchars($product['promotion_name'], ENT_QUOTES, 'UTF-8');
-            $product['promotion_description'] = htmlspecialchars($product['promotion_description'] ?? '', ENT_QUOTES, 'UTF-8');
-        }
-
         return $products;
     }
 
     // Lấy danh sách product theo một mảng chứa id_product
     public function getProductsByIds(array $productIds): array
-{
-    if (empty($productIds)) {
-        return [];
-    }
+    {
+        if (empty($productIds)) {
+            return [];
+        }
 
-    // Tạo chuỗi placeholder cho truy vấn chuẩn bị
-    $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+        // Tạo chuỗi placeholder cho truy vấn chuẩn bị
+        $placeholders = implode(',', array_fill(0, count($productIds), '?'));
 
-    $statement = $this->db->prepare(
-        "SELECT 
+        $statement = $this->db->prepare(
+            "SELECT 
             p.id_product,
             p.name,
             p.price,
@@ -217,13 +253,85 @@ class Product
          LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
          WHERE p.id_product IN ($placeholders)
          GROUP BY p.id_product"
-    );
+        );
 
-    $statement->execute($productIds);
-    return $statement->fetchAll(PDO::FETCH_ASSOC);
-}
-
-
+        $statement->execute($productIds);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
+    public function searchProductsByKeyword(string $keyword): array
+    {
+        $likeKeyword = '%' . $keyword . '%';
+
+        $query = "
+        SELECT 
+            p.id_product,
+            p.name,
+            p.description,
+            p.quantity,
+            p.price,
+            p.unit,
+            p.id_promotion,
+            pr.name AS promotion_name,
+            pr.description AS promotion_description,
+            pr.start_day,
+            pr.end_day,
+            pr.discount_rate,
+            GROUP_CONCAT(ip.URL_image) AS images
+        FROM Products p
+        LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
+        LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+        WHERE p.name LIKE :keyword OR p.description LIKE :keyword
+        GROUP BY p.id_product
+        ORDER BY 
+            CASE 
+                WHEN p.name LIKE :keyword THEN 0
+                WHEN p.description LIKE :keyword THEN 1
+                ELSE 2
+            END,
+            p.name ASC
+    ";
+
+        $statement = $this->db->prepare($query);
+        $statement->execute(['keyword' => $likeKeyword]);
+
+        $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $products;
+    }
+
+    public function getall($limit = 10, $offset = 0)
+    {
+        $query = 'SELECT p.id_product,
+                p.name,
+                p.description,
+                p.quantity,
+                p.price,
+                p.unit,
+                p.id_promotion, 
+                GROUP_CONCAT(ip.URL_image) AS images 
+            FROM products p 
+            JOIN image_product ip on ip.id_product = p.id_product 
+            GROUP BY p.id_product 
+            LIMIT :limit OFFSET :offset';
+
+        $statement = $this->db->prepare($query);
+        $statement->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $statement->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    //đến tổng số sản phẩm
+    public function countproduct()
+    {
+        $query = 'SELECT count(*) as total FROM products';
+        $statement = $this->db->prepare($query);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int) $result['total'] : 0;
+
+    }
 }

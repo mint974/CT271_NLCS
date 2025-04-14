@@ -54,6 +54,23 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
+
+    <?php if (isset($success) && !empty($success)): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php if (is_array($success)): ?>
+                <ul>
+                    <?php foreach ($success as $message): ?>
+                        <li><?= htmlspecialchars((string) $message) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php elseif (is_string($success)): ?>
+                <?= htmlspecialchars($success) ?>
+            <?php else: ?>
+                <p>Hoàn thành thành công.</p>
+            <?php endif; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
     <form class="row mb-3" action="/orders/search" method="post">
         <div class="col-md-4 mb-2">
             <label for="search-date" class="form-label">Tìm theo ngày:</label>
@@ -111,12 +128,12 @@
                             <a href="/orders/order_detail/<?= $order['id_order'] ?>" class="btn btn-outline-primary btn-sm ">
                                 <i class="fa fa-eye"></i> Xem chi tiết
                             </a>
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal"
-                                onclick="setCancelData('<?= $order['id_order'] ?>', '<?= $order['total_price'] ?>', '<?= $order['status'] ?>')">
-                                <i class="fa fa-times-circle"></i> Hủy đơn
-                            </button>
-                            <?php if ($order['status'] == 'Đã gửi đơn đặt hàng'): ?>
 
+                            <?php if ($order['status'] == 'Đã gửi đơn đặt hàng'): ?>
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal"
+                                    onclick="setCancelData('<?= $order['id_order'] ?>', '<?= $order['total_price'] ?>', '<?= $order['status'] ?>')">
+                                    <i class="fa fa-times-circle"></i> Hủy đơn
+                                </button>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -170,7 +187,7 @@
                                 <option>Lý do khác.</option>
                             </select>
                             <div class="mt-3 d-flex justify-content-between">
-                                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <a class="btn btn-secondary" data-bs-dismiss="modal">Hủy</a>
                                 <button type="submit" class="btn btn-danger">Gửi yêu cầu hủy</button>
                             </div>
                         </form>

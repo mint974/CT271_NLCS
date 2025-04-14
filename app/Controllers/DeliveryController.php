@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\DeliveryInformation;
+use App\Models\ActivityHistory;
 
 class DeliveryController extends Controller
 {
@@ -35,13 +36,13 @@ class DeliveryController extends Controller
         $product_ids = $_POST['product_ids'];
 
         $data = $this->filterDeliveryData($_POST);
-        
+
         $newDelivery = new DeliveryInformation(PDO());
         $model_errors = $newDelivery->validate($data);
 
         if (empty($model_errors)) {
             $delivery = new DeliveryInformation(PDO());
-             $newDelivery->fill($data);
+            $newDelivery->fill($data);
             if (
                 $delivery->isDuplicateAddress(
                     AUTHGUARD()->user()->id_account,
@@ -63,13 +64,13 @@ class DeliveryController extends Controller
                 ]);
                 return;
             }
-           
+
 
             $newDelivery->save();
             $Deliveries = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
 
             $this->sendPage('orders/start_order', [
-               // 'id_delivery' => $data['id_delivery'],
+                // 'id_delivery' => $data['id_delivery'],
                 'total_price' => $total_price,
                 'delivery_list' => $Deliveries,
                 'product_ids' => $product_ids,
@@ -79,15 +80,15 @@ class DeliveryController extends Controller
         }
 
         $this->saveFormValues($_POST);
-       // redirect('/delivery/create', ['errors' => $model_errors]);
+        // redirect('/delivery/create', ['errors' => $model_errors]);
         $this->sendPage('orders/start_order', [
             // 'id_delivery' => $data['id_delivery'],
-             'total_price' => $total_price,
-             'delivery_list' => $Deliveries,
-             'product_ids' => $product_ids,
-             'errors' => $model_errors
-         ]);
-         return;
+            'total_price' => $total_price,
+            'delivery_list' => $Deliveries,
+            'product_ids' => $product_ids,
+            'errors' => $model_errors
+        ]);
+        return;
     }
 
     protected function filterDeliveryData(array $data)
@@ -103,24 +104,84 @@ class DeliveryController extends Controller
         ];
     }
 
-    public function edit($deliveryId)
+    public function edit()
     {
-        $delivery = AUTHGUARD()->user()->findDelivery($deliveryId);
-        if (!$delivery) {
-            $this->sendNotFound();
-        }
-        $form_values = $this->getSavedFormValues();
+        $modelDelivery = new DeliveryInformation(PDO());
+        $deliveries = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
+
+        $user = AUTHGUARD()->user();
+        unset($user->password);
+
+        $activitymodel = new ActivityHistory(pdo());
+        $activities = $activitymodel->getByAccountId($user->id_account);
+
         $data = [
-            'errors' => session_get_once('errors'),
-            'delivery' => (!empty($form_values)) ?
-                array_merge($form_values, ['id_delivery' => $delivery->id_delivery]) :
-                (array) $delivery
+            'id_delivery' => $_POST['id_delivery'] ?? '',
+            'receiver_name' => $_POST['receiverName'] ?? '',
+            'receiver_phone' => $_POST['receiverPhone'] ?? '',
+            'house_number' => $_POST['houseNumber'] ?? '',
+            'ward' => $_POST['ward'] ?? '',
+            'district' => $_POST['district'] ?? '',
+            'city' => $_POST['city'] ?? '',
+            'id_account' => AUTHGUARD()->user()->id_account,
         ];
-        $this->sendPage('delivery/edit', $data);
+
+        //Lấy thông tin cũ từ database
+        $oldData = $modelDelivery->getById($data['id_delivery']);
+
+        //Nếu dữ liệu mới giống hệt dữ liệu cũ, không cập nhật
+        if ($oldData && $this->isSameData($oldData, $data)) {
+
+            $this->sendPage('account/index', [
+                'activities' => $activities,
+                'user' => $user,
+                'deliveries' => $deliveries,
+                'errors' => 'Không có thay đổi nào được thực hiện.'
+            ]);
+            return;
+        }
+
+        // Kiểm tra xem địa chỉ có bị trùng lặp không
+        if (
+            $modelDelivery->isDuplicateAddress(
+                $data['id_account'],
+                $data['house_number'],
+                $data['ward'],
+                $data['district'],
+                $data['city'],
+                $data['id_delivery'],
+                $data['receiver_name'],
+                $data['receiver_phone']
+            )
+        ) {
+            $this->sendPage('account/index', [
+                'activities' => $activities,
+                'user' => $user,
+                'deliveries' => $deliveries,
+                'errors' => 'Địa chỉ giao hàng đã tồn tại.'
+            ]);
+            return;
+        }
+
+        //Tiến hành cập nhật thông tin giao hàng
+        $modelDelivery->fill($data);
+        $modelDelivery->save();
+
+
+
+        $deliveries = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
+        $this->sendPage('account/index', [
+            'activities' => $activities,
+            'user' => $user,
+            'deliveries' => $deliveries,
+            'success' => 'Cập nhật thông tin giao hàng thành công!'
+        ]);
+        return;
     }
 
     public function update()
     {
+
         $total_price = $_POST['total_price'];
         $modelDelivery = new DeliveryInformation(PDO());
         $Deliveries = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
@@ -145,6 +206,7 @@ class DeliveryController extends Controller
 
         //Nếu dữ liệu mới giống hệt dữ liệu cũ, không cập nhật
         if ($oldData && $this->isSameData($oldData, $data)) {
+
             $this->sendPage('orders/start_order', [
                 'id_delivery' => $data['id_delivery'],
                 'total_price' => $total_price,
@@ -182,6 +244,8 @@ class DeliveryController extends Controller
         $delivery->fill($data);
         $delivery->save();
 
+
+
         $newdelivery = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
         $this->sendPage('orders/start_order', [
             'total_price' => $total_price,
@@ -202,16 +266,4 @@ class DeliveryController extends Controller
             && $oldData['city'] === $newData['city'];
     }
 
-
-    public function destroy($deliveryId)
-    {
-        $delivery = AUTHGUARD()->user()->findDelivery($deliveryId);
-        if (!$delivery) {
-            $this->sendNotFound();
-        }
-        $delivery->delete();
-
-        $messages = ['success' => 'Delivery information has been deleted successfully.'];
-        redirect('/delivery', $messages);
-    }
 }

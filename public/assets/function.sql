@@ -80,7 +80,6 @@ END;
 //
 DELIMITER ;
 
---tạo id_order tự động
 DELIMITER $$
 
 CREATE TRIGGER before_insert_orders
@@ -90,31 +89,39 @@ BEGIN
     DECLARE next_id INT;
     DECLARE new_id VARCHAR(20);
 
-    -- Nếu bảng chưa có ORD nào, bắt đầu từ ORD1
-    IF NOT EXISTS (SELECT 1 FROM Orders WHERE id_order LIKE 'ORD%') THEN
-        SET next_id = 1;
+    -- Kiểm tra xem đã có order nào với id_account này chưa
+    IF NOT EXISTS (
+        SELECT 1 FROM Orders WHERE id_account = NEW.id_account
+    ) THEN
+        -- Nếu chưa có, gán id_order = 'REORD' + id_account
+        SET new_id = CONCAT('REORD', NEW.id_account);
     ELSE
-        -- Tìm giá trị nhỏ nhất bị thiếu trong chuỗi ORD
-        SELECT MIN(t1.id_num + 1) INTO next_id
-        FROM (
-            SELECT 0 AS id_num -- Để tìm thiếu số 1
-            UNION
-            SELECT CAST(SUBSTRING(id_order, 4) AS UNSIGNED) AS id_num
-            FROM Orders
-            WHERE id_order LIKE 'ORD%'
-        ) t1
-        WHERE NOT EXISTS (
-            SELECT 1 FROM Orders
-            WHERE CAST(SUBSTRING(id_order, 4) AS UNSIGNED) = t1.id_num + 1
-        );
+        -- Nếu đã có, tiếp tục tạo id_order dạng ORD + số nhỏ nhất bị thiếu
+        IF NOT EXISTS (SELECT 1 FROM Orders WHERE id_order LIKE 'ORD%') THEN
+            SET next_id = 1;
+        ELSE
+            SELECT MIN(t1.id_num + 1) INTO next_id
+            FROM (
+                SELECT 0 AS id_num
+                UNION
+                SELECT CAST(SUBSTRING(id_order, 4) AS UNSIGNED) AS id_num
+                FROM Orders
+                WHERE id_order LIKE 'ORD%'
+            ) t1
+            WHERE NOT EXISTS (
+                SELECT 1 FROM Orders
+                WHERE CAST(SUBSTRING(id_order, 4) AS UNSIGNED) = t1.id_num + 1
+            );
+        END IF;
+
+        SET new_id = CONCAT('ORD', next_id);
     END IF;
 
-    -- Gán giá trị id_order mới
-    SET new_id = CONCAT('ORD', next_id);
     SET NEW.id_order = new_id;
 END $$
 
 DELIMITER ;
+
 
 -- tạo id_cancel tự động
 DELIMITER $$
@@ -151,4 +158,170 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- tạo id_activity tự động
+DELIMITER $$
+
+CREATE TRIGGER before_insert_activity_history
+BEFORE INSERT ON Activity_History
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu bảng chưa có ACT nào, bắt đầu từ ACT1
+    IF NOT EXISTS (SELECT 1 FROM Activity_History WHERE id_activity LIKE 'ACT%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm giá trị nhỏ nhất bị thiếu trong chuỗi ACT
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_activity, 4) AS UNSIGNED) AS id_num
+            FROM Activity_History
+            WHERE id_activity LIKE 'ACT%'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Activity_History
+            WHERE CAST(SUBSTRING(id_activity, 4) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Gán giá trị id_activity mới
+    SET new_id = CONCAT('ACT', next_id);
+    SET NEW.id_activity = new_id;
+END $$
+
+DELIMITER ;
+
+--kiểm tra thời gian khuyến mãi
+DELIMITER //
+
+CREATE EVENT IF NOT EXISTS evt_update_expired_promotions
+ON SCHEDULE
+    EVERY 1 DAY
+    STARTS TIMESTAMP(CURRENT_DATE + INTERVAL 1 DAY)  -- bắt đầu từ 00h ngày mai
+DO
+BEGIN
+    UPDATE Products
+    SET id_promotion = NULL
+    WHERE id_promotion IS NOT NULL
+      AND id_promotion IN (
+        SELECT id_promotion FROM Promotions
+        WHERE end_day < CURDATE()
+      );
+END;
+//
+
+DELIMITER ;
+
+--tạo id_contact tự động
+DELIMITER $$
+
+CREATE TRIGGER before_insert_contacts
+BEFORE INSERT ON Contacts
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu chưa có bản ghi nào, bắt đầu từ CONT1
+    IF NOT EXISTS (SELECT 1 FROM Contacts WHERE id_contact LIKE 'CONT%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm số nhỏ nhất bị thiếu trong chuỗi CONTx
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_contact, 5) AS UNSIGNED) AS id_num
+            FROM Contacts
+            WHERE id_contact LIKE 'CONT%'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Contacts
+            WHERE CAST(SUBSTRING(id_contact, 5) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Gán id_contact mới
+    SET new_id = CONCAT('CONT', next_id);
+    SET NEW.id_contact = new_id;
+END $$
+
+DELIMITER ;
+
+--tạo id_supplier tự động
+DELIMITER $$
+
+CREATE TRIGGER before_insert_supplier
+BEFORE INSERT ON Suppliers
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu bảng chưa có SUP nào, bắt đầu từ SUP1
+    IF NOT EXISTS (SELECT 1 FROM Suppliers WHERE id_supplier LIKE 'SUP%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm số nhỏ nhất bị thiếu trong chuỗi SUP
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_supplier, 4) AS UNSIGNED) AS id_num
+            FROM Suppliers
+            WHERE id_supplier LIKE 'SUP%'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Suppliers
+            WHERE CAST(SUBSTRING(id_supplier, 4) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Gán giá trị id_supplier mới
+    SET new_id = CONCAT('SUP', next_id);
+    SET NEW.id_supplier = new_id;
+END $$
+
+DELIMITER ;
+
+--tạo id_receipt tự động
+DELIMITER $$
+
+CREATE TRIGGER before_insert_receipt
+BEFORE INSERT ON Product_receipt
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu bảng chưa có REC nào, bắt đầu từ REC1
+    IF NOT EXISTS (SELECT 1 FROM Product_receipt WHERE id_receipt LIKE 'REC%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm số nhỏ nhất bị thiếu trong chuỗi REC
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_receipt, 4) AS UNSIGNED) AS id_num
+            FROM Product_receipt
+            WHERE id_receipt LIKE 'REC%'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Product_receipt
+            WHERE CAST(SUBSTRING(id_receipt, 4) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Gán giá trị id_receipt mới
+    SET new_id = CONCAT('REC', next_id);
+    SET NEW.id_receipt = new_id;
+END $$
+
+DELIMITER ;
+
 

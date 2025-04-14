@@ -45,10 +45,10 @@ class OrderDetail
         return $row ? (new self($this->db))->fillFromDbRow($row) : null;
     }
 
-    public function delete(String $id_product): bool
+    public function delete(string $id_product): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
-        $id_order = sprintf('REORD%05d', $id_account);
+        $id_order = sprintf('REORD%d', $id_account);
         $statement = $this->db->prepare(
             'DELETE FROM order_details WHERE id_order = :id_order AND id_product = :id_product'
         );
@@ -75,7 +75,7 @@ class OrderDetail
     public function addProduct(string $id_product, int $quantity): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
-        $id_order = sprintf('REORD%05d', $id_account);
+        $id_order = sprintf('REORD%d', $id_account);
 
         $orderdetail = $this->findByOrderAndProduct($id_order, $id_product);
 
@@ -103,7 +103,7 @@ class OrderDetail
     public function updateProduct(string $id_product, int $quantity): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
-        $id_order = sprintf('REORD%05d', $id_account);
+        $id_order = sprintf('REORD%d', $id_account);
 
         $statement = $this->db->prepare(
             'UPDATE order_details 
@@ -120,7 +120,7 @@ class OrderDetail
 
     public function getTotalQuantity(string $id_order, string $id_product = null): int
     {
-        if (empty($id_product)){
+        if (empty($id_product)) {
             $statement = $this->db->prepare(
                 "SELECT SUM(quantity) AS total_quantity FROM order_details WHERE id_order = :id_order"
             );
@@ -134,12 +134,12 @@ class OrderDetail
             $statement->execute([
                 'id_order' => $id_order,
                 'id_product' => $id_product
-             ]);
+            ]);
             $result = $statement->fetch(PDO::FETCH_ASSOC);
             return $result['quantity'] ?? 0;
 
         }
-        
+
     }
 
     public function getAllOrderDetails(string $id_order): array
@@ -176,11 +176,11 @@ class OrderDetail
         try {
             // Lấy id_account của người dùng đang đăng nhập
             $id_account = AUTHGUARD()->user()->id_account;
-            $id_order = sprintf('REORD%05d', $id_account); // Xác định id_order của user hiện tại
-    
+            $id_order = sprintf('REORD%d', $id_account); // Xác định id_order của user hiện tại
+
             // Tạo danh sách placeholders cho mệnh đề IN
             $placeholders = implode(',', array_fill(0, count($id_products), '?'));
-    
+
             // Cập nhật id_order trong Order_details
             $stmtUpdateOrder = $this->db->prepare("
                 UPDATE Order_details 
@@ -188,7 +188,7 @@ class OrderDetail
                 WHERE id_order = ? AND id_product IN ($placeholders)
             ");
             $updateOrderSuccess = $stmtUpdateOrder->execute(array_merge([$new_id_order, $id_order], $id_products));
-    
+
             // Trừ số lượng sản phẩm trong bảng Products 
             $stmtUpdateProduct = $this->db->prepare("
                 UPDATE Products p
@@ -197,13 +197,13 @@ class OrderDetail
                 WHERE od.id_order = ? AND p.id_product IN ($placeholders)
             ");
             $updateProductSuccess = $stmtUpdateProduct->execute(array_merge([$new_id_order], $id_products));
-    
+
             return $updateOrderSuccess && $updateProductSuccess; // Trả về true nếu cả 2 thành công
         } catch (\Exception $e) {
             return false; // Trả về false nếu có lỗi xảy ra
         }
     }
-    
+
     public function getTotalPrice(string $id_order): float
     {
         $statement = $this->db->prepare("
@@ -224,16 +224,16 @@ class OrderDetail
             JOIN Delivery_Information d ON o.id_delivery = d.id_delivery
             WHERE od.id_order = :id_order
         ");
-        
+
         $statement->execute(['id_order' => $id_order]);
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-    
+
         return $result['total_price'] ?? 0;
     }
-    
+
     public function getAllProductsOrderDetails($id_order)
-{
-    $sql = "SELECT 
+    {
+        $sql = "SELECT 
                 od.id_order,
                 od.id_product,
                 od.quantity,
@@ -248,14 +248,25 @@ class OrderDetail
             LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
             LEFT JOIN Image_Product img ON od.id_product = img.id_product
             WHERE od.id_order = :id_order
-            GROUP BY od.id_product"; 
-    
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute(['id_order' => $id_order]);
+            GROUP BY od.id_product";
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_order' => $id_order]);
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function cancelorder($id_order)
+    {
+        $statement = $this->db->prepare(
+            'UPDATE products p
+            join order_details od on p.id_product = od.id_product
+             SET p.quantity = p.quantity + od.quantity 
+             WHERE od.id_order = :id_order'
+        );
+        return $statement->execute([
+            'id_order' => $id_order,
+        ]);
+    }
 
 }

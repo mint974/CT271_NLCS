@@ -2,7 +2,8 @@
 	"require": {
 		"bramus/router": "^1.6.1",
 		"league/plates": "v3.5.0",
-		"vlucas/phpdotenv": "v5.6.0"
+		"vlucas/phpdotenv": "v5.6.0",
+		"phpmailer/phpmailer": "^6.9"
 	},
 	"autoload": {
 		"psr-4": {

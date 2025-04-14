@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Product;
 use App\Models\Catalog;
-use App\Models\Promotion;
+//use App\Models\Promotion;
 
 class ProductsController extends Controller
 {
@@ -24,6 +24,8 @@ class ProductsController extends Controller
 
         $discountedProducts = $discountedProducts->getDiscountedProducts();
 
+        // dd($catalogs);
+        // exit();
         // Gửi dữ liệu đến view
         $this->sendPage('products/index', [
             'catalogs' => $catalogs,
@@ -31,7 +33,40 @@ class ProductsController extends Controller
         ]);
     }
 
-
+    public function indexadmin($error = null, $searchResults = null)
+    {
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+    
+        $productModel = new Product(PDO());
+    
+        if ($searchResults !== null) {
+            
+            $products = $searchResults;
+            $totalItems = count($products);
+            $totalPages = 1; 
+            $promotionCounts = null; //
+        } else {
+            
+            $products = $productModel->getall($limit, $offset);
+            $totalItems = $productModel->countProduct();
+            $totalPages = ceil($totalItems / $limit);
+    
+            
+            $promotionCounts['on'] = count($productModel->getDiscountedProducts());
+            $promotionCounts['off'] = $totalItems - $promotionCounts['on'];
+        }
+    
+        $this->sendPage('products/indexadmin', [
+            'promotionCounts' => $promotionCounts,
+            'totalPages' => $totalPages,
+            'products' => $products,
+            'currentPage' => $page,
+            'errors' => $error
+        ]);
+    }
+    
 
     public function getprodcatabyid()
     {
@@ -122,7 +157,7 @@ class ProductsController extends Controller
         $productmodel = new Product(PDO());
         $product = $productmodel->where('id_product', $id_product);
         if ($product) {
-    
+
             $this->sendPage('products/product_detail', [
                 'products' => $product
             ]);
@@ -130,12 +165,45 @@ class ProductsController extends Controller
 
         } else {
             $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
-            if($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata'){
+            if ($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata') {
                 $redirectUrl = 'http://ct271-mintfreshfruit.localhost/products';
             }
             redirect($redirectUrl, ['error' => 'Lỗi truy xuất sản phẩm, Thử lại sao!']);
         }
 
     }
+
+    public function search()
+    {
+        if (!$this->checkCsrf()) {
+            $error[] = '';
+            $error['csrf'] = 'Lỗi CSRF, hãy kiểm tra và thử lại!';
+            $this->indexadmin($error);
+            exit();
+        }
+        foreach (array_slice($_POST, 1, 1, true) as $key => $value) {
+            $$key = $value; // Tạo biến từ key
+        }
+
+
+        $productModel = new Product(PDO());
+
+        if (isset($id_product)) {
+            $results = $productModel->searchadmin('id_product', $id_product);
+        } elseif (isset($name_product)) {
+            $results = $productModel->searchadmin('name', $name_product);
+        } else {
+            $results = $productModel->searchadmin('id_promotion', $promotion);
+        }
+        if ($results === []) {
+            $error[] = '';
+            $error['search'] = 'Không tồn tại sản phẩm như trên!';
+            $this->indexadmin($error);
+            exit();
+        }
+
+        $this->indexadmin(null, $results);
+    }
+
 
 }

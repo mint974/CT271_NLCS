@@ -8,9 +8,7 @@ class ContactsController extends Controller
 {
   public function __construct()
   {
-    if (!AUTHGUARD()->isUserLoggedIn()) {
-      redirect('/login');
-    }
+
 
     parent::__construct();
   }
@@ -24,6 +22,18 @@ class ContactsController extends Controller
     ]);
   }
 
+  public function indexUser()
+  {
+    $user = AUTHGUARD()->user();
+    unset($user->password);
+    // dd($user);
+    // exit();
+    $this->sendPage('contacts/index', [
+      'user' => $user
+    ]);
+
+  }
+
   public function create()
   {
     $this->sendPage('contacts/create', [
@@ -33,27 +43,45 @@ class ContactsController extends Controller
   }
   public function store()
   {
+    $user = AUTHGUARD()->user();
+    unset($user->password);
     $data = $this->filterContactData($_POST);
+
     $newContact = new Contact(PDO());
     $model_errors = $newContact->validate($data);
+
+    if (!$this->checkCsrf()) {
+      $model_errors['Crsf'] = 'Lỗi CSRF, hãy kiểm tra và thử lại!';
+    }
     if (empty($model_errors)) {
-      $newContact->fill($data)
-        ->setUser(AUTHGUARD()->user())
-        ->save();
-      $messages = ['success' => 'Contact has been created successfully.'];
-      redirect('/',  $messages);
+      if (!$newContact->fill($data)->save()) {
+        $model_errors['save'] = 'Lỗi thêm liên hệ';
+      } else {
+        $messages = ['success' => 'Thêm liên hệ thành công, vui lòng kiểm tra email thường xuyên để cập nhật.'];
+        $this->sendPage('contacts/index', [
+          'user' => $user,
+          'success' => $messages
+        ]);
+      }
     }
     // Lưu các giá trị của form vào $_SESSION['form']
     $this->saveFormValues($_POST);
     // Lưu các thông báo lỗi vào $_SESSION['errors']
-    redirect('/contacts/add', ['errors' => $model_errors]);
+    $this->sendPage('contacts/index', [
+      'user' => $user,
+      'errors' => $model_errors
+    ]);
   }
+
+
   protected function filterContactData(array $data)
   {
     return [
-      'name' => $data['name'] ?? '',
+      'name' => $data['username'] ?? '',
+      'email' => $data['email'] ?? '',
       'phone' => $data['phone'] ?? '',
-      'notes' => $data['notes'] ?? ''
+      'subject' => $data['subject'] ?? '',
+      'content' => $data['content'] ?? ''
     ];
   }
 

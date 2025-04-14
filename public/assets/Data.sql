@@ -1,9 +1,3 @@
-INSERT INTO Promotions (id_promotion, name, description, start_day, end_day, discount_rate, id_account) 
-VALUES 
-    ('PROMO_TET', 'Khuyến mãi Tết Nguyên Đán', 'Giảm giá đặc biệt nhân dịp Tết Nguyên Đán', '2025-02-25', '2025-04-25', 15.00, 1),
-    ('PROMO_SUMMER', 'Giảm giá mùa hè', 'Ưu đãi mùa hè sôi động', '2025-02-25', '2025-06-30', 10.00, 1),
-    ('PROMO_VIP', 'Ưu đãi chóp nhoáng', 'Giảm giá đặc biệt cho các sản phẩm tồn kho', '2025-02-25', '2025-03-31', 20.00, 1);
-
 
 --chèn dữ liệu vào bản 
 INSERT INTO Products (id_product, name, description, quantity, price, unit, id_promotion) VALUES 
@@ -42,6 +36,13 @@ INSERT INTO Products (id_product, name, description, quantity, price, unit, id_p
     ('prod033', 'Dưa hấu ruột vàng', 'Dưa hấu ruột vàng có vị ngọt mát, chứa nhiều nước, giúp giải khát.', 120, 35000, 'Kg', NULL),
     ('prod034', 'Dưa lưới', 'Dưa lưới có vỏ lưới đặc trưng, vị ngọt thơm, nhiều nước.', 60, 90000, 'Kg', NULL),
     ('prod035', 'Vú sữa tím', 'Vú sữa tím có lớp vỏ mỏng, thịt mềm, vị ngọt thanh.', 55, 80000, 'Kg', NULL);
+
+INSERT INTO Promotions (id_promotion, name, description, start_day, end_day, discount_rate, id_account) 
+VALUES 
+    ('PROMO_TET', 'Khuyến mãi Tết Nguyên Đán', 'Giảm giá đặc biệt nhân dịp Tết Nguyên Đán', '2025-02-25', '2025-04-30', 15.00, 1),
+    ('PROMO_SUMMER', 'Giảm giá mùa hè', 'Ưu đãi mùa hè sôi động', '2025-02-25', '2025-06-30', 10.00, 1),
+    ('PROMO_VIP', 'Ưu đãi chóp nhoáng', 'Giảm giá đặc biệt cho các sản phẩm tồn kho', '2025-02-25', '2025-04-31', 20.00, 1);
+
 
 UPDATE Products SET id_promotion = 'PROMO_TET' WHERE id_product IN ('prod002', 'prod007', 'prod013');
 UPDATE Products SET id_promotion = 'PROMO_SUMMER' WHERE id_product IN ('prod005', 'prod011', 'prod019', 'prod025');
@@ -213,9 +214,153 @@ INSERT INTO Product_Catalog_details (id_product, id_catalog) VALUES
 ('prod024', 'prodcata007');
 
 
--- thông tin giao hàng
-INSERT INTO delivery_information (id_delivery, id_account, house_number, ward, district, city, receiver_name, receiver_phone) 
-VALUES 
-    ('DEL2', 1, 'số 25', 'Bến Nghé', 'Quận 1', 'TP. Hồ Chí Minh', 'Hoàng An', '0912345678'),
-    ('DEL3', 1, 'số 88', 'Hòa Cường Bắc', 'Hải Châu', 'Đà Nẵng', 'Thanh Tùng', '0923456789'),
-    ('DEL4', 1, 'số 56', 'Dịch Vọng', 'Cầu Giấy', 'Hà Nội', 'Mai Hương', '0934567890');
+-- -- thông tin giao hàng
+-- INSERT INTO delivery_information (id_delivery, id_account, house_number, ward, district, city, receiver_name, receiver_phone) 
+-- VALUES 
+--     ('DEL2', 1, 'số 25', 'Bến Nghé', 'Quận 1', 'TP. Hồ Chí Minh', 'Hoàng An', '0912345678'),
+--     ('DEL3', 1, 'số 88', 'Hòa Cường Bắc', 'Hải Châu', 'Đà Nẵng', 'Thanh Tùng', '0923456789'),
+--     ('DEL4', 1, 'số 56', 'Dịch Vọng', 'Cầu Giấy', 'Hà Nội', 'Mai Hương', '0934567890');
+
+--liên hệ
+    INSERT INTO Contacts (id_contact, subject, content, status, created_at, phone, id_account) VALUES
+('CONT3', 'Góp ý chung', 'Trang web rất đẹp và dễ sử dụng.', 'Chưa phản hồi', NOW(), '0965333777', 5),
+('CONT4', 'Báo lỗi', 'Không nhận được mã xác thực khi đăng ký.', 'Chưa phản hồi', NOW(), '0934567891', 6),
+('CONT5', 'Góp ý chung', 'Nên thêm chức năng lọc sản phẩm.', 'Chưa phản hồi', NOW(), '0944567342', 7),
+('CONT6', 'Đề xuất cải thiện', 'Cần cải thiện tốc độ tải trang.', 'Chưa phản hồi', NOW(), '0913452678', 8),
+('CONT7', 'Báo lỗi', 'Lỗi khi thanh toán qua ví điện tử.', 'Chưa phản hồi', NOW(), '0977234561', 9),
+('CONT8', 'Góp ý chung', 'Giao diện mobile chưa tối ưu.', 'Chưa phản hồi', NOW(), '0938337722', 10),
+('CONT9', 'Đề xuất cải thiện', 'Thêm nhiều loại trái cây đặc sản.', 'Chưa phản hồi', NOW(), '0912231566', 11),
+('CONT10', 'Báo lỗi', 'Không thể cập nhật thông tin cá nhân.', 'Chưa phản hồi', NOW(), '0945123987', 12),
+('CONT11', 'Góp ý chung', 'Nhân viên giao hàng thân thiện.', 'Chưa phản hồi', NOW(), '0965678123', 13),
+('CONT12', 'Đề xuất cải thiện', 'Nên có chương trình khách hàng thân thiết.', 'Chưa phản hồi', NOW(), '0937451222', 14),
+('CONT13', 'Báo lỗi', 'Không hiện sản phẩm trong giỏ hàng.', 'Chưa phản hồi', NOW(), '0909988123', 15),
+('CONT14', 'Góp ý chung', 'Sản phẩm tươi và đúng mô tả.', 'Chưa phản hồi', NOW(), '0972341189', 16),
+('CONT15', 'Đề xuất cải thiện', 'Cần bổ sung thêm phương thức thanh toán.', 'Chưa phản hồi', NOW(), '0985567889', 17),
+('CONT16', 'Báo lỗi', 'Không nhận được email xác nhận đơn hàng.', 'Chưa phản hồi', NOW(), '0912234666', 18),
+('CONT17', 'Góp ý chung', 'Rất hài lòng với dịch vụ chăm sóc khách hàng.', 'Chưa phản hồi', NOW(), '0967654321', 19),
+('CONT18', 'Đề xuất cải thiện', 'Thêm tùy chọn gói quà tặng cho sản phẩm.', 'Chưa phản hồi', NOW(), '0933456677', 20);
+
+INSERT INTO orders (id_order, created_at, id_account, id_delivery, status) VALUES
+('ORD1', now(), 5, 'DEL6', 'Đã gửi đơn đặt hàng'),
+('ORD2', '2025-04-11 08:29:21', 5, 'DEL6', 'Shop đang đóng gói đơn hàng'),
+('ORD3', '2025-04-11 12:49:21', 6, 'DEL7', 'Đã gửi đơn đặt hàng'),
+('ORD4', '2025-04-10 02:49:21', 7, 'DEL8', 'Đơn hàng đang giao tới bạn'),
+('ORD5', '2025-03-10 02:49:21', 8, 'DEL9', 'Giao hàng thành công'),
+('ORD6', '2025-04-11 12:49:21', 9, 'DEL10', 'Shop đang đóng gói đơn hàng'),
+('ORD7', '2025-02-11 12:49:21', 10, 'DEL11', 'Đơn hàng đã bị hủy'),
+('ORD8', '2025-04-2 12:49:21', 11, 'DEL12', 'Giao hàng thành công'),
+('ORD9', now(), 12, 'DEL13', 'Đã gửi đơn đặt hàng'),
+('ORD10', '2025-04-11 13:49:21', 13, 'DEL14', 'Shop đang đóng gói đơn hàng'),
+('ORD11', now(), 14, 'DEL15', 'Đã gửi đơn đặt hàng'),
+('ORD12', '2025-04-10 12:49:21', 15, 'DEL16', 'Đơn hàng đang giao tới bạn'),
+('ORD13', '2025-01-11 12:49:21', 16, 'DEL17', 'Giao hàng thành công'),
+('ORD14', '2025-02-01 12:49:21', 17, 'DEL18', 'Giao hàng thành công'),
+('ORD15', now(), 18, 'DEL19', 'Đơn hàng đã bị hủy'),
+('ORD16', '2025-03-01 12:49:21', 19, 'DEL20', 'Giao hàng thành công');
+
+INSERT INTO order_details (id_order, id_product, quantity) VALUES
+('ORD1', 'prod001', 2),
+('ORD1', 'prod005', 3),
+('ORD1', 'prod015', 4),
+('ORD1', 'prod025', 3),
+('ORD2', 'prod011', 2),
+('ORD2', 'prod022', 3),
+('ORD3', 'prod006', 2),
+('ORD4', 'prod002', 3),
+('ORD5', 'prod023', 3),
+('ORD5', 'prod035', 4),
+('ORD5', 'prod033', 2),
+('ORD5', 'prod025', 5),
+('ORD5', 'prod007', 5),
+('ORD6', 'prod009', 9),
+('ORD7', 'prod029', 1),
+('ORD8', 'prod019', 5),
+('ORD8', 'prod034', 6),
+('ORD9', 'prod003', 5),
+('ORD9', 'prod008', 2),
+('ORD9', 'prod032', 8),
+('ORD10', 'prod026', 8),
+('ORD11', 'prod004', 7),
+('ORD11', 'prod003', 5),
+('ORD12', 'prod011', 10),
+('ORD13', 'prod016', 5),
+('ORD13', 'prod017', 5),
+('ORD13', 'prod019', 3),
+('ORD14', 'prod031', 10),
+('ORD14', 'prod030', 5),
+('ORD15', 'prod012', 8),
+('ORD15', 'prod014', 10),
+('ORD15', 'prod018', 5),
+('ORD16', 'prod028', 4);
+
+---test vô hiệu hóa
+INSERT into activity_history (id_account, action_time, action, status, created_by) VALUES
+(19, now(), 'Tôi không tìm thấy sản phẩm tôi cần', 'Vô hiệu hóa tài khoản', 19);
+
+--nhà cung cấp
+INSERT INTO Suppliers (id_supplier, name) VALUES
+('SUP1', 'Nông trại Đà Lạt'),
+('SUP2', 'Trang trại Vĩnh Long Fruits'),
+('SUP3', 'Farm Dâu Đà Lạt'),
+('SUP4', 'FruitMart Việt Nam'),
+('SUP5', 'VinaFruits Supply'),
+('SUP6', 'Trái Cây Nhập Khẩu HT'),
+('SUP7', 'Greenbox Mart'),
+('SUP8', 'Organic Farm Mộc Châu');
+
+--phiếu nhập
+INSERT into Product_receipt (created_at, id_supplier, id_account) VALUES
+('2024-12-22 16:22:23', 'SUP1', 1),
+('2024-11-02 10:52:43', 'SUP2', 2),
+('2024-12-20 16:52:23', 'SUP3', 3),
+('2024-12-15 15:22:13', 'SUP4', 4),
+('2024-12-31 12:02:40', 'SUP5', 1),
+('2024-12-17 09:22:03', 'SUP6', 3),
+('2024-12-15 08:32:13', 'SUP7', 2);
+
+
+--chi tiết nhập
+INSERT into Product_receipt_details (id_receipt, id_product, quantity, purchase_price) VALUES
+('REC1', 'prod001', 52, '45000'),
+('REC1', 'prod003', 85, '65000'),
+('REC1', 'prod031', 80, '60000'),
+
+('REC2', 'prod017', 65, '60000'),
+('REC2', 'prod020', 50, '75000'),
+('REC2', 'prod021', 90, '50000'),
+('REC2', 'prod022', 33, '150000'),
+('REC2', 'prod027', 80, '45000'),
+
+
+('REC3', 'prod024', 40, '95000'),
+('REC3', 'prod004', 67, '35000'),
+('REC3', 'prod005', 53, '55000'),
+
+('REC4', 'prod002', 103, '25000'),
+('REC4', 'prod010', 90, '20000'),
+('REC4', 'prod012', 93, '40000'),
+('REC4', 'prod013', 90, '25000'),
+('REC4', 'prod014', 130, '10000'),
+('REC4', 'prod016', 55, '45000'),
+('REC4', 'prod018', 75, '55000'),
+('REC4', 'prod023', 103, '25000'),
+('REC4', 'prod032', 118, '25000'),
+
+('REC5', 'prod006', 82, '25000'),
+('REC5', 'prod007', 70, '55000'),
+('REC5', 'prod009', 79, '100000'),
+('REC5', 'prod015', 64, '65000'),
+('REC5', 'prod034', 66, '65000'),
+('REC5', 'prod035', 59, '50000'),
+
+('REC6', 'prod008', 57, '85000'),
+('REC6', 'prod011', 52, '100000'),
+('REC6', 'prod019', 88, '65000'),
+('REC6', 'prod025', 58, '100000'),
+('REC6', 'prod026', 68, '105000'),
+
+('REC7', 'prod028', 54, '55000'),
+('REC7', 'prod029', 91, '35000'),
+('REC7', 'prod033', 122, '20000'),
+('REC7', 'prod030', 105, '20000');
+

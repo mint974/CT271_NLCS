@@ -187,5 +187,4 @@ class DeliveryInformation
         $statement->execute($params);
         return $statement->fetchColumn() > 0;
     }
-
 }

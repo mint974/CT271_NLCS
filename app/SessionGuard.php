@@ -42,7 +42,7 @@ class SessionGuard
     {
 
         $id_account = $this->user()->id_account;
-        $id_order = sprintf('REORD%05d', $id_account);
+        $id_order = sprintf('REORD%d', $id_account);
         $orderDetailModel = new OrderDetail(PDO());
         return $orderDetailModel->getTotalQuantity($id_order);
         // DD($orderDetailModel->getTotalQuantity($id_order));

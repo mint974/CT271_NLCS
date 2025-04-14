@@ -40,4 +40,14 @@ class Controller
         http_response_code(404);
         exit($this->view->render('errors/404'));
     }
+
+    public function checkCsrf(): bool
+    {
+        if ( $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) ) {
+            return false;
+        }
+        return true;
+    }
+
 }

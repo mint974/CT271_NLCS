@@ -5,6 +5,7 @@ namespace App\Controllers\Auth;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\DeliveryInformation;
+use App\Models\ActivityHistory;
 
 use App\Controllers\Controller;
 
@@ -48,6 +49,7 @@ class RegisterController extends Controller
 
         $datauser = $this->filterDataUser($data);
         $newUser = new User(PDO());
+
         $model_errorsUser = $newUser->validate($datauser);
 
         if (empty($model_errorsUser)) {
@@ -66,11 +68,22 @@ class RegisterController extends Controller
 
             $newDelivery->fill($data_delivery)->save();
 
-            // Tạo đơn hàng
+            // Tạo giỏ hàng
             $order = new Order(PDO());
-            $order->id_order = sprintf("REORD%05d", $newUser->id_account);
+            //$order->id_order = sprintf("REORD%d", $newUser->id_account);
             $order->id_account = $newUser->id_account;
+            $order->status = 'Giỏ Hàng';
             $order->save_def();
+
+            //tạo lịch sử hoạt động
+
+            $modelActivity = new ActivityHistory(pdo());
+            $modelActivity->id_account = $newUser->id_account;
+            $modelActivity->action = "Tạo tài khoản";
+            $modelActivity->status = "Hoạt động";
+            $modelActivity->created_by = $newUser->id_account;
+            $modelActivity->save();
+
 
             redirect('/login', ['success' => 'User created successfully.']);
         }

@@ -9,6 +9,7 @@
 
 <div class="container-fuild homepage products p-1">
 
+    <div class="container">
     <div class="container-fluid row m-3 position-relative d-flex justify-content-center align-items-center">
         <img src="/assets/image/products/banner1.png" class="img-fluid w-100" alt="">
         <h1 class="position-absolute text-center banner-heading">DANH MỤC SẢN PHẨM</h1>
@@ -39,12 +40,12 @@
                     </div>
 
                 </div>
-                <div>
-                    <h3>SẢN PHẨM BÁN CHẠY NHẤT</h3>
+                <div class="mb-3">
+                    <h3 >SẢN PHẨM BÁN CHẠY NHẤT</h3>
 
                 </div>
-                <img src="/assets/image/products/banner_prod1.png" width="100%" alt="">
-                <img src="/assets/image/products/banner_prod2.png" width="100%" alt="">
+                <img src="/assets/image/products/banner_prod1.png" width="100%" class="mb-3" alt="">
+                <img src="/assets/image/products/banner_prod2.png" width="100%" class="mb-3" alt="">
             </div>
 
             <!-- product -->
@@ -244,6 +245,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </div>
 <script>

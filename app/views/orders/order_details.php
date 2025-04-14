@@ -14,18 +14,25 @@
         margin-top: 20px;
     }
 
-    .table th, .card-header{
+    .table th,
+    .card-header {
         background-color: #08a045;
         color: white;
     }
 
-    h3{
+    h3 {
         color: #08a045;
     }
+
     .order-summary {
         font-size: 1.2rem;
         font-weight: bold;
         color: #d9534f;
+    }
+
+    .alert {
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 </style>
 
@@ -37,7 +44,7 @@
         <div class="card-body">
 
             <!-- Thông tin giao hàng -->
-            <div class= "mb-4 row d-flex justify-content-center">
+            <div class="mb-4 row d-flex justify-content-center">
                 <div class="box col col-md-6 m-2">
                     <h3 class="text-center"><i class="fa fa-truck"></i> Thông Tin Giao Hàng</h3>
                     <ul class="list-group list-group-flush">
@@ -55,17 +62,37 @@
                         </li>
                     </ul>
                 </div>
-                <div class="box text-end col col-md-5 m-2">
-                    <h4><i class="fa fa-receipt"></i> Tổng Đơn Hàng</h4>
-                    <p class="order-summary">Tổng cộng: <?php echo number_format($totalPrice, 0, ',', '.') . ' VND'; ?>
-                    </p>
+                <div class="box col col-md-5 m-2">
+                    <div class="text-center mb-3">
+                        <h3 >
+                            <i class="fa fa-receipt"></i> Trạng Thái Đơn Hàng
+                        </h3>
+                        <div class="alert 
+            <?php echo ($order->status === 'Giao hàng thành công') ? 'alert-success' :
+                (($order->status === 'Đơn hàng đã bị hủy') ? 'alert-danger' :
+                    'alert-secondary'); ?>">
+                            <?php echo htmlspecialchars($order->status); ?>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="text-center mt-3">
+                        <h3 >
+                            <i class="fa fa-money-check-alt"></i> Tổng Đơn Hàng
+                        </h3>
+                        <p class="order-summary text-danger fs-4 fw-bold">
+                            <?php echo number_format($totalPrice, 0, ',', '.') . ' VND'; ?>
+                        </p>
+                    </div>
                 </div>
+
             </div>
 
 
             <!-- Danh sách sản phẩm -->
             <div class="box">
-                <h3 class="mb-3 text-center" ><i class="fa fa-shopping-cart"></i> Sản Phẩm Trong Đơn Hàng</h3>
+                <h3 class="mb-3 text-center"><i class="fa fa-shopping-cart"></i> Sản Phẩm Trong Đơn Hàng</h3>
                 <table class="table table-hover">
                     <thead>
                         <tr>

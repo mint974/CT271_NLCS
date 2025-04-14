@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderCancellation;
 use App\Models\Product;
 use App\Models\OrderDetail;
+use GrahamCampbell\ResultType\Success;
 
 class OrdersController extends Controller
 {
@@ -19,7 +20,7 @@ class OrdersController extends Controller
         parent::__construct();
     }
 
-    public function index(string $error = null)
+    public function index(string $error = null, string $Success = null)
     {
         $id_account = AUTHGUARD()->user()->id_account;
         $orderModel = new Order(PDO());
@@ -36,14 +37,15 @@ class OrdersController extends Controller
         $this->sendPage('orders/index', [
             'orders' => $orders,
             'order_details' => $orderDetails,
-            'errors' => $error
+            'errors' => $error,
+            'success' => $Success
         ]);
     }
 
     public function shoppingcart($errors = null, $success = null)
     {
         $ordermodel = new Order(PDO());
-        $reorder = $ordermodel->where('id_order', sprintf("REORD%05d", AUTHGUARD()->user()->id_account));
+        $reorder = $ordermodel->where('id_order', sprintf("REORD%d", AUTHGUARD()->user()->id_account));
 
         $orderdetail = new OrderDetail(PDO());
         $orders_detail = $orderdetail->getAllOrderDetails($reorder->id_order);
@@ -80,7 +82,7 @@ class OrdersController extends Controller
         $product_list = $modelproduct->getProductsByIds($data);
 
         //kiểm tra số lượng sản phẩm trong kho
-        $id_order = sprintf("REORD%05d", AUTHGUARD()->user()->id_account);
+        $id_order = sprintf("REORD%d", AUTHGUARD()->user()->id_account);
         $modelorderdetail = new OrderDetail(PDO());
         $error = [];
         foreach ($product_list as $product) {
@@ -245,27 +247,53 @@ class OrdersController extends Controller
 
         // Gửi dữ liệu đến view
         return $this->sendPage('/orders/order_details', [
+            'order' => $order,
             'orderInfo' => $delivery,
             'orderProducts' => $orderProducts,
             'totalPrice' => $totalPrice + $delivery->shipping_fee
         ]);
     }
 
-    public function cancel(){
+    public function cancel()
+    {
 
-        $order = (new Order(PDO()))->where('id_order', $_POST['id_order']);
+        $id_order = $_POST['id_order'];
+        $reason = $_POST['reason'];
 
-        if($order->status == "Đã gửi đơn đặt hàng"){
-            //$modelcancel = new OrderCancellation(PDO());
-            $data
-            if($modelcancel->)
+        $order = (new Order(PDO()))->where('id_order', $id_order);
+
+        if ($order->status == "Đã gửi đơn đặt hàng") {
+            $modelcancel = new OrderCancellation(PDO());
+            $modelcancel->id_order = $id_order;
+            $modelcancel->reason = $reason;
+
+            if ($modelcancel->save()) {
+                //cập nhật trạng thái đơn hàng
+                $order->status = "Đơn hàng đã bị hủy";
+                $order->save();
+
+                $order_detail = new OrderDetail(PDO());
+                if ($order_detail->cancelorder($order->id_order)) {
+                    $success = "Hủy đơn hàng thành công!";
+                    $this->index(null, $success);
+                    return;
+                } else {
+                    $error = "Lỗi hủy đơn hàng thử lại sao!";
+                    $this->index($error);
+                    return;
+                }
+            } else {
+                $error = "Lỗi hủy đơn hàng thử lại sao!";
+                $this->index($error);
+                return;
+            }
 
 
         } else {
             $error = "Lỗi hủy đơn hàng, bạn chỉ có thể hủy đơn trước khi shop xác nhận đơn hàng!";
             $this->index($error);
             return;
-          }
+        }
 
     }
 
