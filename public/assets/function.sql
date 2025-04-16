@@ -324,4 +324,78 @@ END $$
 
 DELIMITER ;
 
+--tạo id_product
+DELIMITER $$
+
+CREATE TRIGGER before_insert_product
+BEFORE INSERT ON Products
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu bảng trống, bắt đầu từ prod001
+    IF NOT EXISTS (SELECT 1 FROM Products WHERE id_product LIKE 'prod%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm số thứ tự nhỏ nhất chưa dùng (ví dụ: nếu thiếu prod007 thì chèn vào vị trí đó)
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_product, 5) AS UNSIGNED) AS id_num
+            FROM Products
+            WHERE id_product LIKE 'prod%'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Products
+            WHERE CAST(SUBSTRING(id_product, 5) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Định dạng mã id_product với 3 chữ số sau "prod"
+    SET new_id = CONCAT('prod', LPAD(next_id, 3, '0'));
+    SET NEW.id_product = new_id;
+END $$
+
+DELIMITER ;
+
+--tạo id_image
+DELIMITER $$
+
+CREATE TRIGGER before_insert_image_product
+BEFORE INSERT ON Image_Product
+FOR EACH ROW
+BEGIN
+    DECLARE id_suffix VARCHAR(3);
+    DECLARE next_letter CHAR(1);
+    DECLARE used_letters TEXT;
+    DECLARE letter CHAR(1);
+    DECLARE i INT DEFAULT 0;
+
+    -- Lấy 3 ký tự số cuối của id_product (giả sử luôn đúng định dạng prodXXX)
+    SET id_suffix = RIGHT(NEW.id_product, 3);
+
+    -- Lấy các ký tự đã dùng cho id_product này (vd: A, B,...)
+    SELECT GROUP_CONCAT(SUBSTRING(id_image, 10, 1) ORDER BY SUBSTRING(id_image, 10, 1))
+    INTO used_letters
+    FROM Image_Product
+    WHERE id_product = NEW.id_product;
+
+    -- Tìm ký tự chữ cái đầu tiên chưa dùng (A-Z)
+    SET i = 0;
+    WHILE i < 26 DO
+        SET letter = CHAR(65 + i); -- 65 = 'A', 66 = 'B',...
+        IF LOCATE(letter, used_letters) = 0 THEN
+            SET next_letter = letter;
+            LEAVE;
+        END IF;
+        SET i = i + 1;
+    END WHILE;
+
+    -- Gán id_image mới
+    SET NEW.id_image = CONCAT('imaprod', id_suffix, next_letter);
+END$$
+
+DELIMITER ;
 

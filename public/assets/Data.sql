@@ -121,6 +121,7 @@ INSERT into Image_Product (id_image, URL_image, id_product) VALUES
 ('imaprod035A', '/assets/image/products/VN020A-vusuatim.jpg', 'prod035'),
 ('imaprod035B', '/assets/image/products/VN020B-vusuatim.jpg', 'prod035');
 
+
 INSERT INTO Product_Catalog (id_catalog, name) VALUES
 ('prodcata001', 'Trái cây Việt Nam'),
 ('prodcata002', 'Trái cây nhập khẩu'),
@@ -258,40 +259,41 @@ INSERT INTO orders (id_order, created_at, id_account, id_delivery, status) VALUE
 ('ORD15', now(), 18, 'DEL19', 'Đơn hàng đã bị hủy'),
 ('ORD16', '2025-03-01 12:49:21', 19, 'DEL20', 'Giao hàng thành công');
 
-INSERT INTO order_details (id_order, id_product, quantity) VALUES
-('ORD1', 'prod001', 2),
-('ORD1', 'prod005', 3),
-('ORD1', 'prod015', 4),
-('ORD1', 'prod025', 3),
-('ORD2', 'prod011', 2),
-('ORD2', 'prod022', 3),
-('ORD3', 'prod006', 2),
-('ORD4', 'prod002', 3),
-('ORD5', 'prod023', 3),
-('ORD5', 'prod035', 4),
-('ORD5', 'prod033', 2),
-('ORD5', 'prod025', 5),
-('ORD5', 'prod007', 5),
-('ORD6', 'prod009', 9),
-('ORD7', 'prod029', 1),
-('ORD8', 'prod019', 5),
-('ORD8', 'prod034', 6),
-('ORD9', 'prod003', 5),
-('ORD9', 'prod008', 2),
-('ORD9', 'prod032', 8),
-('ORD10', 'prod026', 8),
-('ORD11', 'prod004', 7),
-('ORD11', 'prod003', 5),
-('ORD12', 'prod011', 10),
-('ORD13', 'prod016', 5),
-('ORD13', 'prod017', 5),
-('ORD13', 'prod019', 3),
-('ORD14', 'prod031', 10),
-('ORD14', 'prod030', 5),
-('ORD15', 'prod012', 8),
-('ORD15', 'prod014', 10),
-('ORD15', 'prod018', 5),
-('ORD16', 'prod028', 4);
+INSERT INTO order_details (id_order, id_product, quantity, price, discount_rate) VALUES
+('ORD1', 'prod001', 2, 75000, 0),
+('ORD1', 'prod005', 3, 85000, 10),
+('ORD1', 'prod015', 4, 85000, 0),
+('ORD1', 'prod025', 3, 130000, 10),
+('ORD2', 'prod011', 2, 130000, 10),
+('ORD2', 'prod022', 3, 180000, 0),
+('ORD3', 'prod006', 2, 45000, 0),
+('ORD4', 'prod002', 3, 50000, 15),
+('ORD5', 'prod023', 3, 40000, 20),
+('ORD5', 'prod035', 4, 80000, 20),
+('ORD5', 'prod033', 2, 35000, 0),
+('ORD5', 'prod025', 5, 130000, 10),
+('ORD5', 'prod007', 5, 70000, 15),
+('ORD6', 'prod009', 9, 120000, 0),
+('ORD7', 'prod029', 1, 50000, 0),
+('ORD8', 'prod019', 5, 90000, 10),
+('ORD8', 'prod034', 6, 90000, 0),
+('ORD9', 'prod003', 5, 90000, 0),
+('ORD9', 'prod008', 2, 100000, 20),
+('ORD9', 'prod032', 8, 50000, 0),
+('ORD10', 'prod026', 8, 110000, 0),
+('ORD11', 'prod004', 7, 60000, 0),
+('ORD11', 'prod003', 5, 90000, 0),
+('ORD12', 'prod011', 10, 130000, 10),
+('ORD13', 'prod016', 5, 60000, 0),
+('ORD13', 'prod017', 5, 80000, 0),
+('ORD13', 'prod019', 3, 90000, 10),
+('ORD14', 'prod031', 10, 85000, 0),
+('ORD14', 'prod030', 5, 35000, 0),
+('ORD15', 'prod012', 8, 60000, 0),
+('ORD15', 'prod014', 10, 25000, 0),
+('ORD15', 'prod018', 5, 75000, 0),
+('ORD16', 'prod028', 4, 75000, 0);
+
 
 ---test vô hiệu hóa
 INSERT into activity_history (id_account, action_time, action, status, created_by) VALUES
@@ -320,47 +322,81 @@ INSERT into Product_receipt (created_at, id_supplier, id_account) VALUES
 
 
 --chi tiết nhập
+INSERT INTO Product_receipt_details (id_receipt, id_product, quantity, purchase_price, selling_price) VALUES
+('REC1', 'prod001', 52, 45000, 75000),
+('REC1', 'prod003', 85, 65000, 90000),
+('REC1', 'prod031', 80, 60000, 85000),
+
+('REC2', 'prod017', 65, 60000, 80000),
+('REC2', 'prod020', 50, 75000, 100000),
+('REC2', 'prod021', 90, 50000, 70000),
+('REC2', 'prod022', 33, 150000, 180000),
+('REC2', 'prod027', 80, 45000, 70000),
+
+('REC3', 'prod024', 40, 95000, 120000),
+('REC3', 'prod004', 67, 35000, 60000),
+('REC3', 'prod005', 53, 55000, 85000),
+
+('REC4', 'prod002', 103, 25000, 50000),
+('REC4', 'prod010', 90, 20000, 40000),
+('REC4', 'prod012', 93, 40000, 60000),
+('REC4', 'prod013', 90, 25000, 50000),
+('REC4', 'prod014', 130, 10000, 25000),
+('REC4', 'prod016', 55, 45000, 60000),
+('REC4', 'prod018', 75, 55000, 75000),
+('REC4', 'prod023', 103, 25000, 40000),
+('REC4', 'prod032', 118, 25000, 50000),
+
+('REC5', 'prod006', 82, 25000, 45000),
+('REC5', 'prod007', 70, 55000, 70000),
+('REC5', 'prod009', 79, 100000, 120000),
+('REC5', 'prod015', 64, 65000, 85000),
+('REC5', 'prod034', 66, 65000, 90000),
+('REC5', 'prod035', 59, 50000, 80000),
+
+('REC6', 'prod008', 57, 85000, 100000),
+('REC6', 'prod011', 52, 100000, 130000),
+('REC6', 'prod019', 88, 65000, 90000),
+('REC6', 'prod025', 58, 100000, 130000),
+('REC6', 'prod026', 68, 105000, 110000),
+
+('REC7', 'prod028', 54, 55000, 75000),
+('REC7', 'prod029', 91, 35000, 50000),
+('REC7', 'prod033', 122, 20000, 35000),
+('REC7', 'prod030', 105, 20000, 35000);
+
+
+--test
+INSERT into Product_receipt (created_at, id_supplier, id_account) VALUES
+('2024-09-15 16:04:28', 'SUP7', 1);
+
+INSERT INTO Products (id_product, name, description, quantity, price, unit, id_promotion) VALUES 
+('prod036', 'Me Thái', 'Me Thái là loại trái cây có vị chua ngọt tự nhiên, thường được dùng để ăn trực tiếp hoặc làm mứt, nước giải khát và món ăn vặt. Vị chua dịu và thơm ngon đặc trưng khiến Me Thái trở thành món khoái khẩu của nhiều người.', 10, 70000, 'Kg', NULL);
+
+INSERT into Image_Product (id_image, URL_image, id_product) VALUES
+('imaprod036A', '/assets/image/products/VN021A-methai.jpg', 'prod036'),
+('imaprod036B', '/assets/image/products/VN021B-methai.jpg', 'prod036');
+
+INSERT INTO Product_Catalog_details (id_product, id_catalog) VALUES
+('prod036', 'prodcata001'),
+('prod036', 'prodcata007');
+
+INSERT into Product_receipt_details (id_receipt, id_product, quantity, purchase_price, selling_price) VALUES
+('REC8', 'prod036', 10, '40000', '70000');
+
+INSERT INTO orders ( created_at, id_account, id_delivery, status) VALUES
+( now(), 5, 'DEL6', 'Đã gửi đơn đặt hàng');
+
+INSERT INTO order_details (id_order, id_product, quantity, price, discount_rate) VALUES
+('ORD20', 'prod036', 10, 70000, 0);
+
+INSERT into Product_receipt (created_at, id_supplier, id_account) VALUES
+(now(), 'SUP7', 1);
+
 INSERT into Product_receipt_details (id_receipt, id_product, quantity, purchase_price) VALUES
-('REC1', 'prod001', 52, '45000'),
-('REC1', 'prod003', 85, '65000'),
-('REC1', 'prod031', 80, '60000'),
+('REC9', 'prod036', 30, '45000', '75000');
 
-('REC2', 'prod017', 65, '60000'),
-('REC2', 'prod020', 50, '75000'),
-('REC2', 'prod021', 90, '50000'),
-('REC2', 'prod022', 33, '150000'),
-('REC2', 'prod027', 80, '45000'),
-
-
-('REC3', 'prod024', 40, '95000'),
-('REC3', 'prod004', 67, '35000'),
-('REC3', 'prod005', 53, '55000'),
-
-('REC4', 'prod002', 103, '25000'),
-('REC4', 'prod010', 90, '20000'),
-('REC4', 'prod012', 93, '40000'),
-('REC4', 'prod013', 90, '25000'),
-('REC4', 'prod014', 130, '10000'),
-('REC4', 'prod016', 55, '45000'),
-('REC4', 'prod018', 75, '55000'),
-('REC4', 'prod023', 103, '25000'),
-('REC4', 'prod032', 118, '25000'),
-
-('REC5', 'prod006', 82, '25000'),
-('REC5', 'prod007', 70, '55000'),
-('REC5', 'prod009', 79, '100000'),
-('REC5', 'prod015', 64, '65000'),
-('REC5', 'prod034', 66, '65000'),
-('REC5', 'prod035', 59, '50000'),
-
-('REC6', 'prod008', 57, '85000'),
-('REC6', 'prod011', 52, '100000'),
-('REC6', 'prod019', 88, '65000'),
-('REC6', 'prod025', 58, '100000'),
-('REC6', 'prod026', 68, '105000'),
-
-('REC7', 'prod028', 54, '55000'),
-('REC7', 'prod029', 91, '35000'),
-('REC7', 'prod033', 122, '20000'),
-('REC7', 'prod030', 105, '20000');
-
+UPDATE Products
+SET quantity = 30,
+    price = 75000
+WHERE id_product = 'prod036';

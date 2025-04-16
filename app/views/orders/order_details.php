@@ -64,7 +64,7 @@
                 </div>
                 <div class="box col col-md-5 m-2">
                     <div class="text-center mb-3">
-                        <h3 >
+                        <h3>
                             <i class="fa fa-receipt"></i> Trạng Thái Đơn Hàng
                         </h3>
                         <div class="alert 
@@ -78,7 +78,7 @@
                     <hr>
 
                     <div class="text-center mt-3">
-                        <h3 >
+                        <h3>
                             <i class="fa fa-money-check-alt"></i> Tổng Đơn Hàng
                         </h3>
                         <p class="order-summary text-danger fs-4 fw-bold">
@@ -115,20 +115,21 @@
                                 <td><?php echo htmlspecialchars($item['product_name'] ?? 'Không xác định'); ?></td>
                                 <td class="text-center"><?php echo htmlspecialchars($item['quantity'] ?? 0); ?></td>
                                 <td class="text-end">
-                                    <?php echo number_format($item['unit_price'] ?? 0, 0, ',', '.') . ' VND'; ?>
+                                    <?php echo number_format((float) ($item['price'] ?? 0), 0, ',', '.') . ' VND'; ?>
                                 </td>
                                 <td class="text-center text-success">
-                                    <?php echo ($item['discount_rate'] > 0) ? ('-' . $item['discount_rate'] . '%') : 'Không'; ?>
+                                    <?php echo ((float) $item['discount_rate'] > 0) ? ('-' . rtrim(rtrim($item['discount_rate'], '0'), '.') . '%') : 'Không'; ?>
                                 </td>
-                                <td class="text-end ">
-                                    <?php echo number_format($item['discount_price'] ?? 0, 0, ',', '.') . ' VND'; ?>
+                                <td class="text-end">
+                                    <?php echo number_format((float) ($item['discount_price'] ?? 0), 0, ',', '.') . ' VND'; ?>
                                 </td>
                                 <td class="text-end text-danger order-summary">
-                                    <?php echo number_format($item['total_price'] ?? 0, 0, ',', '.') . ' VND'; ?>
+                                    <?php echo number_format((float) ($item['total_price'] ?? 0), 0, ',', '.') . ' VND'; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+
                 </table>
 
             </div>

@@ -71,7 +71,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
-    <form class="row mb-3" action="/orders/search" method="post">
+    <form class="row mb-3" id="searchForm" action="/orders/search" method="post">
         <div class="col-md-4 mb-2">
             <label for="search-date" class="form-label">Tìm theo ngày:</label>
             <input type="date" id="search-date" name="search_date" class="form-control">
@@ -129,7 +129,7 @@
                                 <i class="fa fa-eye"></i> Xem chi tiết
                             </a>
 
-                            <?php if ($order['status'] == 'Đã gửi đơn đặt hàng'): ?>
+                            <?php if ($order['status'] === 'Đã gửi đơn đặt hàng'): ?>
                                 <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal"
                                     onclick="setCancelData('<?= $order['id_order'] ?>', '<?= $order['total_price'] ?>', '<?= $order['status'] ?>')">
                                     <i class="fa fa-times-circle"></i> Hủy đơn
@@ -146,48 +146,51 @@
                 </tr>
             <?php endif; ?>
         </tbody>
-        <!-- Modal Hủy Đơn Hàng -->
-        <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="cancelModalLabel">Xác nhận hủy đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+
+
+    </table>
+
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Header -->
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="cancelModalLabel">Xác nhận hủy đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <!-- Bước 1: Xác nhận thông tin -->
+                    <div id="cancelStep1">
                         <p><strong>Mã đơn:</strong> <span id="modalOrderId"></span></p>
                         <p><strong>Tổng tiền:</strong> <span id="modalTotalPrice"></span></p>
                         <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reasonModal"
-                                data-bs-dismiss="modal">Tiếp tục</button>
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button class="btn btn-primary" id="nextToReasonBtn">Tiếp tục</button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Modal Chọn Lý Do Hủy -->
-        <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title" id="reasonModalLabel">Chọn lý do hủy đơn</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+                    <!-- Bước 2: Chọn lý do -->
+                    <div id="cancelStep2" style="display:none;">
                         <form action="/orders/cancel" method="post">
-                            <input type="text" class="hidden" name="id_order" id="modalOrderId2">
-                            <select class="form-select" name="reason" id="cancelReason">
-                                <option>Tôi thay đổi ý định, không muốn mua nữa.</option>
-                                <option>Tôi tìm thấy giá tốt hơn ở nơi khác.</option>
-                                <option>Tôi đặt nhầm sản phẩm hoặc số lượng.</option>
-                                <option>Tôi muốn thay đổi địa chỉ nhận hàng.</option>
-                                <option>Lý do khác.</option>
-                            </select>
-                            <div class="mt-3 d-flex justify-content-between">
-                                <a class="btn btn-secondary" data-bs-dismiss="modal">Hủy</a>
+                            <input type="hidden" name="id_order" id="modalOrderId2">
+                            <div class="mb-3">
+                                <label for="cancelReason" class="form-label">Chọn lý do hủy đơn</label>
+                                <select class="form-select" name="reason" id="cancelReason" required>
+                                    <option value="">-- Chọn lý do --</option>
+                                    <option value="Tôi thay đổi ý định, không muốn mua nữa.">Tôi thay đổi ý định
+                                    </option>
+                                    <option value="Tôi tìm thấy giá tốt hơn ở nơi khác.">Giá tốt hơn ở nơi khác
+                                    </option>
+                                    <option value="Tôi đặt nhầm sản phẩm hoặc số lượng.">Đặt nhầm sản phẩm</option>
+                                    <option value="Tôi muốn thay đổi địa chỉ nhận hàng.">Thay đổi địa chỉ</option>
+                                    <option value="Lý do khác.">Lý do khác</option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="backToStep1">Quay lại</button>
                                 <button type="submit" class="btn btn-danger">Gửi yêu cầu hủy</button>
                             </div>
                         </form>
@@ -195,62 +198,73 @@
                 </div>
             </div>
         </div>
-
-
-    </table>
-
-
+    </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const inputs = document.querySelectorAll('input, select');
+  document.addEventListener('DOMContentLoaded', function () {
+    // Chỉ lấy form tìm kiếm
+    const searchForm = document.querySelector('#searchForm');
+    const searchInputs = searchForm.querySelectorAll('input, select');
 
-        // Xóa các trường khác khi nhập vào một trường
-        inputs.forEach(input => {
-            input.addEventListener('input', function () {
-                inputs.forEach(other => {
+    // Giới hạn chọn 1 tiêu chí tìm kiếm
+    searchInputs.forEach(input => {
+        input.addEventListener('input', function () {
+            searchInputs.forEach(other => {
+                if (other !== this) {
+                    other.value = '';
+                }
+            });
+        });
+
+        if (input.type === 'date') {
+            input.addEventListener('change', function () {
+                searchInputs.forEach(other => {
                     if (other !== this) {
-                        other.value = ''; // Xóa giá trị của các trường khác
+                        other.value = '';
                     }
                 });
             });
-
-            // Xử lý riêng cho input type="date"
-            if (input.type === 'date') {
-                input.addEventListener('change', function () {
-                    inputs.forEach(other => {
-                        if (other !== this) {
-                            other.value = '';
-                        }
-                    });
-                });
-            }
-        });
-
-        // Kiểm tra trước khi submit
-        form.addEventListener('submit', function (e) {
-            let hasValue = false;
-
-            inputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    hasValue = true;
-                }
-            });
-
-            if (!hasValue) {
-                e.preventDefault();
-                alert('Vui lòng nhập ít nhất một tiêu chí để tìm kiếm.');
-            }
-        });
+        }
     });
 
-    function setCancelData(id, total, status) {
+    searchForm.addEventListener('submit', function (e) {
+        let hasValue = false;
+        searchInputs.forEach(input => {
+            if (input.value.trim() !== '') {
+                hasValue = true;
+            }
+        });
+
+        if (!hasValue) {
+            e.preventDefault();
+            alert('Vui lòng nhập ít nhất một tiêu chí để tìm kiếm.');
+        }
+    });
+
+    // Phần xử lý cancel modal giữ nguyên
+    window.setCancelData = function (id, total, status) {
         document.getElementById("modalOrderId").textContent = id;
-        document.getElementById("modalTotalPrice").textContent = total;
+        document.getElementById("modalTotalPrice").textContent = Number(total).toLocaleString('vi-VN') + " VND";
         document.getElementById("modalStatus").textContent = status;
         document.getElementById("modalOrderId2").value = id;
-    }
+
+        // Reset modal về bước 1
+        document.getElementById("cancelStep1").style.display = "block";
+        document.getElementById("cancelStep2").style.display = "none";
+    };
+
+    document.getElementById("nextToReasonBtn").addEventListener('click', function () {
+        document.getElementById("cancelStep1").style.display = "none";
+        document.getElementById("cancelStep2").style.display = "block";
+    });
+
+    document.getElementById("backToStep1").addEventListener('click', function () {
+        document.getElementById("cancelStep1").style.display = "block";
+        document.getElementById("cancelStep2").style.display = "none";
+    });
+});
 
 </script>
+
+
 <?php $this->stop() ?>

@@ -127,6 +127,8 @@ CREATE TABLE Order_details (
     id_order VARCHAR(20),
     id_product VARCHAR(20),
     quantity INT NOT NULL DEFAULT 1,
+    price DECIMAL(10,2) NOT NULL, CHECK (price >= 0),
+    discount_rate DECIMAL(5,2) NOT NULL, CHECK (discount_rate >= 0 AND discount_rate <= 100),
     PRIMARY KEY (id_order, id_product),
     FOREIGN KEY (id_order) REFERENCES Orders(id_order) ON DELETE CASCADE,
     FOREIGN KEY (id_product) REFERENCES Products(id_product) ON DELETE CASCADE
@@ -188,6 +190,7 @@ CREATE TABLE Product_receipt_details (
     id_product VARCHAR(20),
     quantity INT NOT NULL,
     purchase_price DECIMAL(10,2) NOT NULL CHECK (purchase_price >= 0),
+    selling_price DECIMAL(10,2) NOT NULL CHECK ( selling_price >= 0),
     PRIMARY KEY (id_receipt, id_product),
     FOREIGN KEY (id_receipt) REFERENCES Product_receipt(id_receipt) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_product) REFERENCES Products(id_product) ON DELETE CASCADE ON UPDATE CASCADE

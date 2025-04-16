@@ -41,6 +41,7 @@ $router->get('/products/proddetail/([\w-]+)', '\App\Controllers\productsControll
 $router->get('/products/admin', '\App\Controllers\productsController@indexadmin');
 
 $router->post('/products/search', '\App\Controllers\productsController@search');
+$router->get('/products/update/([\w-]+)', '\App\Controllers\productsController@updatepage');
 
 
 // load trang gio hang

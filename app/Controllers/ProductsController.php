@@ -2,9 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Models\ImageProduct;
 use App\Models\Product;
 use App\Models\Catalog;
-//use App\Models\Promotion;
+use App\Models\Promotion;
+use App\Models\Supplier;
+use App\Models\ProductReceipt;
+use App\Models\ProductReceiptDetails;
+use App\Models\User;
 
 class ProductsController extends Controller
 {
@@ -38,26 +43,26 @@ class ProductsController extends Controller
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $limit = 10;
         $offset = ($page - 1) * $limit;
-    
+
         $productModel = new Product(PDO());
-    
+
         if ($searchResults !== null) {
-            
+
             $products = $searchResults;
             $totalItems = count($products);
-            $totalPages = 1; 
+            $totalPages = 1;
             $promotionCounts = null; //
         } else {
-            
+
             $products = $productModel->getall($limit, $offset);
             $totalItems = $productModel->countProduct();
             $totalPages = ceil($totalItems / $limit);
-    
-            
+
+
             $promotionCounts['on'] = count($productModel->getDiscountedProducts());
             $promotionCounts['off'] = $totalItems - $promotionCounts['on'];
         }
-    
+
         $this->sendPage('products/indexadmin', [
             'promotionCounts' => $promotionCounts,
             'totalPages' => $totalPages,
@@ -66,10 +71,11 @@ class ProductsController extends Controller
             'errors' => $error
         ]);
     }
-    
+
 
     public function getprodcatabyid()
     {
+
         $catalogMode = new Catalog(PDO());
         $catalogs = $catalogMode->getAllCatalog();
 
@@ -82,7 +88,7 @@ class ProductsController extends Controller
                 'discounted_Products' => $discountedProducts,
             ]);
         }
-        // truy xuất snar phẩm thường
+        // truy xuất sản phẩm thường
         else if (isset($_POST['id_catalog']) || !empty($_POST['id_catalog'])) {
 
             $catalogModel = new Catalog(PDO());
@@ -126,17 +132,6 @@ class ProductsController extends Controller
         redirect('/products/create', ['errors' => $model_errors]);
     }
 
-    public function destroy($productId)
-    {
-        $product = (new Product(PDO()))->find($productId);
-        if (!$product) {
-            $this->sendNotFound();
-        }
-
-        $product->delete();
-        redirect('/products', ['success' => 'Product has been deleted successfully.']);
-    }
-
     protected function filterProductData(array $data)
     {
         return [
@@ -151,16 +146,53 @@ class ProductsController extends Controller
         ];
     }
 
+    //trang chi tiếc sản phẩm
     public function getproductbyid(string $id_product)
     {
 
         $productmodel = new Product(PDO());
         $product = $productmodel->where('id_product', $id_product);
         if ($product) {
+            if (AUTHGUARD()->user()->role === 'khách hàng') {
+                $this->sendPage('products/product_detail', [
+                    'products' => $product
+                ]);
+            } else {
+                //lấy danh sách chi tiết nhập
+                $product_receipt_detail_model = new ProductReceiptDetails(pdo());
+                $product_receipt_details = $product_receipt_detail_model->FindAllReceiptDetailsByIdProduct($id_product);
 
-            $this->sendPage('products/product_detail', [
-                'products' => $product
-            ]);
+                $productreceiptmodel = new ProductReceipt(pdo());
+                $suppliermodel = new Supplier(pdo());
+                $CreatedBytmodel = new User(pdo());
+                $catalogmodel = new Catalog(pdo());
+                
+                $receipt_details_full = [];
+
+                foreach ($product_receipt_details as $prd) {
+                    $receipt = $productreceiptmodel->where('id_receipt', $prd->id_receipt);
+                    if ($receipt !== null) {
+                        $supplier = $suppliermodel->where('id_supplier', $receipt->id_supplier);
+                        $createdBy = $CreatedBytmodel->where('id_account', $receipt->id_account);
+                        unset($createdBy->password); // Bỏ mật khẩu cho an toàn
+
+                        $receipt_details_full[] = [
+                            'detail' => $prd,
+                            'receipt' => $receipt,
+                            'supplier' => $supplier,
+                            'createdBy' => $createdBy
+                        ];
+                    }
+                }
+
+                // dd($receipt_details_full);
+                $this->sendPage('products/product_detail', [
+                    'products' => $product,
+                    'receipt_details_full' => $receipt_details_full
+                ]);
+
+            }
+
 
 
         } else {
@@ -205,5 +237,19 @@ class ProductsController extends Controller
         $this->indexadmin(null, $results);
     }
 
+    public function updatepage(string $id_product){
+        $product = (new product(pdo()))->where('id_product', $id_product);
 
+        $promotions = (new Promotion(pdo()))->getAll();
+
+        $images = (new ImageProduct(pdo()))->getAllByProductId($product->id_product);
+
+
+        $this->sendPage('products/update', [
+            'product' => $product,
+            'promotion' => $promotions,
+            'images' => $images
+        ]);
+
+    }
 }

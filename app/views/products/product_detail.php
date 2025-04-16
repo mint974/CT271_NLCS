@@ -169,16 +169,68 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
         font-size: 1.2rem;
     }
 
-    
-.new-price {
-    font-size: 22px;
-    color: var(--red-color);
+
+    .new-price {
+        font-size: 22px;
+        color: var(--red-color);
+    }
+
+    .old-price {
+        font-size: 14px;
+        text-decoration: line-through;
+        color: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Lịch sử nhập hàng */
+.table {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.old-price {
+.table thead th {
+    background-color: var( --bg-dark-green-color);
+    color: #fff;
+    font-weight: 600;
+    vertical-align: middle;
+    font-size: 15px;
+}
+
+.table tbody td {
+    vertical-align: middle;
     font-size: 14px;
-    text-decoration: line-through;
-    color: rgba(0, 0, 0, 0.5);
+    color: #333;
+    background-color: #fefefe;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border-color: #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f0fff4; /* nhẹ nhàng khi hover */
+}
+
+/* Icon trong tiêu đề bảng */
+.table thead th i,
+.table thead th.bi {
+    margin-right: 5px;
+}
+
+/* Nút quay về */
+.btn-outline-primary {
+    margin-top: 15px;
+    border-radius: 20px;
+    padding: 5px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--blue-color);
+    color: white;
+    border-color: var(--blue-color);
 }
 
 </style>
@@ -311,14 +363,44 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
 
         <?php else: ?>
             <div class="col-md-12 mt-4 d-flex flex-column justify-content-center align-items-center">
-                <p>admin</p>
+                <h2 class="text-center mb-3" style="color: #08a045;">Lịch sử nhập hàng</h2>
 
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-success">
+                        <tr>
+                            <th>STT</th>
+                            <th class="bi bi-calendar-plus">Ngày nhập</th>
+                            <th  class="bi bi-hash">Mã đơn</th>
+                            <th class="bi bi-person">Người lập</th>
+                            <th class="bi bi-geo-alt">Nhà cung cấp</th>
+                            <th><i class="bi bi-stack"></i> Số lượng</th>
+                            <th><i class="bi bi-cash-coin"></i> Giá mua</th>
+                            <th><i class="bi bi-currency-dollar"></i> Giá bán</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($receipt_details_full as $index => $item): ?>
+                            <tr>
+                                <td><?= $index + 1 ?></td>
+                                <td><?= $this->e($item['receipt']->created_at) ?></td>
+                                <td><?= $this->e($item['receipt']->id_receipt) ?></td>
+                                <td><?= $this->e($item['createdBy']->username) ?></td>
+                                <td><?= $this->e($item['supplier']->name) ?></td>
+                                <td><?= $this->e($item['detail']->quantity) ?></td>
+                                <td><?= number_format($item['detail']->purchase_price) ?> đ</td>
+                                <td><?= number_format($item['detail']->selling_price) ?> đ</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
 
                 <a href="/products/admin" class="btn btn-outline-primary btn-sm ">
                     <i class="bi bi-arrow-left-circle"></i> Quay về
                 </a>
 
             </div>
+
+            
 
         <?php endif; ?>
 

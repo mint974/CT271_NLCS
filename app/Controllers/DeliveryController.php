@@ -21,6 +21,8 @@ class DeliveryController extends Controller
         $total_price = $_POST['sumPrice'];
         $modelDelivery = new DeliveryInformation(PDO());
         $Deliveries = $modelDelivery->getAllDeliveryInfo(AUTHGUARD()->user()->id_account);
+        
+        
         $this->sendPage('orders/start_order', [
             'product_ids' => $_POST['product_list'],
             'total_price' => $total_price,

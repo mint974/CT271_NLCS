@@ -162,45 +162,40 @@ class Order
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array
+    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array 
     {
-        $query = "SELECT o.*, 
-                         (SELECT SUM(od.quantity * 
-                                CASE 
-                                    WHEN p.id_promotion IS NOT NULL 
-                                    AND pr.start_day <= CURDATE() 
-                                    AND pr.end_day >= CURDATE() 
-                                    THEN p.price * (1 - pr.discount_rate / 100) 
-                                    ELSE p.price 
-                                END) 
-                          FROM order_details od
-                          JOIN products p ON od.id_product = p.id_product
-                          LEFT JOIN promotions pr ON p.id_promotion = pr.id_promotion
-                          WHERE od.id_order = o.id_order) 
-                         + COALESCE(d.shipping_fee, 0) AS total_price
-                  FROM orders o
-                  LEFT JOIN delivery_information d ON o.id_delivery = d.id_delivery
-                  WHERE o.id_account = :id_account
-                  AND o.id_order NOT LIKE '%REORD%'";
-
+        $query = "
+            SELECT 
+                o.*, 
+                (
+                    SELECT SUM(od.price * (1 - (od.discount_rate / 100)) * od.quantity)
+                    FROM order_details od
+                    WHERE od.id_order = o.id_order
+                ) + COALESCE(d.shipping_fee, 0) AS total_price
+            FROM orders o
+            LEFT JOIN delivery_information d ON o.id_delivery = d.id_delivery
+            WHERE o.id_account = :id_account
+            AND o.id_order NOT LIKE '%REORD%'
+        ";
+    
         $params = ['id_account' => $id_account];
-
-        // Lọc theo ngày tạo đơn hàng nếu có
+    
+        // Lọc theo ngày
         if (!empty($date)) {
             $query .= " AND DATE(o.created_at) = :date";
             $params['date'] = $date;
         }
-
-        // Lọc theo trạng thái đơn hàng nếu có
+    
+        // Lọc theo trạng thái
         if (!empty($status)) {
             $query .= " AND o.status = :status";
             $params['status'] = $status;
         }
-
-        // Nếu lọc theo tổng giá trị đơn hàng thì sử dụng subquery để lọc
+    
+        // Lọc theo khoảng tổng tiền nếu có
         if (!empty($totalRange)) {
-            $query = "SELECT * FROM ($query) AS filtered_orders WHERE 1 = 1";
-
+            $query = "SELECT * FROM ($query) AS filtered_orders WHERE 1=1";
+    
             if ($totalRange === 'under_300') {
                 $query .= " AND total_price < 300000";
             } elseif ($totalRange === 'between_300_800') {
@@ -209,14 +204,13 @@ class Order
                 $query .= " AND total_price > 800000";
             }
         }
-
+    
         $statement = $this->db->prepare($query);
         $statement->execute($params);
-
+    
         return $statement->fetchAll(PDO::FETCH_ASSOC);
-
     }
-
+    
 
 
 }

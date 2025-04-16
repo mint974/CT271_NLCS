@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderCancellation;
 use App\Models\Product;
 use App\Models\OrderDetail;
+
 use GrahamCampbell\ResultType\Success;
 
 class OrdersController extends Controller
@@ -27,12 +28,15 @@ class OrdersController extends Controller
         $orderDetailModel = new OrderDetail(PDO());
 
         $orders = $orderModel->getUserOrders($id_account); // Lấy danh sách đơn hàng của user
-        foreach ($orders as &$order) {
-            $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']); // Tính tổng tiền từng đơn hàng
-        }
-
+        
         $orderIds = array_column($orders, 'id_order');
         $orderDetails = $orderModel->getOrderDetails($orderIds); // Lấy thông tin chi tiết từng đơn hàng
+
+        $delivery_model = new DeliveryInformation(pdo());
+        foreach ($orders as &$order) {
+            $delivery = $delivery_model->where('id_delivery', $order['id_delivery']);
+            $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']) + $delivery->shipping_fee;
+        }
 
         $this->sendPage('orders/index', [
             'orders' => $orders,
@@ -63,8 +67,12 @@ class OrdersController extends Controller
             $productModel = new Product(PDO());
             $products = $productModel->getProductsByIds($productIds);
 
+            //update price
+           $order_detail_list = $orderdetail->updatePrice($products, $orders_detail);
+           
+
             $this->sendPage('orders/shopping_cart', [
-                'orders_detail' => $orders_detail,
+                'orders_detail' =>  $order_detail_list,
                 'products' => $products,
                 'errors' => $errors,
                 'success' => $success
@@ -89,7 +97,7 @@ class OrdersController extends Controller
             $orderedQuantity = $modelorderdetail->getTotalQuantity($id_order, $product['id_product']); // Chỉ truyền ID sản phẩm
 
             if ($product['quantity'] <= $orderedQuantity) {
-                $error[] = "Số lượng sản phẩm " . htmlspecialchars($product['name']) . " không đủ để bán. vui lòng chọn lại!";
+                $error['product'] = "Số lượng sản phẩm " . htmlspecialchars($product['name']) . " không đủ để bán. vui lòng chọn lại!";
             }
         }
         if (!empty($error)) {
@@ -102,10 +110,19 @@ class OrdersController extends Controller
 
         //tạo đơn hàng
         if ($newOrder->save()) {
+            $delivery = (new DeliveryInformation(pdo()))->where('id_delivery', $newOrder->id_delivery);
 
             if ($modelorderdetail->Orders($newOrder->id_order, $data)) {
                 $orders = $this->getUserOrdersWithTotal(AUTHGUARD()->user()->id_account);
-                redirect('/orders/index', ['orders' => $orders]);
+                foreach($orders as &$order){
+                    $order['total_price'] *= $delivery->shipping_fee;
+                }
+                $success = 'Đặt hàng thành công!';
+
+                redirect('/orders/index', [
+                    'orders' => $orders,
+                    'success' => $success
+                ]);
 
             } else {
                 $this->shoppingcart('Lỗi đặt hàng!', null);
@@ -117,41 +134,16 @@ class OrdersController extends Controller
         }
     }
 
-    public function edit($orderId)
-    {
-        $order = AUTHGUARD()->user()->findOrder($orderId);
-        if (!$order) {
-            $this->sendNotFound();
-        }
-
-        $this->sendPage('orders/edit', [
-            'errors' => session_get_once('errors'),
-            'order' => (array) $order
-        ]);
-    }
-
-    public function update($orderId)
-    {
-        $order = AUTHGUARD()->user()->findOrder($orderId);
-        if (!$order) {
-            $this->sendNotFound();
-        }
-
-        $order->created_at = date('Y-m-d H:i:s'); // Cập nhật thời gian khi sửa đơn hàng
-        if ($order->save()) {
-            redirect('/', ['success' => 'Order has been updated successfully.']);
-        } else {
-            redirect('/orders/edit/' . $orderId, ['errors' => ['Failed to update order.']]);
-        }
-    }
-
     public function updateprod($id_product)
     {
         $quantity = $_POST['quantity'] ?? 1;
         $order = new OrderDetail(PDO());
+        $product = (new Product(pdo()))->where('id_product', $id_product);
+        $price = $product->price;
+        $discountRate = $product->promotion['discount_rate'] ? $product->promotion['discount_rate'] : 0;
 
         $redirectUrl = $_SERVER['HTTP_REFERER'] ?? '/products';
-        if ($order->updateProduct($id_product, $quantity)) {
+        if ($order->updateProduct($id_product, $quantity, $price, $discountRate)) {
             redirect($redirectUrl, ['success' => 'Đã sửa số lượng sản phẩm, kiểm tra ngay!']);
         } else {
             redirect($redirectUrl, ['error' => 'Lỗi sửa số lượng sản phẩm, Thử lại sao!']);
@@ -169,7 +161,16 @@ class OrdersController extends Controller
         if ($redirectUrl == 'http://ct271-mintfreshfruit.localhost/products/load_prod_cata') {
             $redirectUrl = 'http://ct271-mintfreshfruit.localhost/products';
         }
-        if ($order->addproduct($id_product, $quantity)) {
+        $productmodel = new Product(pdo());
+        $product = $productmodel->where('id_product', $id_product);
+        $price = $product->price;
+        // dd($product);
+        // exit();
+        $discount_rate = isset($product->promotion['discount_rate']) ? (float) $product->promotion['discount_rate'] : 0;
+
+       
+        
+        if ($order->addproduct($id_product, $quantity, $price, $discount_rate)) {
             redirect($redirectUrl, ['success' => 'Đã thêm sản phẩm vào giỏ hàng, kiểm tra ngay!']);
         } else {
             redirect($redirectUrl, ['error' => 'Lỗi thêm sản phẩm vào giỏ hàng, Thử lại sao!']);
@@ -193,12 +194,13 @@ class OrdersController extends Controller
     public function getUserOrdersWithTotal($id_account)
     {
         $orderModel = new Order(PDO());
-        $orderDetailModel = new OrderDetail(PDO());
 
         $orders = $orderModel->getUserOrders($id_account); // Lấy danh sách đơn hàng của user
 
+        $order_detais_model = new OrderDetail(pdo());
         foreach ($orders as &$order) {
-            $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']); // Tính tổng tiền từng đơn hàng
+
+            $order['total_price'] = $order_detais_model->getTotalPrice($order['id_order']) ;
         }
 
         return $orders;
@@ -259,10 +261,10 @@ class OrdersController extends Controller
 
         $id_order = $_POST['id_order'];
         $reason = $_POST['reason'];
-
+          
         $order = (new Order(PDO()))->where('id_order', $id_order);
 
-        if ($order->status == "Đã gửi đơn đặt hàng") {
+        if ($order->status === "Đã gửi đơn đặt hàng") {
             $modelcancel = new OrderCancellation(PDO());
             $modelcancel->id_order = $id_order;
             $modelcancel->reason = $reason;

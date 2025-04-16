@@ -12,6 +12,10 @@ class OrderDetail
     public string $id_product;
     public int $quantity;
 
+    public int $price;
+
+    public float $discount_rate;
+
     public function __construct(PDO $pdo)
     {
         $this->db = $pdo;
@@ -20,14 +24,16 @@ class OrderDetail
     public function save(): bool
     {
         $statement = $this->db->prepare(
-            'INSERT INTO order_details (id_order, id_product, quantity)
-             VALUES (:id_order, :id_product, :quantity)
+            'INSERT INTO order_details (id_order, id_product, quantity, price, discount_rate)
+             VALUES (:id_order, :id_product, :quantity, :price, :discount_rate)
              ON DUPLICATE KEY UPDATE quantity = :quantity'
         );
         return $statement->execute([
             'id_order' => $this->id_order,
             'id_product' => $this->id_product,
-            'quantity' => $this->quantity
+            'quantity' => $this->quantity,
+            'discount_rate' => $this->discount_rate,
+            'price' => $this->price
         ]);
     }
 
@@ -45,6 +51,7 @@ class OrderDetail
         return $row ? (new self($this->db))->fillFromDbRow($row) : null;
     }
 
+    // xóa sp khỏi giỏ hàng
     public function delete(string $id_product): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
@@ -60,6 +67,8 @@ class OrderDetail
         $this->id_order = $data['id_order'] ?? '';
         $this->id_product = $data['id_product'] ?? '';
         $this->quantity = $data['quantity'] ?? 1;
+        $this->price = $data['price'];
+        $this->discount_rate = $data['discount_rate'] ?? 0;
         return $this;
     }
 
@@ -68,11 +77,13 @@ class OrderDetail
         $this->id_order = $row['id_order'] ?? '';
         $this->id_product = $row['id_product'] ?? '';
         $this->quantity = $row['quantity'] ?? 0;
+        $this->price = $row['price'];
+        $this->discount_rate = $row['discount_rate'] ?? 1;
         return $this;
     }
 
     //thêm vào từ trang chi tiết
-    public function addProduct(string $id_product, int $quantity): bool
+    public function addProduct(string $id_product, int $quantity, $price, $discount_rate): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
         $id_order = sprintf('REORD%d', $id_account);
@@ -82,39 +93,67 @@ class OrderDetail
         if (!empty($orderdetail)) {
             $statement = $this->db->prepare(
                 'UPDATE order_details 
-                 SET quantity = quantity +  :quantity 
-                 WHERE id_order = :id_order AND id_product = :id_product'
+             SET quantity = quantity + :quantity, 
+                 price = :price, 
+                 discount_rate = :discount_rate
+             WHERE id_order = :id_order AND id_product = :id_product'
             );
         } else {
             $statement = $this->db->prepare(
-                'INSERT INTO order_details (id_order, id_product, quantity)
-                 VALUES (:id_order, :id_product, :quantity)'
+                'INSERT INTO order_details (id_order, id_product, quantity, price, discount_rate)
+             VALUES (:id_order, :id_product, :quantity, :price, :discount_rate)'
             );
         }
 
         return $statement->execute([
             'quantity' => $quantity,
             'id_order' => $id_order,
-            'id_product' => $id_product
+            'id_product' => $id_product,
+            'price' => $price,
+            'discount_rate' => $discount_rate,
         ]);
     }
 
+
     //sửa từ trang giỏ hàng
-    public function updateProduct(string $id_product, int $quantity): bool
+    public function updateProduct(string $id_product, int $quantity, $price, $discount_rate): bool
     {
         $id_account = AUTHGUARD()->user()->id_account;
         $id_order = sprintf('REORD%d', $id_account);
 
         $statement = $this->db->prepare(
             'UPDATE order_details 
-                 SET quantity = :quantity 
+                 SET quantity = :quantity,
+                 price = :price,
+                discount_rate = :discount_rate
                  WHERE id_order = :id_order AND id_product = :id_product'
         );
+
         return $statement->execute([
             'quantity' => $quantity,
             'id_order' => $id_order,
-            'id_product' => $id_product
+            'id_product' => $id_product,
+            'price' => $price,
+            'discount_rate' => $discount_rate
         ]);
+    }
+
+    public function updatePrice($products, $order_details): array
+    {
+        $productmodel = new Product(pdo());
+        foreach ($products as $product) {
+            foreach ($order_details as $order_detail) {
+
+                if ($product['id_product'] === $order_detail->id_product) {
+                    $productData = $productmodel->where('id_product', $product['id_product']);
+                    $discount_rate = isset($productData->promotion['discount_rate']) ? $productData->promotion['discount_rate'] : 0;
+
+                    $order_detail->updateProduct($product['id_product'], $order_detail->quantity, $product['price'], $discount_rate);
+                }
+            }
+        }
+
+        return $order_details;
     }
 
 
@@ -208,21 +247,9 @@ class OrderDetail
     {
         $statement = $this->db->prepare("
             SELECT 
-                (SUM(od.quantity * 
-                    CASE 
-                        WHEN p.id_promotion IS NOT NULL 
-                        AND pr.start_day <= CURDATE() 
-                        AND pr.end_day >= CURDATE() 
-                        THEN p.price * (1 - pr.discount_rate / 100) 
-                        ELSE p.price 
-                    END
-                ) + d.shipping_fee) AS total_price
-            FROM order_details od
-            JOIN products p ON od.id_product = p.id_product
-            LEFT JOIN promotions pr ON p.id_promotion = pr.id_promotion
-            JOIN orders o ON od.id_order = o.id_order
-            JOIN Delivery_Information d ON o.id_delivery = d.id_delivery
-            WHERE od.id_order = :id_order
+                SUM(price * (1 - (discount_rate / 100)) * quantity) AS total_price
+            FROM order_details
+            WHERE id_order = :id_order
         ");
 
         $statement->execute(['id_order' => $id_order]);
@@ -231,24 +258,27 @@ class OrderDetail
         return $result['total_price'] ?? 0;
     }
 
+
     public function getAllProductsOrderDetails($id_order)
     {
         $sql = "SELECT 
-                od.id_order,
-                od.id_product,
-                od.quantity,
-                p.name AS product_name,
-                p.price AS unit_price,
-                COALESCE(pr.discount_rate, 0) AS discount_rate,
-                (p.price * (1 - COALESCE(pr.discount_rate, 0) / 100)) AS discount_price,
-                (od.quantity * (p.price * (1 - COALESCE(pr.discount_rate, 0) / 100))) AS total_price,
-                COALESCE(img.URL_image, 'default.jpg') AS image
-            FROM Order_details od
-            JOIN Products p ON od.id_product = p.id_product
-            LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
-            LEFT JOIN Image_Product img ON od.id_product = img.id_product
-            WHERE od.id_order = :id_order
-            GROUP BY od.id_product";
+            od.id_order,
+            od.id_product,
+            od.quantity,
+            p.name AS product_name,
+            od.price,
+            od.discount_rate,
+            (od.price * (1 - COALESCE(od.discount_rate, 0) / 100)) AS discount_price,
+            (od.quantity * (od.price * (1 - COALESCE(od.discount_rate, 0) / 100))) AS total_price,
+            COALESCE(img.URL_image, 'default.jpg') AS image
+        FROM Order_details od
+        JOIN Products p ON od.id_product = p.id_product
+        LEFT JOIN (
+            SELECT id_product, MIN(URL_image) AS URL_image
+            FROM Image_Product
+            GROUP BY id_product
+        ) img ON od.id_product = img.id_product
+        WHERE od.id_order = :id_order";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_order' => $id_order]);

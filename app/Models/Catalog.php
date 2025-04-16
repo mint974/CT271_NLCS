@@ -4,13 +4,14 @@ namespace App\Models;
 
 use PDO;
 use App\Models\Product;
+
 class Catalog
 {
     private PDO $db;
 
     public string $id_catalog;
     public string $name;
-    public array $product_list = []; // Chứa danh sách sản phẩm của danh mục
+    public array $product_list = [];
 
     public function __construct(PDO $pdo)
     {
@@ -18,7 +19,7 @@ class Catalog
     }
 
     // Tìm danh mục theo điều kiện
-    public function where(string $column, string $value, $operator = "="): Catalog
+    public function where(string $column, string $value, $operator = "="): ?Catalog
     {
         $allowedColumns = ['id_catalog', 'name'];
         if (!in_array($column, $allowedColumns)) {
@@ -30,34 +31,28 @@ class Catalog
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->fill($row);
-            return $this;
+            return $this->fill($row);
         }
 
-        return null; 
+        return null;
     }
 
     // Lưu danh mục vào database
     public function save(): bool
     {
         if (!empty($this->id_catalog)) {
-            // Cập nhật danh mục nếu đã tồn tại
             $statement = $this->db->prepare(
-                'UPDATE Product_Catalog 
-                 SET name = :name 
-                 WHERE id_catalog = :id_catalog'
+                'UPDATE Product_Catalog SET name = :name WHERE id_catalog = :id_catalog'
             );
             return $statement->execute([
                 'id_catalog' => $this->id_catalog,
                 'name' => $this->name
             ]);
         } else {
-            // Thêm mới danh mục
             $statement = $this->db->prepare(
-                'INSERT INTO Product_Catalog (id_catalog, name) 
-                 VALUES (:id_catalog, :name)'
+                'INSERT INTO Product_Catalog (id_catalog, name) VALUES (:id_catalog, :name)'
             );
-            $this->id_catalog = uniqid("CAT_"); // Tạo ID tự động
+            $this->id_catalog = uniqid("CAT_");
             return $statement->execute([
                 'id_catalog' => $this->id_catalog,
                 'name' => $this->name
@@ -65,35 +60,35 @@ class Catalog
         }
     }
 
-    // Gán dữ liệu từ mảng vào đối tượng Catalog
     public function fill(array $data): Catalog
     {
         $this->id_catalog = $data['id_catalog'] ?? uniqid("CAT_");
-        $this->name = $data['name'];
-        $product_list = new Product(PDO());
-        // Lấy  danh sách sảnphẩm của danh mục này
-        $this->product_list =  $product_list->getByCatalogId($this->id_catalog);
+        $this->name = $data['name'] ?? '';
+
+        $product = new Product(pdo());
+        $this->product_list = $product->getByCatalogId($this->id_catalog);
 
         return $this;
     }
 
-    // Lấy danh sách sản phẩm theo ID danh mục
-    public function getAll(): array
+  
+    private function fillFromDbRow(array $row): Catalog
     {
-        $statement = $this->db->query('SELECT * FROM Product_Catalog');
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $this->id_catalog = $row['id_catalog'];
+        $this->name = $row['name'] ?? '';
+
+        $product = new Product(pdo());
+        $this->product_list = $product->getByCatalogId($this->id_catalog);
+
+        return $this;
     }
 
     public function getAllCatalog(): array
     {
-        // Tạo đối tượng Product để sử dụng phương thức getByCatalogId()
-        $productModel = new Product($this->db);
-
-        // Lấy tất cả danh mục
+        $productModel = new Product(pdo());
         $statement = $this->db->query('SELECT id_catalog, name FROM Product_Catalog');
         $catalogs = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        // Duyệt qua từng danh mục để lấy danh sách sản phẩm
         foreach ($catalogs as &$catalog) {
             $catalog['product_list'] = $productModel->getByCatalogId($catalog['id_catalog']);
         }
@@ -101,5 +96,23 @@ class Catalog
         return $catalogs;
     }
 
+    public function getCatalogByIdProduct(string $id_product): array
+    {
+        $sql = "SELECT pc.* 
+                FROM product_catalog pc 
+                JOIN product_catalog_details pcd ON pc.id_catalog = pcd.id_catalog 
+                WHERE pcd.id_product = :id_product";
 
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_product' => $id_product]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = [];
+
+        foreach ($rows as $row) {
+            $results[] = (new Catalog(pdo()))->fillFromDbRow($row);
+        }
+
+        return $results;
+    }
 }

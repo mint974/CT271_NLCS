@@ -90,4 +90,22 @@ class Promotion
         ] = $row;
         return $this;
     }
+
+    public function getExpired()
+    {
+        $statement = $this->db->prepare(
+            'SELECT * FROM Promotions WHERE end_day <= NOW()'
+        );
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+        $result = [];
+        $promotion = new Promotion(pdo()); 
+        foreach ($rows as $row) {
+            $result[] = $promotion->fillFromDbRow($row);
+        }
+    
+        return $result;
+    }
+    
 }
