@@ -37,8 +37,8 @@ CREATE TABLE Promotions (
     id_promotion VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    start_day DATE NOT NULL,
-    end_day DATE NOT NULL,
+    start_day DATETIME NOT NULL,
+    end_day DATETIME NOT NULL,
     discount_rate DECIMAL(5,2) NOT NULL CHECK (discount_rate >= 0 AND discount_rate <= 100),
     id_account INT(11) NOT NULL,
     FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE ON UPDATE CASCADE
@@ -82,13 +82,6 @@ CREATE TABLE Product_Catalog_details (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
--- Tạo bảng Payments
--- CREATE TABLE Payments (
---     id_payment VARCHAR(20) PRIMARY KEY,
---     name VARCHAR(100) NOT NULL,
---     qr_code_url VARCHAR(255) NULL 
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 -- Tạo bảng Delivery_Information
 CREATE TABLE Delivery_Information (
     id_delivery varchar(20) PRIMARY KEY ,
@@ -121,6 +114,20 @@ CREATE TABLE Orders (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
+CREATE TABLE payments (
+    id_payment VARCHAR(20) PRIMARY KEY,
+    id_order VARCHAR(20),
+    payment_method ENUM('Online', 'COD') NOT NULL,
+    payment_status ENUM('Chưa thanh toán', 'Đã thanh toán', 'Thất bại') DEFAULT 'Chưa thanh toán',
+    transaction_code VARCHAR(100),
+    payment_time DATETIME,
+    CONSTRAINT fk_order_payment
+        FOREIGN KEY (id_order) REFERENCES orders(id_order)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 
 -- Tạo bảng Order_details
 CREATE TABLE Order_details (
@@ -142,30 +149,6 @@ CREATE TABLE Order_Cancellations (
     canceled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
     FOREIGN KEY (id_order) REFERENCES Orders(id_order) ON DELETE CASCADE,
     FOREIGN KEY (canceled_by) REFERENCES Accounts(id_account) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- Tạo bảng Feedbacks
-CREATE TABLE Feedbacks (
-    id_feedback VARCHAR(20) PRIMARY KEY,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id_product VARCHAR(20) NOT NULL,
-    id_account INT(11) NOT NULL,
-    FOREIGN KEY (id_product) REFERENCES Products(id_product) ON DELETE CASCADE,
-    FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- Tạo bảng Responses (phản hồi feedback)
-CREATE TABLE Responses (
-    id_responses VARCHAR(20) PRIMARY KEY,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id_feedback VARCHAR(20) NOT NULL,
-    id_account INT(11) NOT NULL,
-    FOREIGN KEY (id_feedback) REFERENCES Feedbacks(id_feedback) ON DELETE CASCADE,
-    FOREIGN KEY (id_account) REFERENCES Accounts(id_account) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Tạo bảng Suppliers

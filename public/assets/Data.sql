@@ -400,3 +400,11 @@ UPDATE Products
 SET quantity = 30,
     price = 75000
 WHERE id_product = 'prod036';
+
+
+INSERT INTO Promotions (id_promotion, name, description, start_day, end_day, discount_rate, id_account) 
+VALUES 
+    ('PROMO_TEST', 'Khuyến mãi kiểm thử', 'Giảm giá đặc biệt nhân dịp kiểm thử', '2025-02-25 10:00:00', '2025-04-17 11:30:00', 15.00, 1);
+
+
+UPDATE Products SET id_promotion = 'PROMO_TEST' WHERE id_product IN ('prod001');

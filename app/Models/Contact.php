@@ -96,8 +96,8 @@ class Contact
         $errors = [];
 
         if (empty($data['phone']) || !preg_match('/^\d{10,20}$/', $data['phone'])) {
-          $errors['phone'] = 'Số điện thoại không hợp lệ.';
-      }
+            $errors['phone'] = 'Số điện thoại không hợp lệ.';
+        }
 
         if (empty(trim($data['content'] ?? ''))) {
             $errors['content'] = 'Nội dung không được để trống.';
@@ -117,4 +117,28 @@ class Contact
         $this->phone = $row['phone'];
         return $this;
     }
+
+    public function getAll(): array
+    {
+        $statement = $this->db->prepare('SELECT * FROM Contacts ORDER BY created_at DESC');
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+        foreach ($rows as $row) {
+            $contact = new Contact($this->db);
+            $result[] = $contact->fillFromDbRow($row);
+        }
+
+        return $result;
+    }
+
+    public function getBySubject(string $subject): int
+    {
+        $statement = $this->db->prepare('SELECT COUNT(*) FROM Contacts WHERE subject = :subject');
+        $statement->execute(['subject' => $subject]);
+        
+        return (int)$statement->fetchColumn();
+    }    
+
 }

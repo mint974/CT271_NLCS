@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Models;
 
@@ -11,7 +11,6 @@ class Catalog
 
     public string $id_catalog;
     public string $name;
-    public array $product_list = [];
 
     public function __construct(PDO $pdo)
     {
@@ -37,61 +36,59 @@ class Catalog
         return null;
     }
 
+    public function whereCat(string $column, string $value): array
+{
+    $allowedColumns = ['id_catalog', 'name'];
+    if (!in_array($column, $allowedColumns)) {
+        throw new \Exception("Invalid column: " . htmlspecialchars($column));
+    }
+
+    $statement = $this->db->prepare("SELECT * FROM Product_Catalog WHERE $column LIKE :value");
+    $statement->execute(['value' => '%' . $value . '%']);
+    $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    $result = [];
+    foreach ($rows as $row) {
+        $catalog = new Catalog($this->db);
+        $result[] = $catalog->fill($row);
+    }
+
+    return $result;
+}
+
     // Lưu danh mục vào database
     public function save(): bool
     {
-        if (!empty($this->id_catalog)) {
-            $statement = $this->db->prepare(
-                'UPDATE Product_Catalog SET name = :name WHERE id_catalog = :id_catalog'
-            );
-            return $statement->execute([
-                'id_catalog' => $this->id_catalog,
-                'name' => $this->name
-            ]);
-        } else {
+
             $statement = $this->db->prepare(
                 'INSERT INTO Product_Catalog (id_catalog, name) VALUES (:id_catalog, :name)'
             );
-            $this->id_catalog = uniqid("CAT_");
+           
             return $statement->execute([
                 'id_catalog' => $this->id_catalog,
                 'name' => $this->name
             ]);
-        }
+        
     }
 
     public function fill(array $data): Catalog
     {
-        $this->id_catalog = $data['id_catalog'] ?? uniqid("CAT_");
+        $this->id_catalog = $data['id_catalog'] ?? '';
         $this->name = $data['name'] ?? '';
-
-        $product = new Product(pdo());
-        $this->product_list = $product->getByCatalogId($this->id_catalog);
-
         return $this;
     }
 
-  
     private function fillFromDbRow(array $row): Catalog
     {
         $this->id_catalog = $row['id_catalog'];
         $this->name = $row['name'] ?? '';
-
-        $product = new Product(pdo());
-        $this->product_list = $product->getByCatalogId($this->id_catalog);
-
         return $this;
     }
 
     public function getAllCatalog(): array
     {
-        $productModel = new Product(pdo());
         $statement = $this->db->query('SELECT id_catalog, name FROM Product_Catalog');
         $catalogs = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($catalogs as &$catalog) {
-            $catalog['product_list'] = $productModel->getByCatalogId($catalog['id_catalog']);
-        }
 
         return $catalogs;
     }
@@ -115,4 +112,59 @@ class Catalog
 
         return $results;
     }
+
+    public function find(string $id): ?Catalog
+    {
+        $stmt = $this->db->prepare("SELECT * FROM Product_Catalog WHERE id_catalog = :id_catalog LIMIT 1");
+        $stmt->execute(['id_catalog' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return $this->fill($row);
+        }
+
+        return null;
+    }
+
+    public function delete(string $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM Product_Catalog WHERE id_catalog = :id_catalog");
+        return $stmt->execute(['id_catalog' => $id]);
+    }
+
+    public function update(array $data): bool
+    {
+        $stmt = $this->db->prepare("UPDATE Product_Catalog SET name = :name WHERE id_catalog = :id_catalog");
+        return $stmt->execute([
+            'name' => $data['name'],
+            'id_catalog' => $data['id_catalog']
+        ]);
+    }
+
+    public function validate(array $data): array
+    {
+        $errors = [];
+
+        if (empty($data['name'])) {
+            $errors[] = "Tên danh mục không được để trống.";
+        }
+
+        return $errors;
+    }
+
+    public function getAll(): array
+{
+    $statement = $this->db->prepare('SELECT * FROM Product_Catalog');
+    $statement->execute();
+    $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    $result = [];
+    foreach ($rows as $row) {
+        $catalog = new Catalog(pdo());
+        $result[] = $catalog->fillFromDbRow($row);
+    }
+
+    return $result;
+}
+
 }

@@ -21,17 +21,18 @@ class ProductsController extends Controller
     public function index()
     {
 
-        // $productModel = new Product(PDO());
+        $productModel = new Product(PDO());
         $catalogModel = new Catalog(PDO());
         $discountedProducts = new Product(PDO());
 
         $catalogs = $catalogModel->getAllCatalog();
 
         $discountedProducts = $discountedProducts->getDiscountedProducts();
-
-        // dd($catalogs);
-        // exit();
-        // Gửi dữ liệu đến view
+        
+        foreach ($catalogs as &$catalog) {
+            $catalog['product_list'] = $productModel->getByCatalogId($catalog['id_catalog']);
+        }
+        
         $this->sendPage('products/index', [
             'catalogs' => $catalogs,
             'discountedProducts' => $discountedProducts
@@ -79,9 +80,12 @@ class ProductsController extends Controller
         $catalogMode = new Catalog(PDO());
         $catalogs = $catalogMode->getAllCatalog();
 
+
+
+$productModel = new Product(PDO());
         // truy xuất giảm giá 
         if (isset(($_POST['discountproduct']))) {
-            $productModel = new Product(PDO());
+            
             $discountedProducts = $productModel->getDiscountedProducts();
             $this->sendPage('products/index', [
                 'catalogs' => $catalogs,
@@ -93,11 +97,19 @@ class ProductsController extends Controller
 
             $catalogModel = new Catalog(PDO());
             $catalogname = $catalogModel->where('id_catalog', $_POST['id_catalog']);
+            $productbycata[] = '';
+            $productbycata['name'] = $catalogname->name;
+            $productbycata['product_list'] = $productModel->getByCatalogId($catalogname->id_catalog);
+            
             $this->sendPage('products/index', [
-                'productbycata' => $catalogname,
+                'productbycata' => $productbycata,
                 'catalogs' => $catalogs
             ]);
         } else {
+
+            foreach ($catalogs as &$catalog) {
+                $catalog['product_list'] = $productModel->getByCatalogId($catalog['id_catalog']);
+            }
             $error = 'Không có doanh mục';
             $this->sendPage('products/index', [
                 'catalogs' => $catalogs,
@@ -153,9 +165,15 @@ class ProductsController extends Controller
         $productmodel = new Product(PDO());
         $product = $productmodel->where('id_product', $id_product);
         if ($product) {
+
+            $catalogmodel = new Catalog(pdo());
+
+            $catalogs = $catalogmodel->getCatalogByIdProduct($product->id_product);
+
             if (AUTHGUARD()->user()->role === 'khách hàng') {
                 $this->sendPage('products/product_detail', [
-                    'products' => $product
+                    'products' => $product,
+                    'catalogs' => $catalogs,
                 ]);
             } else {
                 //lấy danh sách chi tiết nhập
@@ -165,14 +183,13 @@ class ProductsController extends Controller
                 $productreceiptmodel = new ProductReceipt(pdo());
                 $suppliermodel = new Supplier(pdo());
                 $CreatedBytmodel = new User(pdo());
-                $catalogmodel = new Catalog(pdo());
-                
+
                 $receipt_details_full = [];
 
                 foreach ($product_receipt_details as $prd) {
                     $receipt = $productreceiptmodel->where('id_receipt', $prd->id_receipt);
                     if ($receipt !== null) {
-                        $supplier = $suppliermodel->where('id_supplier', $receipt->id_supplier);
+                        $supplier = $suppliermodel->whereSup('id_supplier', $receipt->id_supplier);
                         $createdBy = $CreatedBytmodel->where('id_account', $receipt->id_account);
                         unset($createdBy->password); // Bỏ mật khẩu cho an toàn
 
@@ -188,6 +205,7 @@ class ProductsController extends Controller
                 // dd($receipt_details_full);
                 $this->sendPage('products/product_detail', [
                     'products' => $product,
+                    'catalogs' => $catalogs,
                     'receipt_details_full' => $receipt_details_full
                 ]);
 
@@ -237,19 +255,33 @@ class ProductsController extends Controller
         $this->indexadmin(null, $results);
     }
 
-    public function updatepage(string $id_product){
-        $product = (new product(pdo()))->where('id_product', $id_product);
+    // public function updatepage(string $id_product)
+    // {
+    //     $product = (new product(pdo()))->where('id_product', $id_product)->toArray();
 
-        $promotions = (new Promotion(pdo()))->getAll();
+    //     $product['catalogs'] = (new Catalog(pdo()))->getCatalogByIdProduct($product['id_product']);
 
-        $images = (new ImageProduct(pdo()))->getAllByProductId($product->id_product);
+    //     $promotions = (new Promotion(pdo()))->getAll();
+
+    //     $catalogs = (new Catalog(pdo()))->getAllCatalog();
+
+    //     // dd($product);
+    //     $this->sendPage('products/update', [
+    //         'product' => $product,
+    //         'promotion' => $promotions,
+    //         'catalogs' => $catalogs
+            
+    //     ]);
+
+    // }
+
+    public function UpdateInforPage(String $id_product){
 
 
-        $this->sendPage('products/update', [
-            'product' => $product,
-            'promotion' => $promotions,
-            'images' => $images
-        ]);
+        $product = (new Product(pdo()))->where('id_product', $id_product);
 
+        $this->sendPage('products/update_infor_product', [
+                    'product' => $product             
+                ]);
     }
 }

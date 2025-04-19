@@ -30,6 +30,10 @@ $router->get('/adminhome', '\App\Controllers\HomeController@adminindex');
 $router->get('/contacts', '\App\Controllers\ContactsController@indexUser');
 $router->post('/contacts/save', '\App\Controllers\ContactsController@store');
 
+
+//contact admin 
+$router->get('/contacts/admin', '\App\Controllers\ContactsController@index');
+
 // product routes
 $router->get('/products', '\App\Controllers\productsController@index');
 $router->POST('/products/load_prod_cata', '\App\Controllers\productsController@getprodcatabyid');
@@ -41,7 +45,7 @@ $router->get('/products/proddetail/([\w-]+)', '\App\Controllers\productsControll
 $router->get('/products/admin', '\App\Controllers\productsController@indexadmin');
 
 $router->post('/products/search', '\App\Controllers\productsController@search');
-$router->get('/products/update/([\w-]+)', '\App\Controllers\productsController@updatepage');
+$router->get('/products/updateInfor/([\w-]+)', '\App\Controllers\productsController@UpdateInforPage');
 
 
 // load trang gio hang
@@ -65,12 +69,21 @@ $router->POST('/orders/search', '\App\Controllers\OrdersController@search');
 
 //order cancel
 $router->POST('/orders/cancel', '\App\Controllers\OrdersController@cancel');
+$router->POST('/orders/searchadmin', '\App\Controllers\OrdersController@searchadmin');
+
+
+//order admin 
+$router->get('/orders/admin', '\App\Controllers\OrdersController@indexadmin');
 
 
 $router->POST('/delivery/update', '\App\Controllers\DeliveryController@update');
 $router->POST('/delivery/add', '\App\Controllers\DeliveryController@store');
 $router->POST('/delivery/edit', '\App\Controllers\DeliveryController@edit');
 $router->POST('/delivery/delete', '\App\Controllers\DeliveryController@delete');
+
+//payment
+$router->get('/payments/store', '\App\Controllers\PaymentsController@store');
+
 
 //account
 $router->get('/account/detail/(\d+)', '\App\Controllers\UserController@index');
@@ -91,6 +104,40 @@ $router->get('/account/activate/(\d+)', '\App\Controllers\UserController@activat
 $router->POST('/account/activate', '\App\Controllers\UserController@activate');
 
 $router->get('/introduction', '\App\Controllers\HomeController@introduction');
+
+
+//promotion admin 
+$router->get('/promotion/admin', '\App\Controllers\PromotionController@index');
+
+$router->POST('/promotions/search', '\App\Controllers\PromotionController@search');
+
+$router->get('/promotion/add', '\App\Controllers\PromotionController@storepage');
+$router->POST('/promotion/store', '\App\Controllers\PromotionController@store');
+
+$router->get('/promotions/update/([\w-]+)', '\App\Controllers\PromotionController@updatepage');
+$router->POST('/promotion/update', '\App\Controllers\PromotionController@update');
+
+// supplier admin
+$router->get('/suppliers/admin', '\App\Controllers\SupplierController@index');
+
+$router->POST('/suppliers/search', '\App\Controllers\SupplierController@search');
+
+$router->get('/suppliers/add', '\App\Controllers\SupplierController@storepage');
+$router->POST('/suppliers/store', '\App\Controllers\SupplierController@store');
+
+$router->get('/suppliers/update/([\w-]+)', '\App\Controllers\SupplierController@updatepage');
+$router->POST('/suppliers/update', '\App\Controllers\SupplierController@update');
+
+// catalog admin
+$router->get('/catalogs/admin', '\App\Controllers\CatalogController@index');
+
+$router->POST('/catalogs/search', '\App\Controllers\CatalogController@search');
+
+$router->get('/catalogs/add', '\App\Controllers\CatalogController@storepage');
+$router->POST('/catalogs/store', '\App\Controllers\CatalogController@store');
+
+$router->get('/catalogs/update/([\w-]+)', '\App\Controllers\catalogController@updatepage');
+$router->POST('/catalogs/update', '\App\Controllers\catalogController@update');
 
 $router->set404('\App\Controllers\Controller@sendNotFound');
 $router->run();

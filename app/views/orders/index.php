@@ -112,7 +112,9 @@
                 <th><i class="fa fa-receipt"></i> Mã Đơn Hàng</th>
                 <th><i class="fa fa-calendar-alt"></i> Ngày Đặt</th>
                 <th><i class="fa fa-money-bill-wave"></i> Tổng Tiền</th>
-                <th><i class="fa fa-info-circle"></i> Trạng Thái</th>
+                <th><i class="fa fa-info-circle"></i> Phương thức thanh toán</th>
+                <th><i class="fa fa-cogs"></i>Trạng thái thanh toán</th>
+                <th><i class="fa fa-info-circle"></i> Trạng Thái đơn hàng</th>
                 <th><i class="fa fa-cogs"></i> Hành Động</th>
             </tr>
         </thead>
@@ -120,16 +122,82 @@
             <?php if (!empty($orders)): ?>
                 <?php foreach ($orders as $order): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($order['id_order']); ?></td>
-                        <td><?php echo htmlspecialchars($order['created_at']); ?></td>
-                        <td><?php echo number_format($order['total_price'], 0, ',', '.') . ' VND'; ?></td>
-                        <td><?php echo htmlspecialchars($order['status']); ?></td>
                         <td>
-                            <a href="/orders/order_detail/<?= $order['id_order'] ?>" class="btn btn-outline-primary btn-sm ">
+                            <i class="fa fa-receipt text-secondary"></i>
+                            <?= htmlspecialchars($order['id_order']) ?>
+                        </td>
+
+                        <td>
+                            <i class="fa fa-clock text-muted"></i>
+                            <?= htmlspecialchars($order['created_at']) ?>
+                        </td>
+
+                        <td>
+                            <i class="fa fa-money-bill-wave text-success"></i>
+                            <?= number_format($order['total_price'], 0, ',', '.') . ' VND' ?>
+                        </td>
+
+                        <td>
+                            <i class="fa fa-credit-card text-primary"></i>
+                            <?= htmlspecialchars($order['payment_method']) ?>
+                        </td>
+
+                        <td>
+                            <?php
+                            $status = $order['payment_status'];
+                            $badgeClass = '';
+                            $icon = '';
+
+                            switch ($status) {
+                                case 'Đã thanh toán':
+                                    $badgeClass = 'success';
+                                    $icon = 'fa-check-circle';
+                                    break;
+                                case 'Thất bại':
+                                    $badgeClass = 'danger';
+                                    $icon = 'fa-times-circle';
+                                    break;
+                                default:
+                                    $badgeClass = 'warning';
+                                    $icon = 'fa-clock';
+                            }
+                            ?>
+                            <span class="badge bg-<?= $badgeClass ?>">
+                                <i class="fa <?= $icon ?>"></i> <?= htmlspecialchars($status) ?>
+                            </span>
+                        </td>
+
+                        <td>
+                            <?php
+                            $orderStatus = $order['status'];
+                            $statusClass = 'secondary';
+                            $statusIcon = 'fa-box';
+
+                            if ($orderStatus === 'Đã gửi đơn đặt hàng') {
+                                $statusClass = 'info';
+                                $statusIcon = 'fa-paper-plane';
+                            } elseif ($orderStatus === 'Đang giao hàng') {
+                                $statusClass = 'primary';
+                                $statusIcon = 'fa-truck';
+                            } elseif ($orderStatus === 'Đã nhận hàng') {
+                                $statusClass = 'success';
+                                $statusIcon = 'fa-check';
+                            } elseif ($orderStatus === 'Đã hủy') {
+                                $statusClass = 'danger';
+                                $statusIcon = 'fa-times';
+                            }
+                            ?>
+                            <span class="badge bg-<?= $statusClass ?>">
+                                <i class="fa <?= $statusIcon ?>"></i> <?= htmlspecialchars($orderStatus) ?>
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="/orders/order_detail/<?= $order['id_order'] ?>" class="btn btn-outline-primary btn-sm">
                                 <i class="fa fa-eye"></i> Xem chi tiết
                             </a>
 
-                            <?php if ($order['status'] === 'Đã gửi đơn đặt hàng'): ?>
+                            <?php if ($order['status'] === 'Đã gửi đơn đặt hàng' && $order['payment_method'] !== 'Online'): ?>
                                 <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal"
                                     onclick="setCancelData('<?= $order['id_order'] ?>', '<?= $order['total_price'] ?>', '<?= $order['status'] ?>')">
                                     <i class="fa fa-times-circle"></i> Hủy đơn
@@ -137,6 +205,7 @@
                             <?php endif; ?>
                         </td>
                     </tr>
+
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
@@ -201,68 +270,68 @@
     </div>
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Chỉ lấy form tìm kiếm
-    const searchForm = document.querySelector('#searchForm');
-    const searchInputs = searchForm.querySelectorAll('input, select');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Chỉ lấy form tìm kiếm
+        const searchForm = document.querySelector('#searchForm');
+        const searchInputs = searchForm.querySelectorAll('input, select');
 
-    // Giới hạn chọn 1 tiêu chí tìm kiếm
-    searchInputs.forEach(input => {
-        input.addEventListener('input', function () {
-            searchInputs.forEach(other => {
-                if (other !== this) {
-                    other.value = '';
-                }
-            });
-        });
-
-        if (input.type === 'date') {
-            input.addEventListener('change', function () {
+        // Giới hạn chọn 1 tiêu chí tìm kiếm
+        searchInputs.forEach(input => {
+            input.addEventListener('input', function () {
                 searchInputs.forEach(other => {
                     if (other !== this) {
                         other.value = '';
                     }
                 });
             });
-        }
-    });
 
-    searchForm.addEventListener('submit', function (e) {
-        let hasValue = false;
-        searchInputs.forEach(input => {
-            if (input.value.trim() !== '') {
-                hasValue = true;
+            if (input.type === 'date') {
+                input.addEventListener('change', function () {
+                    searchInputs.forEach(other => {
+                        if (other !== this) {
+                            other.value = '';
+                        }
+                    });
+                });
             }
         });
 
-        if (!hasValue) {
-            e.preventDefault();
-            alert('Vui lòng nhập ít nhất một tiêu chí để tìm kiếm.');
-        }
+        searchForm.addEventListener('submit', function (e) {
+            let hasValue = false;
+            searchInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    hasValue = true;
+                }
+            });
+
+            if (!hasValue) {
+                e.preventDefault();
+                alert('Vui lòng nhập ít nhất một tiêu chí để tìm kiếm.');
+            }
+        });
+
+        // Phần xử lý cancel modal giữ nguyên
+        window.setCancelData = function (id, total, status) {
+            document.getElementById("modalOrderId").textContent = id;
+            document.getElementById("modalTotalPrice").textContent = Number(total).toLocaleString('vi-VN') + " VND";
+            document.getElementById("modalStatus").textContent = status;
+            document.getElementById("modalOrderId2").value = id;
+
+            // Reset modal về bước 1
+            document.getElementById("cancelStep1").style.display = "block";
+            document.getElementById("cancelStep2").style.display = "none";
+        };
+
+        document.getElementById("nextToReasonBtn").addEventListener('click', function () {
+            document.getElementById("cancelStep1").style.display = "none";
+            document.getElementById("cancelStep2").style.display = "block";
+        });
+
+        document.getElementById("backToStep1").addEventListener('click', function () {
+            document.getElementById("cancelStep1").style.display = "block";
+            document.getElementById("cancelStep2").style.display = "none";
+        });
     });
-
-    // Phần xử lý cancel modal giữ nguyên
-    window.setCancelData = function (id, total, status) {
-        document.getElementById("modalOrderId").textContent = id;
-        document.getElementById("modalTotalPrice").textContent = Number(total).toLocaleString('vi-VN') + " VND";
-        document.getElementById("modalStatus").textContent = status;
-        document.getElementById("modalOrderId2").value = id;
-
-        // Reset modal về bước 1
-        document.getElementById("cancelStep1").style.display = "block";
-        document.getElementById("cancelStep2").style.display = "none";
-    };
-
-    document.getElementById("nextToReasonBtn").addEventListener('click', function () {
-        document.getElementById("cancelStep1").style.display = "none";
-        document.getElementById("cancelStep2").style.display = "block";
-    });
-
-    document.getElementById("backToStep1").addEventListener('click', function () {
-        document.getElementById("cancelStep1").style.display = "block";
-        document.getElementById("cancelStep2").style.display = "none";
-    });
-});
 
 </script>
 

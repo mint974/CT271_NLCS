@@ -6,6 +6,12 @@
 <?php $this->stop() ?>
 
 <?php $this->start("page") ?>
+
+<?php 
+if (empty($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
 <style>
     .section-title {
         font-weight: bold;
@@ -60,6 +66,9 @@
 
 
             <form action="/delivery/update" method="post">
+
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
                 <div class="row">
                     <div class="mb-3 col-12">
                         <label class="mb-2 ">Chọn địa chỉ giao hàng</label>
@@ -123,16 +132,20 @@
         <div class="col-md-4">
             <div class="order-summary">
                 <form action="/orders/save" method="post">
+                    
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+                    <!-- danh sách id sản phẩm sẽ mua -->
                     <div class="mb-3 col-6 hidden">
                         <label>id_list</label>
-                        <input type="text" name="product_ids" value="<?= $product_ids; ?>"
-                            class="form-control">
+                        <input type="text" name="product_ids" value="<?= $product_ids; ?>" class="form-control">
                     </div>
+                    <!-- tổng tiền -->
                     <div class="mb-3 col-6 hidden">
                         <label>total_price</label>
-                        <input type="text" name="total_price" value="<?= $total_price; ?>"
-                            class="form-control">
+                        <input type="text" name="total_price" value="<?= $total_price; ?>" class="form-control">
                     </div>
+                    <!-- id giao hàng -->
                     <div class="mb-3 col-6 hidden">
                         <label>id</label>
                         <input type="text" name="id_delivery" id="id_delivery_order" class="form-control">
@@ -141,7 +154,16 @@
                     <p>Tổng tiền hàng: <strong><?= number_format($total_price, 0, ',', '.') ?> VND</strong></p>
                     <p>Phí vận chuyển: <strong id="shippingFee">0 VND</strong></p>
                     <h5>Tổng cộng: <span class="text-danger" id="totalAmount">0 VND</span></h5>
-                    <button type="submit" class="btn btn-primary w-100 mt-3">Đặt hàng</button>
+                    <hr>
+                    <div class="mb-3 mt-3">
+                        <label for="payment_method" class="form-label"><strong>Chọn phương thức thanh
+                                toán</strong></label>
+                        <select name="payment_method" id="payment_method" class="form-control">
+                            <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+                            <option value="Online">Thanh toán trực tuyến (VNPay)</option>
+                        </select>
+                    </div>
+                    <button type="submit" name="redirect" class="btn btn-primary w-100 mt-3">Đặt hàng</button>
                 </form>
             </div>
         </div>
@@ -158,6 +180,9 @@
             </div>
             <div class="modal-body">
                 <form action="/delivery/add" method="post">
+                    
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
                     <div class="mb-3 col-6 hidden">
                         <label>id_list</label>
                         <input type="text" name="product_ids" id="product_ids" value="<?= $product_ids; ?>"
@@ -233,21 +258,21 @@
 
     //kiểm tra giao hàng khác tỉnh
     document.addEventListener("DOMContentLoaded", function () {
-    const orderButton = document.querySelector(".order-summary button[type='submit']");
-    const deliverySelect = document.getElementById("deliverySelect");
-    const totalPriceInput = document.querySelector("input[name='total_price']");
+        const orderButton = document.querySelector(".order-summary button[type='submit']");
+        const deliverySelect = document.getElementById("deliverySelect");
+        const totalPriceInput = document.querySelector("input[name='total_price']");
 
-    orderButton.addEventListener("click", function (event) {
-        const selectedDeliveryIndex = deliverySelect.value;
-        const selectedCity = deliveryList[selectedDeliveryIndex].city.toLowerCase().trim();
-        const totalPrice = parseFloat(totalPriceInput.value);
+        orderButton.addEventListener("click", function (event) {
+            const selectedDeliveryIndex = deliverySelect.value;
+            const selectedCity = deliveryList[selectedDeliveryIndex].city.toLowerCase().trim();
+            const totalPrice = parseFloat(totalPriceInput.value);
 
-        if (selectedCity !== "cần thơ" && totalPrice < 800000) {
-            event.preventDefault();
-            alert("Chỉ giao hàng khác tỉnh khi đơn hàng từ 800.000 VND. Vui lòng mua thêm hoặc đổi địa chỉ giao hàng.");
-        }
+            if (selectedCity !== "cần thơ" && totalPrice < 800000) {
+                event.preventDefault();
+                alert("Chỉ giao hàng khác tỉnh khi đơn hàng từ 800.000 VND. Vui lòng mua thêm hoặc đổi địa chỉ giao hàng.");
+            }
+        });
     });
-});
 
 </script>
 <?php $this->stop() ?>

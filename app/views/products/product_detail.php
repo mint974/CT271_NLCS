@@ -182,60 +182,100 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
     }
 
     /* Lịch sử nhập hàng */
-.table {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
+    .table {
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
 
-.table thead th {
-    background-color: var( --bg-dark-green-color);
-    color: #fff;
-    font-weight: 600;
-    vertical-align: middle;
-    font-size: 15px;
-}
+    .table thead th {
+        background-color: var(--bg-dark-green-color);
+        color: #fff;
+        font-weight: 600;
+        vertical-align: middle;
+        font-size: 15px;
+    }
 
-.table tbody td {
-    vertical-align: middle;
-    font-size: 14px;
-    color: #333;
-    background-color: #fefefe;
-}
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 14px;
+        color: #333;
+        background-color: #fefefe;
+    }
 
-.table-bordered th,
-.table-bordered td {
-    border-color: #dee2e6;
-}
+    .table-bordered th,
+    .table-bordered td {
+        border-color: #dee2e6;
+    }
 
-.table tbody tr:hover {
-    background-color: #f0fff4; /* nhẹ nhàng khi hover */
-}
+    .table tbody tr:hover {
+        background-color: #f0fff4;
+        /* nhẹ nhàng khi hover */
+    }
 
-/* Icon trong tiêu đề bảng */
-.table thead th i,
-.table thead th.bi {
-    margin-right: 5px;
-}
+    /* Icon trong tiêu đề bảng */
+    .table thead th i,
+    .table thead th.bi {
+        margin-right: 5px;
+    }
 
-/* Nút quay về */
-.btn-outline-primary {
-    margin-top: 15px;
-    border-radius: 20px;
-    padding: 5px 20px;
-    transition: all 0.3s ease;
-}
+    /* Nút quay về */
+    .btn-outline-primary {
+        margin-top: 15px;
+        border-radius: 20px;
+        padding: 5px 20px;
+        transition: all 0.3s ease;
+    }
 
-.btn-outline-primary:hover {
-    background-color: var(--blue-color);
-    color: white;
-    border-color: var(--blue-color);
-}
+    .btn-outline-primary:hover {
+        background-color: var(--blue-color);
+        color: white;
+        border-color: var(--blue-color);
+    }
 
+    .catalog_detail {
+        background-color: var(--bg-1-color);
+        border-left: 5px solid var(--bg-green-color);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        color: #333;
+    }
+
+    .catalog_detail h4 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--bg-dark-green-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .catalog_detail p {
+        margin-bottom: 5px;
+        font-weight: 500;
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+    }
+
+    .catalog_detail p i {
+        color: var(--orange-color);
+        font-size: 1.2rem;
+    }
+
+    .catalog_detail hr {
+        margin: 10px 0;
+        border-top: 1px dashed #ccc;
+    }
 </style>
 
-<div class="product-detail-page container-fluid">
+<div class="product-detail-page container-fluid mb-3">
     <div class="container">
         <div class="row">
             <!-- Carousel Box -->
@@ -312,9 +352,33 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                             </button>
                         </form>
                     <?php else: ?>
-                        <a href="/products/update/<?= $product['id_product'] ?>" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil-square"></i> Chỉnh sửa
-                        </a>
+                        <div class="row row-cols-1 row-cols-md-1 g-3 mt-4">
+                            <div class="col">
+                                <a href="/products/updateInfor/<?= $this->e($products->id_product) ?>"
+                                    class="btn btn-warning w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>Sửa thông tin sản phẩm</span>
+                                </a>
+                            </div>
+                            <div class="col">
+                                <a href="/products/update/<?= $this->e($products->id_product) ?>"
+                                    class="btn btn-info w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2 text-white">
+                                    <i class="bi bi-image"></i>
+                                    <span>Sửa ảnh sản phẩm</span>
+                                </a>
+                            </div>
+                            <div class="col">
+                                <a href="/products/update/<?= $this->e($products->id_product) ?>"
+                                    class="btn btn-success w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-tags"></i>
+                                    <span>Sửa danh mục sản phẩm</span>
+                                </a>
+                            </div>
+                        </div>
+
+
+
+
                     <?php endif; ?>
                 </div>
             </div>
@@ -333,6 +397,20 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                         <?= date('d/m/Y', strtotime($products->promotion['end_day'] ?? 'now')) ?>
                     </p>
                 </div>
+
+                <div class="mt-3 mb-2">
+                    <div class="catalog_detail">
+                        <h4><i class="bi bi-tags-fill text-success"></i> DANH MỤC</h4>
+                        <?php foreach ($catalogs as $catalog): ?>
+                            <p><i class="bi bi-box-seam-fill"></i><?= htmlspecialchars($catalog->name); ?></p>
+                            <hr>
+                        <?php endforeach; ?>
+                    </div>
+
+                </div>
+
+
+
             </div>
 
 
@@ -370,7 +448,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                         <tr>
                             <th>STT</th>
                             <th class="bi bi-calendar-plus">Ngày nhập</th>
-                            <th  class="bi bi-hash">Mã đơn</th>
+                            <th class="bi bi-hash">Mã đơn</th>
                             <th class="bi bi-person">Người lập</th>
                             <th class="bi bi-geo-alt">Nhà cung cấp</th>
                             <th><i class="bi bi-stack"></i> Số lượng</th>
@@ -400,7 +478,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
 
             </div>
 
-            
+
 
         <?php endif; ?>
 

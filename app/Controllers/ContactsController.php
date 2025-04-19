@@ -15,10 +15,20 @@ class ContactsController extends Controller
 
   public function index()
   {
-    $success = session_get_once('success');
-    $this->sendPage('contacts/index', [
-      'contacts' => AUTHGUARD()->user()?->contacts() ?? [],
-      'success' => $success
+    $contactModel = new Contact(pdo());
+    $contacts = $contactModel->getAll();
+    
+    $generalFeedback = $contactModel->getBySubject("Góp ý chung");
+    $improvementSuggestions = $contactModel->getBySubject("Đề xuất cải thiện");
+    $bugReport = $contactModel->getBySubject("Báo lỗi");
+
+    // dd($generalFeedback);
+
+    $this->sendPage('contacts/indexadmin', [
+      'contacts' => $contacts,
+      'generalFeedback' => $generalFeedback,
+      'improvementSuggestions' => $improvementSuggestions,
+      'bugReport' => $bugReport
     ]);
   }
 
@@ -120,14 +130,4 @@ class ContactsController extends Controller
     ]);
   }
 
-  public function destroy($contactId)
-  {
-    $contact = AUTHGUARD()->user()->findContact($contactId);
-    if (!$contact) {
-      $this->sendNotFound();
-    }
-    $contact->delete();
-    $messages = ['success' => 'Contact has been deleted successfully.'];
-    redirect('/', $messages);
-  }
 }

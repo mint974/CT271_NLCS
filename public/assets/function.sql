@@ -196,12 +196,35 @@ END $$
 DELIMITER ;
 
 --kiểm tra thời gian khuyến mãi
-DELIMITER //
+-- DELIMITER //
+
+-- CREATE EVENT IF NOT EXISTS evt_update_expired_promotions
+-- ON SCHEDULE
+--     EVERY 1 DAY
+--     STARTS TIMESTAMP(CURRENT_DATE + INTERVAL 1 DAY)  -- bắt đầu từ 00h ngày mai
+-- DO
+-- BEGIN
+--     UPDATE Products
+--     SET id_promotion = NULL
+--     WHERE id_promotion IS NOT NULL
+--       AND id_promotion IN (
+--         SELECT id_promotion FROM Promotions
+--         WHERE end_day < CURDATE()
+--       );
+-- END;
+-- //
+
+-- DELIMITER ;
+
+-- DROP EVENT IF EXISTS evt_update_expired_promotions;
+
+--sau mỗi 5p tự động cập nhật khuyến mãi nếu hết thời gian
+DELIMITER $$
 
 CREATE EVENT IF NOT EXISTS evt_update_expired_promotions
 ON SCHEDULE
-    EVERY 1 DAY
-    STARTS TIMESTAMP(CURRENT_DATE + INTERVAL 1 DAY)  -- bắt đầu từ 00h ngày mai
+    EVERY 5 MINUTE
+    STARTS CURRENT_TIMESTAMP
 DO
 BEGIN
     UPDATE Products
@@ -209,12 +232,14 @@ BEGIN
     WHERE id_promotion IS NOT NULL
       AND id_promotion IN (
         SELECT id_promotion FROM Promotions
-        WHERE end_day < CURDATE()
+        WHERE end_day < NOW()
       );
 END;
-//
+$$
 
 DELIMITER ;
+
+
 
 --tạo id_contact tự động
 DELIMITER $$
@@ -399,3 +424,38 @@ END$$
 
 DELIMITER ;
 
+-- tại id_payments tự động
+DELIMITER $$
+
+CREATE TRIGGER before_insert_payment
+BEFORE INSERT ON payments
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+    DECLARE new_id VARCHAR(20);
+
+    -- Nếu bảng chưa có PAY nào, bắt đầu từ PAY1
+    IF NOT EXISTS (SELECT 1 FROM payments WHERE id_payment LIKE 'PAY%') THEN
+        SET next_id = 1;
+    ELSE
+        -- Tìm số nhỏ nhất bị thiếu trong chuỗi PAY
+        SELECT MIN(t1.id_num + 1) INTO next_id
+        FROM (
+            SELECT 0 AS id_num
+            UNION
+            SELECT CAST(SUBSTRING(id_payment, 4) AS UNSIGNED) AS id_num
+            FROM payments
+            WHERE id_payment REGEXP '^PAY[0-9]+$'
+        ) t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM payments
+            WHERE CAST(SUBSTRING(id_payment, 4) AS UNSIGNED) = t1.id_num + 1
+        );
+    END IF;
+
+    -- Gán giá trị id_payment mới
+    SET new_id = CONCAT('PAY', next_id);
+    SET NEW.id_payment = new_id;
+END $$
+
+DELIMITER ;

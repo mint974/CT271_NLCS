@@ -91,7 +91,7 @@ class Order
                   VALUES ( :id_account, :created_at)'
         );
         return $statement->execute([
-           
+
             'id_account' => $this->id_account,
             'created_at' => $this->created_at
         ]);
@@ -162,7 +162,7 @@ class Order
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array 
+    public function searchOrders(int $id_account, ?string $date, ?string $totalRange, ?string $status): array
     {
         $query = "
             SELECT 
@@ -177,25 +177,25 @@ class Order
             WHERE o.id_account = :id_account
             AND o.id_order NOT LIKE '%REORD%'
         ";
-    
+
         $params = ['id_account' => $id_account];
-    
+
         // Lọc theo ngày
         if (!empty($date)) {
             $query .= " AND DATE(o.created_at) = :date";
             $params['date'] = $date;
         }
-    
+
         // Lọc theo trạng thái
         if (!empty($status)) {
             $query .= " AND o.status = :status";
             $params['status'] = $status;
         }
-    
+
         // Lọc theo khoảng tổng tiền nếu có
         if (!empty($totalRange)) {
             $query = "SELECT * FROM ($query) AS filtered_orders WHERE 1=1";
-    
+
             if ($totalRange === 'under_300') {
                 $query .= " AND total_price < 300000";
             } elseif ($totalRange === 'between_300_800') {
@@ -204,13 +204,68 @@ class Order
                 $query .= " AND total_price > 800000";
             }
         }
-    
+
         $statement = $this->db->prepare($query);
         $statement->execute($params);
-    
+
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAll(): array
+    {
+        $statement = $this->db->prepare("SELECT * FROM Orders WHERE id_order LIKE 'ORD%' ORDER BY created_at DESC");
+        $statement->execute();
+
+        $orders = [];
+
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $order = new self($this->db); // tạo một đối tượng mới
+            $orders[] = $order->fillFromDbRow($row);
+        }
+
+        return $orders;
+    }
+
     
 
+
+
+//     public function searchadmin(string $column, string $value): array
+// {
+//     $allowedColumns = ['Id_order', 'id_account', 'subject'];
+//     if (!in_array($column, $allowedColumns)) {
+//         throw new \Exception("Invalid column: " . htmlspecialchars($column));
+//     }
+
+//     $value = trim($value);
+//     if ($value === '') {
+//         return [];
+//     }
+
+//     if ($column === 'id_account') {
+//         // Kiểm tra xem value có phải số nguyên không
+//         if (!ctype_digit($value)) {
+//             return [];
+//         }
+
+//         $query = "SELECT * FROM Contacts WHERE $column = :value";
+//         $statement = $this->db->prepare($query);
+//         $statement->execute(['value' => (int)$value]);
+//     } else {
+//         $query = "SELECT * FROM Contacts WHERE $column LIKE :value";
+//         $statement = $this->db->prepare($query);
+//         $statement->execute(['value' => '%' . $value . '%']);
+//     }
+
+//     $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+//     $contacts = [];
+
+//     foreach ($rows as $row) {
+//         $contact = new Contact($this->db);
+//         $contacts[] = $contact->fillFromDbRow($row);
+//     }
+
+//     return $contacts;
+// }
 
 }

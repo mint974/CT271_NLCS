@@ -53,6 +53,7 @@ class Product
         return $this;
     }
 
+    //admin tìm kiếm
     public function searchadmin(string $column, string $value): array
     {
         $allowedColumns = ['id_product', 'name', 'id_promotion'];
@@ -97,7 +98,7 @@ class Product
         return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-
+// lưu sản phẩm
     public function save(): bool
     {
         if (!empty($this->id_product)) {
@@ -259,7 +260,7 @@ class Product
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
+//tìm kiếm sản phẩm
     public function searchProductsByKeyword(string $keyword): array
     {
         $likeKeyword = '%' . $keyword . '%';
@@ -334,4 +335,24 @@ class Product
         return $result ? (int) $result['total'] : 0;
 
     }
+
+    //chuyển về array
+    public function toArray(): array
+    {
+        return [
+            'id_product' => $this->id_product,
+            'name' => $this->name,
+            'description' => $this->description,
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+            'unit' => $this->unit,
+            'id_promotion' => $this->id_promotion,
+            // Nếu bạn có thêm các thuộc tính phụ như:
+            'images' => $this->images ?? [],
+            'catalogs' => $this->catalogs ?? [],
+            
+        ];
+    }
+
+
 }

@@ -2,11 +2,14 @@
 
 namespace App\Controllers;
 
+use App\Models\Contact;
 use App\Models\DeliveryInformation;
 use App\Models\Order;
 use App\Models\OrderCancellation;
 use App\Models\Product;
 use App\Models\OrderDetail;
+
+use App\Models\Payment;
 
 use GrahamCampbell\ResultType\Success;
 
@@ -33,16 +36,31 @@ class OrdersController extends Controller
         $orderDetails = $orderModel->getOrderDetails($orderIds); // Lấy thông tin chi tiết từng đơn hàng
 
         $delivery_model = new DeliveryInformation(pdo());
+        $paymentModel = new Payment(pdo());
         foreach ($orders as &$order) {
             $delivery = $delivery_model->where('id_delivery', $order['id_delivery']);
             $order['total_price'] = $orderDetailModel->getTotalPrice($order['id_order']) + $delivery->shipping_fee;
+            $order['payment_status'] = $paymentModel->find($order['id_order'])->payment_status;
+            $order['payment_method'] = $paymentModel->find($order['id_order'])->payment_method;
         }
 
+        
         $this->sendPage('orders/index', [
             'orders' => $orders,
             'order_details' => $orderDetails,
             'errors' => $error,
             'success' => $Success
+        ]);
+    }
+
+    public function indexadmin(string $error = null, string $Success = null)
+    {
+        
+        $orderModel = new Order(PDO());
+        $orders = $orderModel->getAll(); 
+
+        $this->sendPage('orders/indexadmin', [
+            'orders' => $orders         
         ]);
     }
 
@@ -84,6 +102,15 @@ class OrdersController extends Controller
 
     public function store()
     {
+        // dd($_POST);
+
+        $error = [];
+        //kiểm tra lỗi 
+        if (!$this->checkCsrf()) {
+            $error['Crsf'] = 'Lỗi CSRF, hãy kiểm tra và thử lại!';
+        }
+
+        //lấy danh sách id_product
         $data = explode(",", $_POST['product_ids']);
 
         $modelproduct = new Product(PDO());
@@ -92,7 +119,7 @@ class OrdersController extends Controller
         //kiểm tra số lượng sản phẩm trong kho
         $id_order = sprintf("REORD%d", AUTHGUARD()->user()->id_account);
         $modelorderdetail = new OrderDetail(PDO());
-        $error = [];
+        
         foreach ($product_list as $product) {
             $orderedQuantity = $modelorderdetail->getTotalQuantity($id_order, $product['id_product']); // Chỉ truyền ID sản phẩm
 
@@ -100,6 +127,7 @@ class OrdersController extends Controller
                 $error['product'] = "Số lượng sản phẩm " . htmlspecialchars($product['name']) . " không đủ để bán. vui lòng chọn lại!";
             }
         }
+
         if (!empty($error)) {
             $this->shoppingcart($error);
         }
@@ -114,9 +142,21 @@ class OrdersController extends Controller
 
             if ($modelorderdetail->Orders($newOrder->id_order, $data)) {
                 $orders = $this->getUserOrdersWithTotal(AUTHGUARD()->user()->id_account);
+                
+                // dd($orders);
+
                 foreach($orders as &$order){
-                    $order['total_price'] *= $delivery->shipping_fee;
+                    $order['total_price'] += $delivery->shipping_fee;
                 }
+
+                // dd($newOrder);
+                $payment_method = $_POST['payment_method'];
+                //thanh toán
+                if($payment_method === 'Online'){
+                    $this->Payments($newOrder);
+                }
+
+
                 $success = 'Đặt hàng thành công!';
 
                 redirect('/orders/index', [
@@ -133,6 +173,28 @@ class OrdersController extends Controller
 
         }
     }
+
+
+    //hàm chuẩn bị thanh toán
+    public function Payments($data){
+        $shipping_cost = (new DeliveryInformation(pdo()))->where('id_delivery', $data->id_delivery)->shipping_fee;
+
+        $total_price_order = (new OrderDetail(pdo()))->getTotalPrice($data->id_order);
+        $vnp_Amount = $total_price_order + $shipping_cost;
+
+        $vnp_Returnurl = 'http://ct271-mintfreshfruit.localhost/payments/store';
+
+        $vnp_TxnRef = $data->id_order;
+        $vnp_OrderInfo = 'Thanh toán tiền trái cây';
+
+        $vnp_OrderType = 'Đơn hàng trực tuyến';
+
+        // dd("d");
+        $payment = (new Payment(pdo()))->pay($vnp_Returnurl, $vnp_TxnRef, $vnp_OrderInfo, $vnp_OrderType, $vnp_Amount);
+        dd($payment);
+
+    }
+
 
     public function updateprod($id_product)
     {
@@ -299,4 +361,43 @@ class OrdersController extends Controller
 
     }
 
+    protected function fillformsearch(array $data) 
+    {
+        return [
+            'id_order' => isset($data['id_order']) ? htmlspecialchars($data['id_order']) : '',
+            'id_account' => isset($data['id_account']) ? htmlspecialchars($data['id_account']) : '',
+            'subject' => isset($data['subject']) ? htmlspecialchars($data['subject']) : ''
+        ];
+    }
+  
+  
+    public function searchadmin(){
+    //   dd($_POST);
+  
+      if (!$this->checkCsrf()) {
+          $error = 'Lỗi CSRF, hãy kiểm tra và thử lại!';
+          $this->index($error);
+          exit();
+      }
+  
+      $searchData = $this->fillformsearch($_POST);
+      $orderModel = new Order(pdo());
+  
+      if (!empty($searchData['id_order'])) {
+          $order = $orderModel->where('id_order',$searchData['id_order']);
+          $orders = $order ? [$order] : [];
+      } elseif (!empty($searchData['id_account'])) {
+          $orders = $orderModel->searchadmin('id_account', $searchData['id_account']);
+      } elseif (!empty($searchData['subject'])) {
+          $orders = $orderModel->searchadmin('subject', $searchData['subject']);
+      } else {
+          $error = "Bạn chưa nhập thông tin tìm kiếm.";
+      }
+  
+      dd($orders);
+      $this->sendPage('suppliers/index', [
+          'orders' => $orders ?? [],
+          'errors' => $error ?? null
+      ]);
+  }
 }

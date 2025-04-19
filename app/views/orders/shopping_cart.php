@@ -262,7 +262,7 @@
                 </form>
 
             </div>
-
+            
         <?php endif; ?>
 
         <div class="col col-md-6 mt-4">

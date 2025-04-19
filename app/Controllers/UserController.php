@@ -95,65 +95,64 @@ class UserController extends Controller
 
     public function update()
     {
-
         $data = $this->filterUserData($_POST);
-
+    
         $user = (new user(pdo()))->where('id_account', $data['id_account']);
-
-
         $model_errors = $user->validate($data);
-
-       
+    
+        // Xử lý ảnh đại diện
         $avatarPath = $this->handleAvatarUpload();
-        //  dd($avatarPath);
-        // exit();
-        //kiểm tra upfile avatar
-        if ($avatarPath && $avatarPath !== 'Chỉ hỗ trợ định dạng các tệp: jpg, jpeg, png, gif') {
-            if ($avatarPath == $user->url) {
-                $model_errors['avatar'] = 'Trùng ảnh, nếu bạn không thay đổi avatar thì giữ nguyên.';
-            } else {
-                $data['avatar'] = $avatarPath;
-                $user->url = $avatarPath;
-            }
+    
+        if ($avatarPath === null) {
+            // Không upload ảnh mới -> giữ nguyên
+            $data['avatar'] = $user->url;
+        } elseif ($avatarPath === 'Chỉ hỗ trợ định dạng các tệp: jpg, jpeg, png, gif') {
+            // Sai định dạng ảnh
+            $model_errors['avatar'] = $avatarPath;
+        } elseif ($avatarPath === $user->url) {
+            // Trùng ảnh cũ
+            $model_errors['avatar'] = 'Trùng ảnh, nếu bạn không thay đổi avatar thì giữ nguyên.';
         } else {
-            $model_errors['avatar'] = 'Chỉ hỗ trợ định dạng các tệp: jpg, jpeg, png, gif';
-            
+            // Có ảnh mới, hợp lệ
+            $data['avatar'] = $avatarPath;
+            $user->url = $avatarPath;
         }
-
-
-        //kiểm tra chưa nhập dữ liệu
+    
+        // Kiểm tra nếu không thay đổi gì và không nhập mật khẩu
         if (empty($data['password']) && $user->isDuplicateAccountInfo($data)) {
             $model_errors['form'] = "Bạn chưa thay đổi gì cả.";
         }
-
-        //kiểm tra mật khẩu 
+    
+        // Xử lý mật khẩu
         if (!empty($data['password']) && !password_verify($data['password'], $user->password)) {
             $model_errors['password_old'] = "Mật khẩu cũ không đúng.";
         } elseif (!empty($data['new_password']) && password_verify($data['new_password'], $user->password)) {
             $model_errors['password_new'] = "Mật khẩu mới trùng mật khẩu cũ.";
         }
-
-
-
+    
+        // Nếu không có lỗi -> cập nhật
         if (empty($model_errors)) {
-
             $user->fill($data)->save();
-
+    
             $newuser = (new user(pdo()))->where('id_account', $user->id_account);
             $messages = ['success' => 'Cập nhật thông tin tài khoản thành công.'];
+    
             $this->sendPage('/account/update', [
                 'user' => $newuser,
                 'success' => $messages
             ]);
+            return;
         }
-
+    
+        // Gửi lại trang với dữ liệu và lỗi
         $this->saveFormValues($_POST);
-
+    
         $this->sendPage('/account/update', [
             'user' => $user,
             'errors' => $model_errors
         ]);
     }
+    
 
 
     public function updatepage($id)
@@ -189,7 +188,7 @@ class UserController extends Controller
     //cập nhật avatar
     protected function handleAvatarUpload(): ?string
     {
-        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['avatar']) && !empty($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
             // dd("d");
             // exit;
             $targetDir = 'assets/image/avatar/';

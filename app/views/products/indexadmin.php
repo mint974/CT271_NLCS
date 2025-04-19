@@ -159,11 +159,9 @@
 
                             <td>
                                 <a href="<?= '/products/proddetail/' . $this->e($product['id_product']) ?>" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> Xem thêm
+                                    <i class="bi bi-eye"></i> Xem chi tiết
                                 </a>
-                                <a href="/products/update/<?= $product['id_product'] ?>" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil-square"></i> Chỉnh sửa
-                                </a>
+                               
                             </td>
                         </tr>
                     <?php endforeach; ?>

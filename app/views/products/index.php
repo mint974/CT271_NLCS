@@ -20,7 +20,7 @@
             <!-- catalog -->
             <div class=" container col col-2 catalog mt-5">
                 <div class="mt-3 mb-2">
-                    <h3>DOANH MỤC</h3>
+                    <h3>DANH MỤC</h3>
                     <div class="catalog_detail">
                         <form action="/products/load_prod_cata" method="POST">
                             <input type="hidden" name="discountproduct" value="discountproduct">
@@ -40,10 +40,10 @@
                     </div>
 
                 </div>
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <h3 >SẢN PHẨM BÁN CHẠY NHẤT</h3>
 
-                </div>
+                </div> -->
                 <img src="/assets/image/products/banner_prod1.png" width="100%" class="mb-3" alt="">
                 <img src="/assets/image/products/banner_prod2.png" width="100%" class="mb-3" alt="">
             </div>
@@ -54,11 +54,11 @@
                 <?php if (isset($productbycata) && !empty($productbycata)): ?>
                     <div
                         class="container-fluid product-box other-box d-flex flex-column align-items-center justify-content-center">
-                        <h1><b><?php echo htmlspecialchars($productbycata->name); ?></b></h1>
+                        <h1><b><?php echo htmlspecialchars($productbycata['name']); ?></b></h1>
 
                         <div class="row row-cols-3 row-cols-md-4 g-1 product-list">
                             <?php
-                            $product_list = $productbycata->product_list;
+                            $product_list = $productbycata['product_list'];
                             ?>
                             <?php foreach ($product_list as $product): ?>
                                 <div class="col product-card p-3 product-item">
@@ -144,6 +144,9 @@
 
 
                     <?php else: ?>
+
+
+
                         <div
                             class=" container-fluid product-box VN-box d-flex flex-column align-items-center justify-content-center pb-4">
                             <h1><b>TRÁI CÂY VIỆT NAM</b></h1>

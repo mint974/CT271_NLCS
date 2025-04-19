@@ -13,11 +13,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <?= $this->section("page_specific_css") ?>
-  <?php 
-if (empty($_SESSION['csrf_token'])) {
-  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-?>
+  <?php
+  if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  }
+  ?>
   <style>
     :root {
       --bg-dark-green-color: #08a045;
@@ -119,9 +119,28 @@ if (empty($_SESSION['csrf_token'])) {
       clip-path: circle(30px at 50% 50%);
     }
 
-    .main-header a{
+    .main-header a {
       text-decoration: none;
       color: black;
+    }
+
+    .sidebar a.nav-item {
+      font-size: 15px;
+      border-radius: 0 20px 20px 0;
+      margin: 2px 0;
+      font-weight: 500;
+    }
+
+    .sidebar a.nav-item.active,
+    .sidebar a.nav-item:hover {
+      background-color: var(--bg-green-color);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .sidebar a.nav-item i {
+      width: 20px;
+      text-align: center;
     }
   </style>
 </head>
@@ -138,12 +157,26 @@ if (empty($_SESSION['csrf_token'])) {
 
         <div class="flex-grow-1 d-flex flex-column">
           <a href="/adminhome" class="nav-item"><i class="fas fa-home"></i> Tổng quan</a>
-          <a href="#" class="nav-item"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
-          <a href="/products/admin" class="nav-item"><i class="fas fa-apple-alt"></i> Sản phẩm</a>
+          <a href="/orders/admin" class="nav-item"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
+          <!-- Nút Sản phẩm: dùng để mở / đóng -->
+          <a class="nav-item d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+            href="#productMenu" role="button" aria-expanded="false" aria-controls="productMenu">
+            <div><i class="fas fa-apple-alt me-2"></i> Sản phẩm</div>
+            <i class="bi bi-caret-down-fill collapse-icon"></i>
+          </a>
+
+          <!-- Submenu: collapse Bootstrap -->
+          <div class="collapse ps-4" id="productMenu">
+            <a href="/products/admin" class="nav-item">Danh sách sản phẩm</a>
+            <a href="/suppliers/admin" class="nav-item">Nhà cung cấp</a>
+            <a href="/catalogs/admin" class="nav-item">Danh mục sản phẩm</a>
+          </div>
+
+
+
           <a href="/account/admin" class="nav-item "><i class="fas fa-users"></i> Khách hàng </a>
-          <a href="#" class="nav-item"><i class="fas fa-tags"></i> Khuyến mãi</a>
-          <a href="#" class="nav-item"><i class="fas fa-headset"></i> Liên hệ</a>
-          <a href="#" class="nav-item"><i class="fas fa-comment-dots"></i> Phản hồi</a>
+          <a href="/promotion/admin" class="nav-item"><i class="fas fa-tags"></i> Khuyến mãi</a>
+          <a href="/contacts/admin" class="nav-item"><i class="fas fa-headset"></i> Liên hệ</a>
           <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Báo cáo</a>
         </div>
 
@@ -191,11 +224,28 @@ if (empty($_SESSION['csrf_token'])) {
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script src="/assets/js/js.js"></script>
 
 </body>
+
+<script>
+  const collapseEl = document.getElementById('productMenu');
+  const toggleIcon = document.querySelector('[href="#productMenu"] .collapse-icon');
+
+  collapseEl.addEventListener('show.bs.collapse', function () {
+    toggleIcon.classList.remove('bi-caret-down-fill');
+    toggleIcon.classList.add('bi-caret-up-fill');
+  });
+
+  collapseEl.addEventListener('hide.bs.collapse', function () {
+    toggleIcon.classList.remove('bi-caret-up-fill');
+    toggleIcon.classList.add('bi-caret-down-fill');
+  });
+</script>
+
+
 
 </html>
