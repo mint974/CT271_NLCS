@@ -26,6 +26,10 @@ $router->post('/search', '\App\Controllers\HomeController@search');
 
 $router->get('/adminhome', '\App\Controllers\HomeController@adminindex');
 
+
+$router->get('/home/report', '\App\Controllers\HomeController@report');
+
+
 // Contact routes
 $router->get('/contacts', '\App\Controllers\ContactsController@indexUser');
 $router->post('/contacts/save', '\App\Controllers\ContactsController@store');
@@ -83,6 +87,7 @@ $router->POST('/delivery/delete', '\App\Controllers\DeliveryController@delete');
 
 //payment
 $router->get('/payments/store', '\App\Controllers\PaymentsController@store');
+$router->get('/payments/storeCOD', '\App\Controllers\PaymentsController@storeCOD');
 
 
 //account

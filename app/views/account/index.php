@@ -120,11 +120,11 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                 <?php if (is_array($_SESSION['form_error'])): ?>
                     <ul>
                         <?php foreach ($_SESSION['form_error'] as $error): ?>
-                            <li><?= htmlspecialchars((string) $error) ?></li>
+                            <li><?= $this->e((string) $error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif (is_string($_SESSION['form_error'])): ?>
-                    <?= htmlspecialchars($_SESSION['form_error']) ?>
+                    <?= $this->e($_SESSION['form_error']) ?>
                 <?php else: ?>
                     <p>Lỗi không xác định.</p>
                 <?php endif; ?>
@@ -135,25 +135,35 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
 
         <div class="row align-items-center profile-info">
             <div class="col col-md-3 text-center">
-                <img src="/<?= htmlspecialchars($user->url) ?>" alt="Avatar" class="avatar mb-2">
+                <img src="/<?= $this->e($user->url) ?>" alt="Avatar" class="avatar mb-2">
             </div>
             <div class="col col-md-9">
-                <h4 class="fw-bold mb-3">Username: <?= htmlspecialchars($user->username) ?></h4>
-                <p class="mb-3 fs-5"> Email đăng kí: <?= htmlspecialchars($user->email) ?></p>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-outline-primary"
-                        href="/account/update/<?= htmlspecialchars($user->id_account) ?>">
-                        Chỉnh sửa Thông tin
-                    </a>
+                <h4 class="fw-bold mb-3">Username: <?= $this->e($user->username) ?></h4>
+                <p class="mb-3 fs-5"> Email đăng kí: <?= $this->e($user->email) ?></p>
+                <?php if (AUTHGUARD()->user()->role !== 'nhân viên'): ?>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-outline-primary" href="/account/update/<?= $this->e($user->id_account) ?>">
+                            Chỉnh sửa Thông tin
+                        </a>
+                        <button class="btn btn-outline-success" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#activityTimeline" aria-controls="activityTimeline">
+                            Hiển thị dòng thời gian
+                        </button>
+                        <?php if (AUTHGUARD()->user()->role === 'khách hàng'): ?>
+                            <a href="/account/suspend/<?= $this->e($user->id_account) ?>" class="btn btn-danger">Tạm
+                                dừng tài khoản</a>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-success" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#activityTimeline" aria-controls="activityTimeline">
+                            Hiển thị dòng thời gian
+                        </button>
+                    </div>
 
-                    <button class="btn btn-outline-success" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#activityTimeline" aria-controls="activityTimeline">
-                        Hiển thị dòng thời gian
-                    </button>
-                    <a href="/account/suspend/<?= htmlspecialchars($user->id_account) ?>" class="btn btn-danger">Tạm dừng tài khoản</a>
+                <?php endif; ?>
 
-
-                </div>
             </div>
         </div>
 
@@ -174,10 +184,10 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                             <li class="timeline-item">
                                 <span class="time"><?= date("d/m/Y H:i", strtotime($activity->action_time)) ?></span>
                                 <div class="timeline-content">
-                                    <h6 class="mb-1"><?= htmlspecialchars($activity->action) ?></h6>
-                                    <p class="mb-0">Trạng thái: <strong><?= htmlspecialchars($activity->status) ?></strong></p>
+                                    <h6 class="mb-1"><?= $this->e($activity->action) ?></h6>
+                                    <p class="mb-0">Trạng thái: <strong><?= $this->e($activity->status) ?></strong></p>
                                     <small class="text-muted">Thực hiện bởi:
-                                        <?= htmlspecialchars($activity->actor) ?></small>
+                                        <?= $this->e($activity->actor) ?></small>
                                 </div>
                             </li>
                         <?php endforeach; ?>
@@ -196,11 +206,11 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                 <?php if (is_array($errors)): ?>
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?= htmlspecialchars((string) $error) ?></li>
+                            <li><?= $this->e((string) $error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif (is_string($errors)): ?>
-                    <?= htmlspecialchars($errors) ?>
+                    <?= $this->e($errors) ?>
                 <?php else: ?>
                     <p>Lỗi không xác định.</p>
                 <?php endif; ?>
@@ -210,7 +220,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
 
         <?php if (!empty($success) && is_string($success)): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($success) ?>
+                <?= $this->e($success) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
@@ -218,15 +228,15 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
             <?php foreach ($deliveries as $delivery): ?>
                 <div class="col">
                     <div class="address-card h-100 p-3 border">
-                        <p><strong>Người nhận:</strong> <?= htmlspecialchars($delivery->receiver_name) ?></p>
-                        <p><strong>SĐT:</strong> <?= htmlspecialchars($delivery->receiver_phone) ?></p>
-                        <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($delivery->house_number) ?>,
-                            <?= htmlspecialchars($delivery->ward) ?>,
-                            <?= htmlspecialchars($delivery->district) ?>,
-                            <?= htmlspecialchars($delivery->city) ?>
+                        <p><strong>Người nhận:</strong> <?= $this->e($delivery->receiver_name) ?></p>
+                        <p><strong>SĐT:</strong> <?= $this->e($delivery->receiver_phone) ?></p>
+                        <p><strong>Địa chỉ:</strong> <?= $this->e($delivery->house_number) ?>,
+                            <?= $this->e($delivery->ward) ?>,
+                            <?= $this->e($delivery->district) ?>,
+                            <?= $this->e($delivery->city) ?>
                         </p>
                         <p><strong>Phí giao hàng:</strong> <?= number_format($delivery->shipping_fee) ?> đ</p>
-                        <button class="btn mb-2 btn-sm btn-outline-primary" type="button" data-bs-toggle="modal" <?php if(AUTHGUARD()->user()->id_account !== $user->id_account): ?> disabled <?php endif; ?>
+                        <button class="btn mb-2 btn-sm btn-outline-primary" type="button" data-bs-toggle="modal" <?php if (AUTHGUARD()->user()->id_account !== $user->id_account): ?> disabled <?php endif; ?>
                             data-bs-target="#editDeliveryModal<?= $delivery->id_delivery ?>">Chỉnh sửa địa chỉ</button>
                     </div>
                 </div>
@@ -252,7 +262,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                                             nhận</label>
                                         <input type="text" class="form-control"
                                             id="receiverName<?= $delivery->id_delivery ?>" name="receiverName"
-                                            value="<?= htmlspecialchars($delivery->receiver_name) ?>" required>
+                                            value="<?= $this->e($delivery->receiver_name) ?>" required>
                                     </div>
 
                                     <div class="mb-3 col-6">
@@ -260,7 +270,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                                             class="form-label">SĐT</label>
                                         <input type="text" class="form-control"
                                             id="receiverPhone<?= $delivery->id_delivery ?>" name="receiverPhone"
-                                            value="<?= htmlspecialchars($delivery->receiver_phone) ?>" required>
+                                            value="<?= $this->e($delivery->receiver_phone) ?>" required>
                                     </div>
 
                                     <div class="mb-3 col-6">
@@ -268,25 +278,25 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                                             chỉ</label>
                                         <input type="text" class="form-control"
                                             id="houseNumber<?= $delivery->id_delivery ?>" name="houseNumber"
-                                            value="<?= htmlspecialchars($delivery->house_number) ?>" required>
+                                            value="<?= $this->e($delivery->house_number) ?>" required>
                                     </div>
 
                                     <div class="mb-3 col-6">
                                         <label for="ward<?= $delivery->id_delivery ?>" class="form-label">Phường</label>
                                         <input type="text" class="form-control" id="ward<?= $delivery->id_delivery ?>"
-                                            name="ward" value="<?= htmlspecialchars($delivery->ward) ?>" required>
+                                            name="ward" value="<?= $this->e($delivery->ward) ?>" required>
                                     </div>
 
                                     <div class="mb-3 col-6">
                                         <label for="district<?= $delivery->id_delivery ?>" class="form-label">Quận</label>
                                         <input type="text" class="form-control" id="district<?= $delivery->id_delivery ?>"
-                                            name="district" value="<?= htmlspecialchars($delivery->district) ?>" required>
+                                            name="district" value="<?= $this->e($delivery->district) ?>" required>
                                     </div>
 
                                     <div class="mb-3 col-6">
                                         <label for="city<?= $delivery->id_delivery ?>" class="form-label">Thành phố</label>
                                         <input type="text" class="form-control" id="city<?= $delivery->id_delivery ?>"
-                                            name="city" value="<?= htmlspecialchars($delivery->city) ?>" required>
+                                            name="city" value="<?= $this->e($delivery->city) ?>" required>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">Cập nhật</button>

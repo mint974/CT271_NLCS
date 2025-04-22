@@ -1,10 +1,17 @@
-<?php $this->layout("layouts/default", ["title" => APPNAME]) ?>
+<?php
+if (AUTHGUARD()->user()->role === 'khách hàng') {
+    $this->layout("layouts/default", ["title" => APPNAME]);
+} else {
+    $this->layout("layouts/admin", ["title" => APPNAME]);
+}
+?>
 
 <?php $this->start("page_specific_css") ?>
 <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.8/r-3.0.2/sp-2.3.1/datatables.min.css" rel="stylesheet">
 <?php $this->stop() ?>
 
 <?php $this->start("page") ?>
+
 <style>
     .box {
         background-color: #FFFFFF;
@@ -43,50 +50,72 @@
         </div>
         <div class="card-body">
 
-            <!-- Thông tin giao hàng -->
             <div class="mb-4 row d-flex justify-content-center">
-                <div class="box col col-md-6 m-2">
+                <!-- Giao hàng -->
+                <div class="box col-lg-4 col-md-6 m-2">
                     <h3 class="text-center"><i class="fa fa-truck"></i> Thông Tin Giao Hàng</h3>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Tên người nhận:</strong>
-                            <?php echo htmlspecialchars($orderInfo->receiver_name); ?>
+                            <?php echo $this->e($orderInfo->receiver_name); ?>
                         </li>
                         <li class="list-group-item"><strong>Số điện thoại:</strong>
-                            <?php echo htmlspecialchars($orderInfo->receiver_phone); ?>
+                            <?php echo $this->e($orderInfo->receiver_phone); ?>
                         </li>
                         <li class="list-group-item"><strong>Địa chỉ:</strong>
-                            <?php echo htmlspecialchars($orderInfo->house_number . ', ' . $orderInfo->ward . ', ' . $orderInfo->district . ', ' . $orderInfo->city); ?>
+                            <?php echo $this->e($orderInfo->house_number . ', ' . $orderInfo->ward . ', ' . $orderInfo->district . ', ' . $orderInfo->city); ?>
                         </li>
                         <li class="list-group-item"><strong>Phí giao hàng:</strong>
                             <?php echo number_format($orderInfo->shipping_fee, 0, ',', '.') . ' VND'; ?>
                         </li>
                     </ul>
                 </div>
-                <div class="box col col-md-5 m-2">
+
+                <!-- Thanh toán -->
+                <?php if (isset($payment)): ?>
+                    <div class="box col-lg-3 col-md-5 m-2">
+                        <h3 class="text-center"><i class="fa fa-credit-card"></i> Thông Tin Thanh Toán</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Mã thanh toán:</strong>
+                                <?php echo $this->e($payment->id_payment); ?>
+                            </li>
+                            <li class="list-group-item"><strong>Phương thức:</strong>
+                                <?php echo $this->e($payment->payment_method); ?>
+                            </li>
+                            <li class="list-group-item"><strong>Trạng thái:</strong>
+                                <span
+                                    class="text-success fw-bold"><?php echo $this->e($payment->payment_status); ?></span>
+                            </li>
+                            <li class="list-group-item"><strong>Mã giao dịch:</strong>
+                                <?php echo $this->e($payment->transaction_code); ?>
+                            </li>
+                            <li class="list-group-item"><strong>Thời gian thanh toán:</strong>
+                                <?php echo date('H:i:s d/m/Y', strtotime($payment->payment_time)); ?>
+                            </li>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Trạng thái & Tổng tiền -->
+                <div class="box col-lg-3 col-md-5 m-2">
                     <div class="text-center mb-3">
-                        <h3>
-                            <i class="fa fa-receipt"></i> Trạng Thái Đơn Hàng
-                        </h3>
+                        <h3><i class="fa fa-receipt"></i> Trạng Thái Đơn Hàng</h3>
                         <div class="alert 
-            <?php echo ($order->status === 'Giao hàng thành công') ? 'alert-success' :
-                (($order->status === 'Đơn hàng đã bị hủy') ? 'alert-danger' :
-                    'alert-secondary'); ?>">
-                            <?php echo htmlspecialchars($order->status); ?>
+                <?php echo ($order->status === 'Giao hàng thành công') ? 'alert-success' :
+                    (($order->status === 'Đơn hàng đã bị hủy') ? 'alert-danger' :
+                        'alert-secondary'); ?>">
+                            <?php echo $this->e($order->status); ?>
                         </div>
                     </div>
 
                     <hr>
 
                     <div class="text-center mt-3">
-                        <h3>
-                            <i class="fa fa-money-check-alt"></i> Tổng Đơn Hàng
-                        </h3>
+                        <h3><i class="fa fa-money-check-alt"></i> Tổng Đơn Hàng</h3>
                         <p class="order-summary text-danger fs-4 fw-bold">
                             <?php echo number_format($totalPrice, 0, ',', '.') . ' VND'; ?>
                         </p>
                     </div>
                 </div>
-
             </div>
 
 
@@ -109,11 +138,11 @@
                         <?php foreach ($orderProducts as $item): ?>
                             <tr>
                                 <td>
-                                    <img src="<?php echo htmlspecialchars($item['image'] ?? 'default.jpg'); ?>" width="50"
+                                    <img src="<?php echo $this->e($item['image'] ?? 'default.jpg'); ?>" width="50"
                                         height="50" class="rounded" alt="Sản phẩm">
                                 </td>
-                                <td><?php echo htmlspecialchars($item['product_name'] ?? 'Không xác định'); ?></td>
-                                <td class="text-center"><?php echo htmlspecialchars($item['quantity'] ?? 0); ?></td>
+                                <td><?php echo $this->e($item['product_name'] ?? 'Không xác định'); ?></td>
+                                <td class="text-center"><?php echo $this->e($item['quantity'] ?? 0); ?></td>
                                 <td class="text-end">
                                     <?php echo number_format((float) ($item['price'] ?? 0), 0, ',', '.') . ' VND'; ?>
                                 </td>
@@ -134,10 +163,16 @@
 
             </div>
 
+            <?php if (AUTHGUARD()->user()->role === 'khách hàng'): ?>
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="/orders/index" class="btn btn-success ">Quay lại</a>
+                </div>
 
-            <div class="d-flex justify-content-center mt-3">
-                <a href="/orders/index" class="btn btn-success ">Quay lại</a>
-            </div>
+            <?php else: ?>
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="/orders/admin" class="btn btn-success ">Quay lại</a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

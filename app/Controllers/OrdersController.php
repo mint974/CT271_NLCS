@@ -154,16 +154,13 @@ class OrdersController extends Controller
                 //thanh toán
                 if($payment_method === 'Online'){
                     $this->Payments($newOrder);
+                } else {
+                    $data = $newOrder->toArray();
+                    redirect('/payments/storeCOD', [
+                        'data' => $data
+                    ]);
                 }
-
-
-                $success = 'Đặt hàng thành công!';
-
-                redirect('/orders/index', [
-                    'orders' => $orders,
-                    'success' => $success
-                ]);
-
+                
             } else {
                 $this->shoppingcart('Lỗi đặt hàng!', null);
             }
@@ -292,7 +289,7 @@ class OrdersController extends Controller
         $orderModel = new Order(pdo());
         $orderDetailModel = new OrderDetail(pdo());
         $deliveryModel = new DeliveryInformation(PDO());
-
+        $paymentmodel = new Payment(pdo());
         // Lấy thông tin đơn hàng
         $order = $orderModel->where('id_order', $id_order);
         if (!$order) {
@@ -309,12 +306,15 @@ class OrdersController extends Controller
         // Tính tổng tiền đơn hàng
         $totalPrice = array_sum(array_column($orderProducts, 'total_price'));
 
+        $payment = $paymentmodel->find($id_order);
+        // dd($payment);
         // Gửi dữ liệu đến view
         return $this->sendPage('/orders/order_details', [
             'order' => $order,
             'orderInfo' => $delivery,
             'orderProducts' => $orderProducts,
-            'totalPrice' => $totalPrice + $delivery->shipping_fee
+            'totalPrice' => $totalPrice + $delivery->shipping_fee,
+            'payment' => $payment
         ]);
     }
 

@@ -209,4 +209,16 @@ class Promotion
         return $errors;
     }
 
+    public function countActivePromotions(): int
+{
+    $now = date('Y-m-d H:i:s');
+    $statement = $this->db->prepare(
+        'SELECT COUNT(*) as total FROM Promotions WHERE start_day <= :now AND end_day >= :now'
+    );
+    $statement->execute(['now' => $now]);
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+    return $result['total'] ?? 0;
+}
+
 }

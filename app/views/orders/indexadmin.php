@@ -36,15 +36,15 @@
         <form action="/orders/searchadmin" id="search_form" method="post" class="row g-3 card-body align-items-center">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <input type="text" class="form-control" name="id_order" placeholder="🔎 Theo ID đơn hàng..."
                     value="<?= $this->e($_POST['id_order'] ?? '') ?>">
             </div>
-            <div class="col-md-4">
-                <input type="number" min="2" class="form-control" name="id_account" placeholder="🔍 Theo ID tài khoản..."
-                    value="<?= $this->e($_POST['id_account'] ?? '') ?>">
+            <div class="col-md-3">
+                <input type="number" min="2" class="form-control" name="id_account"
+                    placeholder="🔍 Theo ID tài khoản..." value="<?= $this->e($_POST['id_account'] ?? '') ?>">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <select name="status" class="form-select">
                     <option value="">🔎 Theo trạng thái</option>
                     <?php
@@ -63,6 +63,22 @@
                 </select>
             </div>
 
+            <div class="col-md-3">
+                <select name="payment_status" class="form-select">
+                    <option value="">🔎 Theo trạng thái tt</option>
+                    <?php
+                    $statuses = [
+                        'Đã thanh toán',
+                        'Chưa thanh toán',
+                        'Thất bại'
+                    ];
+                    foreach ($statuses as $s):
+                        $selected = (isset($_POST['payment_status']) && $_POST['payment_status'] == $s) ? 'selected' : '';
+                        echo "<option value=\"$s\" $selected>$s</option>";
+                    endforeach;
+                    ?>
+                </select>
+            </div>
             <div class="col-md-12 mb-1 text-md-center">
                 <div class="d-flex justify-content-end gap-2">
                     <button class="btn btn-primary btn-sm"><i class="bi bi-search"></i> Tìm kiếm</button>
@@ -130,14 +146,17 @@
 
                             <td>
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="<?= '/orders/detail/' . $this->e($order->id_order) ?>"
+                                    <a href="<?= '/orders/order_detail/' . $this->e($order->id_order) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> Xem chi tiết
                                     </a>
-                                    <a href="<?= '/orders/update/' . $this->e($order->id_order) ?>"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="bi bi-pencil-square"></i> Cập nhật
-                                    </a>
+
+                                    <?php if ($order->status !== 'Đơn hàng đã bị hủy' && $order->status !== 'Giao hàng thành công'): ?>
+                                        <a href="<?= '/orders/update/' . $this->e($order->id_order) ?>"
+                                            class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil-square"></i> Cập nhật
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </td>
 

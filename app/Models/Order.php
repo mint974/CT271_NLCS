@@ -226,29 +226,29 @@ class Order
         return $orders;
     }
 
-    
 
 
 
-//     public function searchadmin(string $column, string $value): array
+
+    //     public function searchadmin(string $column, string $value): array
 // {
 //     $allowedColumns = ['Id_order', 'id_account', 'subject'];
 //     if (!in_array($column, $allowedColumns)) {
 //         throw new \Exception("Invalid column: " . htmlspecialchars($column));
 //     }
 
-//     $value = trim($value);
+    //     $value = trim($value);
 //     if ($value === '') {
 //         return [];
 //     }
 
-//     if ($column === 'id_account') {
+    //     if ($column === 'id_account') {
 //         // Kiểm tra xem value có phải số nguyên không
 //         if (!ctype_digit($value)) {
 //             return [];
 //         }
 
-//         $query = "SELECT * FROM Contacts WHERE $column = :value";
+    //         $query = "SELECT * FROM Contacts WHERE $column = :value";
 //         $statement = $this->db->prepare($query);
 //         $statement->execute(['value' => (int)$value]);
 //     } else {
@@ -257,15 +257,52 @@ class Order
 //         $statement->execute(['value' => '%' . $value . '%']);
 //     }
 
-//     $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+    //     $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 //     $contacts = [];
 
-//     foreach ($rows as $row) {
+    //     foreach ($rows as $row) {
 //         $contact = new Contact($this->db);
 //         $contacts[] = $contact->fillFromDbRow($row);
 //     }
 
-//     return $contacts;
+    //     return $contacts;
 // }
+
+    public function toArray(): array
+    {
+        return [
+            'id_order' => $this->id_order,
+            'created_at' => $this->created_at,
+            'id_account' => $this->id_account,
+            'id_delivery' => $this->id_delivery,
+            'status' => $this->status,
+        ];
+    }
+
+    public function getTodayOrders(): array
+    {
+        // Lấy ngày hôm nay ở định dạng YYYY-MM-DD
+        $today = date('Y-m-d');
+
+        $query = "
+        SELECT * FROM Orders 
+        WHERE DATE(created_at) = :today 
+        AND id_order NOT LIKE 'REORD%' 
+        ORDER BY created_at DESC
+    ";
+
+        $statement = $this->db->prepare($query);
+        $statement->execute(['today' => $today]);
+
+        $orders = [];
+
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $order = new self($this->db);
+            $orders[] = $order->fillFromDbRow($row);
+        }
+
+        return $orders;
+    }
+
 
 }

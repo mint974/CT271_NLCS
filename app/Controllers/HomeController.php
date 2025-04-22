@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Controllers;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Promotion;
+use App\Models\User;
 class HomeController extends Controller
 {
   public function __construct()
@@ -70,21 +73,35 @@ class HomeController extends Controller
 
   function introduction()
   {
-   
+
     $this->sendPage('/introduction/index');
-  
+
   }
 
   function adminindex()
   {
-    $user = AUTHGUARD()->user();
-    unset($user->password);
-    // dd($user);
-    // exit();
+    $ordermodel = new Order(pdo());
+
+    $orders = $ordermodel->getTodayOrders();
+    $promotionmodel = new Promotion(pdo());
+
+    $totalPromotion = $promotionmodel->countActivePromotions();
+
+    $usermodel = new User(pdo());
+    $totaluser = count($usermodel->getAllUser());
+
     $this->sendPage('adminindex', [
-      'user' => $user
+      'orders' => $orders,
+      'totalpromotion' => $totalPromotion,
+      'totaluser' => $totaluser
     ]);
-  
+
+  }
+
+  public function report(){
+
+    $this->sendPage('report');
+
   }
 
 }

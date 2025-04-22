@@ -170,6 +170,7 @@
             <a href="/products/admin" class="nav-item">Danh sách sản phẩm</a>
             <a href="/suppliers/admin" class="nav-item">Nhà cung cấp</a>
             <a href="/catalogs/admin" class="nav-item">Danh mục sản phẩm</a>
+            <a href="/receipt" class="nav-item">Nhập hàng</a>
           </div>
 
 
@@ -177,7 +178,7 @@
           <a href="/account/admin" class="nav-item "><i class="fas fa-users"></i> Khách hàng </a>
           <a href="/promotion/admin" class="nav-item"><i class="fas fa-tags"></i> Khuyến mãi</a>
           <a href="/contacts/admin" class="nav-item"><i class="fas fa-headset"></i> Liên hệ</a>
-          <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Báo cáo</a>
+          <a href="/home/report" class="nav-item"><i class="fas fa-chart-line"></i> Báo cáo</a>
         </div>
 
         <!-- Đăng xuất nằm cuối -->

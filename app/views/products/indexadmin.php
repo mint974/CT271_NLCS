@@ -168,7 +168,7 @@
                 </tbody>
             </table>
             <?php if ($totalPages > 1 && empty($_POST)): ?>
-                <nav class="mt-4 d-flex justify-content-center">
+                <nav class="mt-2 d-flex justify-content-center">
                     <ul class="pagination">
                         <?php
                         $startPage = max(1, $currentPage - 2);

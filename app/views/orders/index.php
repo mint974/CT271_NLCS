@@ -72,12 +72,12 @@
         </div>
     <?php endif; ?>
     <form class="row mb-3" id="searchForm" action="/orders/search" method="post">
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
             <label for="search-date" class="form-label">Tìm theo ngày:</label>
             <input type="date" id="search-date" name="search_date" class="form-control">
         </div>
 
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
             <label for="search-total" class="form-label">Tìm theo tổng tiền:</label>
             <select id="search-total" name="search_total" class="form-control">
                 <option value="">-- Chọn khoảng giá --</option>
@@ -87,7 +87,17 @@
             </select>
         </div>
 
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
+            <label for="search_tatus_payment" class="form-label">Tìm theo trạng thái tt:</label>
+            <select id="search_tatus_payment" name="search_tatus_payment" class="form-control">
+                <option value="">-- Chọn trạng thái tt --</option>
+                <option value="Chưa thanh toán">Chưa thanh toán</option>
+                <option value="Đã thanh toán">Đã thanh toán</option>
+                <option value="Thất bại">Thất bại</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-2">
             <label for="search-status" class="form-label">Tìm theo trạng thái:</label>
             <select id="search-status" name="search_status" class="form-control">
                 <option value="">-- Chọn trạng thái --</option>
@@ -112,8 +122,8 @@
                 <th><i class="fa fa-receipt"></i> Mã Đơn Hàng</th>
                 <th><i class="fa fa-calendar-alt"></i> Ngày Đặt</th>
                 <th><i class="fa fa-money-bill-wave"></i> Tổng Tiền</th>
-                <th><i class="fa fa-info-circle"></i> Phương thức thanh toán</th>
-                <th><i class="fa fa-cogs"></i>Trạng thái thanh toán</th>
+                <th><i class="fa fa-info-circle"></i> Phương thức tt</th>
+                <th><i class="fa fa-cogs"></i>Trạng thái tt</th>
                 <th><i class="fa fa-info-circle"></i> Trạng Thái đơn hàng</th>
                 <th><i class="fa fa-cogs"></i> Hành Động</th>
             </tr>
@@ -162,7 +172,7 @@
                                     $icon = 'fa-clock';
                             }
                             ?>
-                            <span class="badge bg-<?= $badgeClass ?>">
+                            <span class="badge fs-6 bg-<?= $badgeClass ?>">
                                 <i class="fa <?= $icon ?>"></i> <?= htmlspecialchars($status) ?>
                             </span>
                         </td>
@@ -187,7 +197,7 @@
                                 $statusIcon = 'fa-times';
                             }
                             ?>
-                            <span class="badge bg-<?= $statusClass ?>">
+                            <span class="badge fs-6 bg-<?= $statusClass ?>">
                                 <i class="fa <?= $statusIcon ?>"></i> <?= htmlspecialchars($orderStatus) ?>
                             </span>
                         </td>

@@ -35,11 +35,11 @@ class PaymentsController extends Controller
         // dd($_GET);
 
         $errors = [];
-         $data = $this->FillFormUrl($_GET);
+        $data = $this->FillFormUrl($_GET);
         $payment = new Payment(pdo());
 
         $errors = $payment->validate($data);
-   
+
         if (empty($errors)) {
             if (!$payment->fill($data)->save()) {
                 $errors['save'] = 'Không thể lưu thanh toán.';
@@ -53,7 +53,28 @@ class PaymentsController extends Controller
 
         redirect('/orders/index', [
             'errors' => $errors
-        ]);    
+        ]);
+    }
+
+    public function storeCOD()
+    {
+       
+        $payment = new Payment(pdo());
+        $payment->id_order = $_SESSION['data']['id_order'];
+        $payment->payment_method = 'COD';
+        $payment->payment_status = 'Chưa thanh toán';
+        $payment->payment_time = $_SESSION['data']['created_at'];
+        $payment->transaction_code = null;
+
+        if (!$payment->save()) {
+            redirect('/orders/index', [
+                'errors' => ['save' => 'Không thể lưu thanh toán.']
+            ]);
+        }
+
+        redirect('/orders/index', [
+            'success' => 'Thanh toán thành công'
+        ]);
     }
 
     public function updatepage($id)
@@ -62,6 +83,7 @@ class PaymentsController extends Controller
         $this->sendPage('payments/update', [
             'payment' => $payment
         ]);
+
     }
 
     public function update()
