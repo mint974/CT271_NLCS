@@ -58,11 +58,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e((string) $error) ?></li>
+                                        <li><?= htmlspecialchars((string) $error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php endif; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
@@ -71,7 +71,7 @@ if (empty($_SESSION['csrf_token'])) {
                     <!-- Thông báo thành công -->
                     <?php if (isset($success) && !empty($success)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= is_array($success) ? implode("<br>", array_map([$this, 'e'], $success)) : $this->e($success) ?>
+                            <?= is_array($success) ? implode("<br>", array_map([$this, 'e'], $success)) : htmlspecialchars($success) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
@@ -85,11 +85,11 @@ if (empty($_SESSION['csrf_token'])) {
                                 <label for="id_product" class="form-label fw-semibold">ID sản phẩm</label>
                                 <input type="text"
                                     class="form-control<?= isset($errors['id_product']) ? ' is-invalid' : '' ?>"
-                                    id="id_product" name="id_product" value="<?= $this->e($product->id_product) ?>"
+                                    id="id_product" name="id_product" value="<?= htmlspecialchars($product->id_product) ?>"
                                     readonly>
                                 <?php if (isset($errors['id_product'])): ?>
                                     <div class="invalid-feedback">
-                                        <?= $this->e($errors['id_product']) ?>
+                                        <?= htmlspecialchars($errors['id_product']) ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -99,10 +99,10 @@ if (empty($_SESSION['csrf_token'])) {
                                 <label for="name" class="form-label fw-semibold">Tên sản phẩm</label>
                                 <input type="text"
                                     class="form-control<?= isset($errors['name']) ? ' is-invalid' : '' ?>" id="name"
-                                    name="name" value="<?= $this->e($product->name) ?>">
+                                    name="name" value="<?= htmlspecialchars($product->name) ?>">
                                 <?php if (isset($errors['name'])): ?>
                                     <div class="invalid-feedback">
-                                        <?= $this->e($errors['name']) ?>
+                                        <?= htmlspecialchars($errors['name']) ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -113,10 +113,10 @@ if (empty($_SESSION['csrf_token'])) {
                             <label for="description" class="form-label fw-semibold">Mô tả sản phẩm</label>
                             <textarea class="form-control<?= isset($errors['description']) ? ' is-invalid' : '' ?>"
                                 id="description" name="description"
-                                rows="4"><?= $this->e($product->description) ?></textarea>
+                                rows="4"><?= htmlspecialchars($product->description) ?></textarea>
                             <?php if (isset($errors['description'])): ?>
                                 <div class="invalid-feedback">
-                                    <?= $this->e($errors['description']) ?>
+                                    <?= htmlspecialchars($errors['description']) ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -126,10 +126,10 @@ if (empty($_SESSION['csrf_token'])) {
                             <label for="promotion" class="form-label fw-semibold">ID khuyến mãi</label>
                             <input type="text"
                                 class="form-control<?= isset($errors['promotion']) ? ' is-invalid' : '' ?>"
-                                id="promotion" name="promotion" value="<?= $this->e($product->id_promotion) ?>">
+                                id="promotion" name="promotion" value="<?= htmlspecialchars($product->id_promotion) ?>">
                             <?php if (isset($errors['promotion'])): ?>
                                 <div class="invalid-feedback">
-                                    <?= $this->e($errors['promotion']) ?>
+                                    <?= htmlspecialchars($errors['promotion']) ?>
                                 </div>
                             <?php endif; ?>
                         </div>

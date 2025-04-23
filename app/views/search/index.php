@@ -45,7 +45,7 @@
                 ?>
                 <div class="col product-card">
                     <div class="card h-100 position-relative">
-                        <a href="<?= '/products/proddetail/' . $this->e($product['id_product']) ?>">
+                        <a href="<?= '/products/proddetail/' . htmlspecialchars($product['id_product']) ?>">
                             <img src="<?= htmlspecialchars($firstImage) ?>" loading="lazy" class="card-img-top"
                                  alt="<?= htmlspecialchars($product['name']) ?>">
                         </a>
@@ -58,7 +58,7 @@
                         <?php endif; ?>
                         <div class="card-body d-flex flex-column justify-content-between">
                             <h5 class="card-title fs-5" style="min-height: 38px;">
-                                <a href="<?= '/products/proddetail/' . $this->e($product['id_product']) ?>"
+                                <a href="<?= '/products/proddetail/' . htmlspecialchars($product['id_product']) ?>"
                                    class="text-decoration-none text-dark">
                                     <?= htmlspecialchars($product['name']) ?>
                                 </a>
@@ -79,7 +79,7 @@
                                     <?= htmlspecialchars($product['unit']) ?>
                                 </p>
                             <?php endif; ?>
-                            <form action="<?= '/products/addprod/' . $this->e($product['id_product']) ?>" method="post">
+                            <form action="<?= '/products/addprod/' . htmlspecialchars($product['id_product']) ?>" method="post">
                                 <button type="submit" class="btn my-btn btn-outline-success w-100 mt-2">
                                     <i class="fa fa-plus orange-color"></i> Thêm vào giỏ
                                 </button>
@@ -91,4 +91,4 @@
         </div>
     <?php endif; ?>
 </div>
-<?php $this->end() ?>
+<?php htmlspecialcharsnd() ?>

@@ -40,11 +40,11 @@ if (empty($_SESSION['csrf_token'])) {
               <label for="email" class="offset-md-2 col-md-2 col-form-label">E-Mail Address</label>
               <div class="col-md-6">
                 <input id="email" type="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
-                  name="email" value="<?= isset($old['email']) ? $this->e($old['email']) : '' ?>" required autofocus>
+                  name="email" value="<?= isset($old['email']) ? htmlspecialchars($old['email']) : '' ?>" required autofocus>
 
                 <?php if (isset($errors['email'])): ?>
                   <span class="invalid-feedback">
-                    <strong><?= $this->e($errors['email']) ?></strong>
+                    <strong><?= htmlspecialchars($errors['email']) ?></strong>
                   </span>
                 <?php endif ?>
               </div>
@@ -58,7 +58,7 @@ if (empty($_SESSION['csrf_token'])) {
 
                 <?php if (isset($errors['password'])): ?>
                   <span class="invalid-feedback">
-                    <strong><?= $this->e($errors['password']) ?></strong>
+                    <strong><?= htmlspecialchars($errors['password']) ?></strong>
                   </span>
                 <?php endif ?>
               </div>

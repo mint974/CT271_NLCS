@@ -111,11 +111,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul>
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e((string) $error) ?></li>
+                                        <li><?= htmlspecialchars((string) $error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php elseif (is_string($errors)): ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php else: ?>
                                 <p>Lỗi không xác định.</p>
                             <?php endif; ?>
@@ -128,11 +128,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($success)): ?>
                                 <ul>
                                     <?php foreach ($success as $message): ?>
-                                        <li><?= $this->e((string) $message) ?></li>
+                                        <li><?= htmlspecialchars((string) $message) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php elseif (is_string($success)): ?>
-                                <?= $this->e($success) ?>
+                                <?= htmlspecialchars($success) ?>
                             <?php else: ?>
                                 <p>Hoàn thành thành công.</p>
                             <?php endif; ?>
@@ -146,13 +146,13 @@ if (empty($_SESSION['csrf_token'])) {
                         <div class="mb-3">
                             <label for="id_product" class="form-label"><strong>ID sản phẩm</strong></label>
                             <input type="text" class="form-control" name="id_product" id="id_product"
-                                value="<?= $this->e($product['id_product']) ?>">
+                                value="<?= htmlspecialchars($product['id_product']) ?>">
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label"><strong>Tên Sản phẩm</strong></label>
                             <input type="text" class="form-control" name="username" id="username"
-                                value="<?= $this->e($product['name']) ?>">
+                                value="<?= htmlspecialchars($product['name']) ?>">
                         </div>
 
                         <!-- ảnh -->
@@ -161,7 +161,7 @@ if (empty($_SESSION['csrf_token'])) {
                                 <?php foreach ($product['images'] as $image): ?>
                                     <div class="col image-preview existing position-relative">
                                         <div class="card position-relative">
-                                            <img src="<?= $this->e($image) ?>" class="card-img-top" alt="ảnh">
+                                            <img src="<?= htmlspecialchars($image) ?>" class="card-img-top" alt="ảnh">
                                             <!-- Nút xóa -->
                                             <div class="delete-existing text-danger"
                                                 style="position:absolute; top:5px; right:10px; cursor:pointer;">
@@ -180,7 +180,7 @@ if (empty($_SESSION['csrf_token'])) {
                                             </div>
                                         </div>
                                         <!-- Input ẩn để đánh dấu ảnh bị xóa -->
-                                        <input type="hidden" name="deleted_images[]" value="<?= $this->e($image) ?>"
+                                        <input type="hidden" name="deleted_images[]" value="<?= htmlspecialchars($image) ?>"
                                             class="delete-flag" disabled>
                                     </div>
                                 <?php endforeach; ?>
@@ -196,7 +196,7 @@ if (empty($_SESSION['csrf_token'])) {
                         <div class="mb-3">
                             <label for="description" class="form-label"><strong>Mô tả</strong></label>
                             <textarea class="form-control" name="description"
-                                id="description"><?= $this->e($product['description']) ?></textarea>
+                                id="description"><?= htmlspecialchars($product['description']) ?></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-submit w-100 fw-bold">Cập nhật thông tin</button>

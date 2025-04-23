@@ -19,50 +19,62 @@ class ProductReceipt
     }
 
     public function where(string $column, string $value): ?ProductReceipt
-{
-    $allowedColumns = ['id_receipt', 'id_supplier', 'id_account'];
-    if (!in_array($column, $allowedColumns)) {
-        throw new \Exception("Invalid column: " . htmlspecialchars($column));
+    {
+        $allowedColumns = ['id_receipt', 'id_supplier', 'id_account'];
+        if (!in_array($column, $allowedColumns)) {
+            throw new \Exception("Invalid column: " . htmlspecialchars($column));
+        }
+
+        $statement = $this->db->prepare("SELECT * FROM Product_receipt WHERE $column = :value LIMIT 1");
+        $statement->execute(['value' => $value]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? $this->fillFromDbRow($row) : null;
     }
 
-    $statement = $this->db->prepare("SELECT * FROM Product_receipt WHERE $column = :value LIMIT 1");
-    $statement->execute(['value' => $value]);
-    $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-    return $row ? $this->fillFromDbRow($row) : null;
+    public function save(): ?ProductReceipt
+{
+    $createdAt = date('Y-m-d H:i:s'); 
+    $this->created_at = $createdAt;
+
+    $statement = $this->db->prepare(
+        'INSERT INTO Product_receipt (id_supplier, id_account, created_at)
+         VALUES (:id_supplier, :id_account, :created_at)'
+    );
+
+    $success = $statement->execute([
+        'id_supplier' => $this->id_supplier,
+        'id_account'  => $this->id_account,
+        'created_at'  => $createdAt
+    ]);
+
+    if ($success) {
+        // Truy vấn lại bản ghi vừa chèn để lấy id_receipt (dựa vào 3 giá trị độc nhất)
+        $stmt = $this->db->prepare(
+            'SELECT * FROM Product_receipt
+             WHERE id_supplier = :id_supplier
+             AND id_account = :id_account
+             AND created_at = :created_at
+             ORDER BY id_receipt DESC LIMIT 1'
+        );
+
+        $stmt->execute([
+            'id_supplier' => $this->id_supplier,
+            'id_account'  => $this->id_account,
+            'created_at'  => $createdAt
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($data) {
+            return (new ProductReceipt($this->db))->fillFromDbRow($data);
+        }
+    }
+
+    return null;
 }
 
 
-    // public function save(): bool
-    // {
-    //     $result = false;
-
-    //     if (!empty($this->id_receipt)) {
-    //         $statement = $this->db->prepare(
-    //             'UPDATE Product_receipt SET id_supplier = :id_supplier, id_account = :id_account 
-    //              WHERE id_receipt = :id_receipt'
-    //         );
-
-    //         $result = $statement->execute([
-    //             'id_supplier' => $this->id_supplier,
-    //             'id_account' => $this->id_account,
-    //             'id_receipt' => $this->id_receipt
-    //         ]);
-    //     } else {
-    //         $statement = $this->db->prepare(
-    //             'INSERT INTO Product_receipt (id_receipt, id_supplier, id_account, created_at)
-    //              VALUES (:id_receipt, :id_supplier, :id_account, NOW())'
-    //         );
-
-    //         $result = $statement->execute([
-    //             'id_receipt' => $this->id_receipt,
-    //             'id_supplier' => $this->id_supplier,
-    //             'id_account' => $this->id_account
-    //         ]);
-    //     }
-
-    //     return $result;
-    // }
 
     // public function find(string $id): ?ProductReceipt
     // {
@@ -107,10 +119,71 @@ class ProductReceipt
 
     private function fillFromDbRow(array $row): ProductReceipt
     {
-        $this->id_receipt = $row['id_receipt'];
-        $this->created_at = $row['created_at'];
-        $this->id_supplier = $row['id_supplier'];
-        $this->id_account = (int)$row['id_account'];
-        return $this;
+
+        $receipts = new ProductReceipt(pdo());
+
+        $receipts->id_receipt = $row['id_receipt'];
+        $receipts->created_at = $row['created_at'];
+        $receipts->id_supplier = $row['id_supplier'];
+        $receipts->id_account = (int) $row['id_account'];
+        return $receipts;
     }
+
+    public function getAll(): array
+    {
+        $statement = $this->db->prepare(
+            'SELECT * FROM Product_receipt ORDER BY created_at DESC'
+        );
+        $statement->execute();
+
+        $receipts = [];
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $receipt = new self($this->db);
+            $receipts[] = $receipt->fillFromDbRow($row);
+        }
+        return $receipts;
+    }
+
+    public function getByTime($time): array
+    {
+        // Ép về định dạng ngày Y-m-d để so sánh không kèm giờ
+        $dateOnly = date('Y-m-d', strtotime($time));
+
+        $statement = $this->db->prepare(
+            'SELECT * FROM Product_receipt WHERE DATE(created_at) = :date ORDER BY created_at DESC'
+        );
+        $statement->execute([
+            'date' => $dateOnly
+        ]);
+
+        $receipts = [];
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $receipt = new self($this->db);
+            $receipts[] = $receipt->fillFromDbRow($row);
+        }
+
+        return $receipts;
+    }
+
+    public function getByIdSuplider($id): array
+    {
+
+        $statement = $this->db->prepare(
+            'SELECT * FROM Product_receipt WHERE id_supplier = :id ORDER BY created_at DESC'
+        );
+        $statement->execute([
+            'id' => $id
+        ]);
+
+        $receipts = [];
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $receipt = new self($this->db);
+            $receipts[] = $receipt->fillFromDbRow($row);
+        }
+
+        return $receipts;
+    }
+
+
+
 }

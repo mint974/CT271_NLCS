@@ -46,11 +46,11 @@ unset($_SESSION['success']);
 
             <div class="col-md-6">
                 <input type="text" class="form-control" name="id_catalog" placeholder="🔎 Theo ID danh mục..."
-                    value="<?= $this->e($_POST['id_catalog'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['id_catalog'] ?? '') ?>">
             </div>
             <div class="col-md-6">
                 <input type="text" class="form-control" name="name" placeholder="🔍 Theo tên danh mục..."
-                    value="<?= $this->e($_POST['name'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
             </div>
 
             <div class="col-md-12 mb-1 text-md-center">
@@ -76,11 +76,11 @@ unset($_SESSION['success']);
                 <?php if (is_array($errors)): ?>
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?= $this->e($error) ?></li>
+                            <li><?= htmlspecialchars($error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <?= $this->e($errors) ?>
+                    <?= htmlspecialchars($errors) ?>
                 <?php endif; ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -111,10 +111,10 @@ unset($_SESSION['success']);
                     <?php foreach ($catalogs as $index => $catalog): ?>
                         <tr>
                             <td><?= $index + 1 ?></td>
-                            <td><?= $this->e($catalog->id_catalog) ?></td>
-                            <td><?= $this->e($catalog->name) ?></td>
+                            <td><?= htmlspecialchars($catalog->id_catalog) ?></td>
+                            <td><?= htmlspecialchars($catalog->name) ?></td>
                             <td>
-                                <a href="/catalogs/update/<?= $this->e($catalog->id_catalog) ?>" class="btn btn-sm btn-outline-primary">
+                                <a href="/catalogs/update/<?= htmlspecialchars($catalog->id_catalog) ?>" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
                             </td>

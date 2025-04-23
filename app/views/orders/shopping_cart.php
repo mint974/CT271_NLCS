@@ -198,7 +198,7 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="<?= '/orders/update/' . $this->e($product['id_product']) ?>"
+                                            <form action="<?= '/orders/update/' . htmlspecialchars($product['id_product']) ?>"
                                                 method="POST">
 
                                                 <!-- Tên sản phẩm -->

@@ -60,11 +60,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e($error) ?></li>
+                                        <li><?= htmlspecialchars($error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php endif; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
@@ -73,7 +73,7 @@ if (empty($_SESSION['csrf_token'])) {
 
                     <?php if (isset($success) && !empty($success)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= $this->e($success) ?>
+                            <?= htmlspecialchars($success) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     <?php endif; ?>
@@ -84,43 +84,43 @@ if (empty($_SESSION['csrf_token'])) {
                     ?>
 
                     <form action="/promotion/update" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $this->e($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
                         <div class="mb-3">
                             <label for="id_promotion" class="form-label"><strong>Mã khuyến mãi</strong></label>
                             <input type="text" class="form-control" id="id_promotion" name="id_promotion"
-                                value="<?= $this->e($old['id_promotion'] ?? $promotion->id_promotion) ?>" readonly>
+                                value="<?= htmlspecialchars($old['id_promotion'] ?? $promotion->id_promotion) ?>" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label"><strong>Tên khuyến mãi</strong></label>
                             <input type="text" class="form-control" id="name" name="name"
-                                value="<?= $this->e($old['name'] ?? $promotion->name) ?>" required>
+                                value="<?= htmlspecialchars($old['name'] ?? $promotion->name) ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label"><strong>Mô tả</strong></label>
                             <textarea class="form-control" id="description" name="description"
-                                required><?= $this->e($old['description'] ?? $promotion->description) ?></textarea>
+                                required><?= htmlspecialchars($old['description'] ?? $promotion->description) ?></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="discount_percent" class="form-label"><strong>Phần trăm giảm (%)</strong></label>
                             <input type="number" class="form-control" id="discount_percent" name="discount_percent"
                                 min="0" max="100"
-                                value="<?= $this->e($old['discount_percent'] ?? $promotion->discount_rate) ?>" required>
+                                value="<?= htmlspecialchars($old['discount_percent'] ?? $promotion->discount_rate) ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="start_date" class="form-label"><strong>Ngày bắt đầu</strong></label>
                             <input type="datetime-local" class="form-control" id="start_date" name="start_date"
-                                value="<?= $this->e(date('Y-m-d\TH:i', strtotime($startDate))) ?>" required>
+                                value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($startDate))) ?>" required>
                         </div>
 
                         <div class="mb-4">
                             <label for="end_date" class="form-label"><strong>Ngày kết thúc</strong></label>
                             <input type="datetime-local" class="form-control" id="end_date" name="end_date"
-                                value="<?= $this->e(date('Y-m-d\TH:i', strtotime($endDate))) ?>" required>
+                                value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($endDate))) ?>" required>
                         </div>
 
                         <button type="submit" class="btn btn-submit w-100 fw-bold mb-3">Cập nhật khuyến mãi</button>

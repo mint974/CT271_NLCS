@@ -158,7 +158,7 @@
                             </td>
 
                             <td>
-                                <a href="<?= '/products/proddetail/' . $this->e($product['id_product']) ?>" class="btn btn-sm btn-outline-primary">
+                                <a href="<?= '/products/proddetail/' . htmlspecialchars($product['id_product']) ?>" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> Xem chi tiết
                                 </a>
                                

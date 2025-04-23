@@ -43,20 +43,20 @@
 
             <div class="col-md-3">
                 <input type="text" class="form-control" name="id_promotion" placeholder="🔎 Theo ID khuyến mãi..."
-                    value="<?= $this->e($_POST['id_promotion'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['id_promotion'] ?? '') ?>">
             </div>
             <div class="col-md-3">
                 <input type="text" class="form-control" name="name" placeholder="🔍 Theo tên khuyến mãi..."
-                    value="<?= $this->e($_POST['name'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
             </div>
 
             <div class="col-md-3">
                 <input type="date" class="form-control" name="start_day" placeholder="🔎 Theo ngày bắt đầu"
-                    value="<?= $this->e($_POST['start_day'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['start_day'] ?? '') ?>">
             </div>
             <div class="col-md-3">
                 <input type="date" class="form-control" name="end_day" placeholder="🔍 Theo ngày kết thúc"
-                    value="<?= $this->e($_POST['end_day'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['end_day'] ?? '') ?>">
             </div>
 
             <div class="col-md-12 mb-1 mb-1 text-md-center">
@@ -84,11 +84,11 @@
                 <?php if (is_array($errors)): ?>
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?= $this->e((string) $error) ?></li>
+                            <li><?= htmlspecialchars((string) $error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif (is_string($errors)): ?>
-                    <?= $this->e($errors) ?>
+                    <?= htmlspecialchars($errors) ?>
                 <?php else: ?>
                     <p>Lỗi không xác định.</p>
                 <?php endif; ?>
@@ -135,14 +135,14 @@
                         <?php foreach ($promotions as $index => $promotion): ?>
                             <tr>
                                 <td><?= $index + 1 ?></td>
-                                <td><?= $this->e($promotion->id_promotion) ?></td>
-                                <td><?= $this->e($promotion->name) ?></td>
-                                <td><?= $this->e($promotion->description) ?></td>
-                                <td><?= $this->e($promotion->start_day) ?></td>
-                                <td><?= $this->e($promotion->end_day) ?></td>
-                                <td><span class="badge bg-success"><?= $this->e($promotion->discount_rate) ?>%</span></td>
+                                <td><?= htmlspecialchars($promotion->id_promotion) ?></td>
+                                <td><?= htmlspecialchars($promotion->name) ?></td>
+                                <td><?= htmlspecialchars($promotion->description) ?></td>
+                                <td><?= htmlspecialchars($promotion->start_day) ?></td>
+                                <td><?= htmlspecialchars($promotion->end_day) ?></td>
+                                <td><span class="badge bg-success"><?= htmlspecialchars($promotion->discount_rate) ?>%</span></td>
                                 <td>
-                                    <a href="/promotions/update/<?= $this->e($promotion->id_promotion) ?>"
+                                    <a href="/promotions/update/<?= htmlspecialchars($promotion->id_promotion) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>

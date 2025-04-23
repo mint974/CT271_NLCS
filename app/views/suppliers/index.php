@@ -44,11 +44,11 @@ unset($_SESSION['success']);
 
             <div class="col-md-6">
                 <input type="text" class="form-control" name="id_supplier" placeholder="🔎 Theo ID nhà cung cấp..."
-                    value="<?= $this->e($_POST['id_supplier'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['id_supplier'] ?? '') ?>">
             </div>
             <div class="col-md-6">
                 <input type="text" class="form-control" name="name" placeholder="🔍 Theo tên nhà cung cấp..."
-                    value="<?= $this->e($_POST['name'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
             </div>
 
             <div class="col-md-12 mb-1 text-md-center">
@@ -74,11 +74,11 @@ unset($_SESSION['success']);
                 <?php if (is_array($errors)): ?>
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?= $this->e((string) $error) ?></li>
+                            <li><?= htmlspecialchars((string) $error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif (is_string($errors)): ?>
-                    <?= $this->e($errors) ?>
+                    <?= htmlspecialchars($errors) ?>
                 <?php else: ?>
                     <p>Lỗi không xác định.</p>
                 <?php endif; ?>
@@ -122,10 +122,10 @@ unset($_SESSION['success']);
                         <?php foreach ($suppliers as $index => $supplier): ?>
                             <tr>
                                 <td><?= $index + 1 ?></td>
-                                <td><?= $this->e($supplier->id_supplier) ?></td>
-                                <td><?= $this->e($supplier->name) ?></td>
+                                <td><?= htmlspecialchars($supplier->id_supplier) ?></td>
+                                <td><?= htmlspecialchars($supplier->name) ?></td>
                                 <td>
-                                    <a href="/suppliers/update/<?= $this->e($supplier->id_supplier) ?>"
+                                    <a href="/suppliers/update/<?= htmlspecialchars($supplier->id_supplier) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>

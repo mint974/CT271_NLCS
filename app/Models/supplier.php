@@ -74,11 +74,12 @@ class Supplier
 
     private function fillFromDbRow(array $row): Supplier
     {
+        $supplier = new Supplier(pdo());
         [
-            'id_supplier' => $this->id_supplier,
-            'name' => $this->name
+            'id_supplier' => $supplier->id_supplier,
+            'name' => $supplier->name
         ] = $row;
-        return $this;
+        return $supplier;
     }
 
     public function getAll(): array

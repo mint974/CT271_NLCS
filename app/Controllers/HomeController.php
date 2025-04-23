@@ -29,12 +29,12 @@ class HomeController extends Controller
     ]);
   }
 
-  private function checkLogin()
-  {
-    if (!AUTHGUARD()->isUserLoggedIn()) {
-      redirect('/login');
-    }
-  }
+  // private function checkLogin()
+  // {
+  //   if (!AUTHGUARD()->isUserLoggedIn()) {
+  //     redirect('/login');
+  //   }
+  // }
 
   public function search()
   {
@@ -80,6 +80,8 @@ class HomeController extends Controller
 
   function adminindex()
   {
+    $this->checkroleadmin();
+    $this->checkLogin();
     $ordermodel = new Order(pdo());
 
     $orders = $ordermodel->getTodayOrders();

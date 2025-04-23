@@ -60,11 +60,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e($error) ?></li>
+                                        <li><?= htmlspecialchars($error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php endif; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
@@ -72,24 +72,24 @@ if (empty($_SESSION['csrf_token'])) {
 
                     <?php if (isset($success) && !empty($success)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= $this->e($success) ?>
+                            <?= htmlspecialchars($success) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     <?php endif; ?>
 
                     <form action="/catalogs/update" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $this->e($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
                         <div class="mb-3">
                             <label for="id_catalog" class="form-label"><strong>Mã danh mục</strong></label>
                             <input type="text" class="form-control" id="id_catalog" name="id_catalog"
-                                value="<?= $this->e($old['id_catalog'] ?? $catalog->id_catalog) ?>" readonly>
+                                value="<?= htmlspecialchars($old['id_catalog'] ?? $catalog->id_catalog) ?>" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label"><strong>Tên danh mục</strong></label>
                             <input type="text" class="form-control" id="name" name="name"
-                                value="<?= $this->e($old['name'] ?? $catalog->name) ?>" required>
+                                value="<?= htmlspecialchars($old['name'] ?? $catalog->name) ?>" required>
                         </div>
 
                         <button type="submit" class="btn btn-submit w-100 fw-bold mb-3">Cập nhật danh mục</button>

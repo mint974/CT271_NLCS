@@ -62,7 +62,7 @@
                             ?>
                             <?php foreach ($product_list as $product): ?>
                                 <div class="col product-card p-3 product-item">
-                                    <a href="<?= '/products/proddetail/' . $this->e($product['id_product']) ?>">
+                                    <a href="<?= '/products/proddetail/' . htmlspecialchars($product['id_product']) ?>">
                                         <div class="card    h-100 position-relative">
                                             <?php
                                             // Lấy danh sách ảnh, chọn ảnh đầu tiên nếu có, nếu không dùng ảnh mặc định
@@ -78,7 +78,7 @@
                                                 <p class="card-text fs-5 pt-2">
                                                     <?php echo number_format($product['price'], 0, ',', '.'); ?> đ
                                                 </p>
-                                                <form action="<?= '/products/addprod/' . $this->e($product['id_product']) ?>"
+                                                <form action="<?= '/products/addprod/' . htmlspecialchars($product['id_product']) ?>"
                                                     method="post">
                                                     <button type="submit" class="btn my-btn btn-outline-success">
                                                         <i class="fa fa-plus orange-color"></i> Thêm vào giỏ
@@ -105,7 +105,7 @@
                                 $discountedPrice = $product1['price'] * (1 - $product1['discount_rate'] / 100);
                                 ?>
                                 <div class="col p-3 " id="discounted-product-list">
-                                    <a href="<?= '/products/proddetail/' . $this->e($product1['id_product']) ?>">
+                                    <a href="<?= '/products/proddetail/' . htmlspecialchars($product1['id_product']) ?>">
                                         <div class="card h-100 position-relative">
                                             <img src="<?php echo htmlspecialchars($firstImage1); ?>" class="card-img-top"
                                                 alt="<?php echo htmlspecialchars($product1['name']); ?>">
@@ -128,7 +128,7 @@
                                                         <?php echo number_format($product1['price'], 0, ',', '.'); ?> đ
                                                     </p>
                                                 </div>
-                                                <form action="<?= '/products/addprod/' . $this->e($product1['id_product']) ?>"
+                                                <form action="<?= '/products/addprod/' . htmlspecialchars($product1['id_product']) ?>"
                                                     method="post">
                                                     <button type="submit" class="btn my-btn btn-outline-success">
                                                         <i class="fa fa-plus orange-color"></i> Thêm vào giỏ
@@ -160,7 +160,7 @@
                                 <?php foreach ($products1 as $index => $product2): ?>
                                     <div class="col product-card p-3 product-item"
                                         style="display: <?php echo $index < 10 ? 'block' : 'none'; ?>;">
-                                        <a href="<?= '/products/proddetail/' . $this->e($product2['id_product']) ?>">
+                                        <a href="<?= '/products/proddetail/' . htmlspecialchars($product2['id_product']) ?>">
                                             <div class="card h-100 position-relative">
                                                 <?php
                                                 // Lấy danh sách ảnh, chọn ảnh đầu tiên nếu có, nếu không dùng ảnh mặc định
@@ -177,7 +177,7 @@
                                                         <?php echo number_format($product2['price'], 0, ',', '.'); ?> đ
                                                     </p>
                                                     <form
-                                                        action="<?= '/products/addprod/' . $this->e($product2['id_product']) ?>"
+                                                        action="<?= '/products/addprod/' . htmlspecialchars($product2['id_product']) ?>"
                                                         method="post">
                                                         <button type="submit" class="btn my-btn btn-outline-success">
                                                             <i class="fa fa-plus orange-color"></i> Thêm vào giỏ
@@ -210,7 +210,7 @@
                                 <?php foreach ($products2 as $index => $product3): ?>
                                     <div class="col product-card p-3 product-item"
                                         style="display: <?php echo $index < 10 ? 'block' : 'none'; ?>;">
-                                        <a href="<?= '/products/proddetail/' . $this->e($product3['id_product']) ?>">
+                                        <a href="<?= '/products/proddetail/' . htmlspecialchars($product3['id_product']) ?>">
                                             <div class="card h-100 position-relative">
                                                 <?php
                                                 // Lấy danh sách ảnh, chọn ảnh đầu tiên nếu có, nếu không dùng ảnh mặc định
@@ -227,7 +227,7 @@
                                                         <?php echo number_format($product3['price'], 0, ',', '.'); ?> đ
                                                     </p>
                                                     <form
-                                                        action="<?= '/products/addprod/' . $this->e($product3['id_product']) ?>"
+                                                        action="<?= '/products/addprod/' . htmlspecialchars($product3['id_product']) ?>"
                                                         method="post">
                                                         <button type="submit" class="btn my-btn btn-outline-success">
                                                             <i class="fa fa-plus orange-color"></i> Thêm vào giỏ

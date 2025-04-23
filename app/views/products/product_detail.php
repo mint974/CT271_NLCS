@@ -340,7 +340,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                     <?php endif; ?>
 
                     <?php if (AUTHGUARD()->user()->role === 'khách hàng'): ?>
-                        <form action="<?= '/products/addprod/' . $this->e($products->id_product) ?>" method="post">
+                        <form action="<?= '/products/addprod/' . htmlspecialchars($products->id_product) ?>" method="post">
                             <div class="number-input" style="width: 103px;">
                                 <button class="minus" onclick="decreaseValue(event)">-</button>
                                 <input type="number" id="quantity" name="quantity" value="1" min="1">
@@ -354,21 +354,21 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                     <?php else: ?>
                         <div class="row row-cols-1 row-cols-md-1 g-3 mt-4">
                             <div class="col">
-                                <a href="/products/updateInfor/<?= $this->e($products->id_product) ?>"
+                                <a href="/products/updateInfor/<?= htmlspecialchars($products->id_product) ?>"
                                     class="btn btn-warning w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-pencil-square"></i>
                                     <span>Sửa thông tin sản phẩm</span>
                                 </a>
                             </div>
                             <div class="col">
-                                <a href="/products/update/<?= $this->e($products->id_product) ?>"
+                                <a href="/products/update/<?= htmlspecialchars($products->id_product) ?>"
                                     class="btn btn-info w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2 text-white">
                                     <i class="bi bi-image"></i>
                                     <span>Sửa ảnh sản phẩm</span>
                                 </a>
                             </div>
                             <div class="col">
-                                <a href="/products/update/<?= $this->e($products->id_product) ?>"
+                                <a href="/products/update/<?= htmlspecialchars($products->id_product) ?>"
                                     class="btn btn-success w-100 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-tags"></i>
                                     <span>Sửa danh mục sản phẩm</span>
@@ -460,11 +460,11 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                         <?php foreach ($receipt_details_full as $index => $item): ?>
                             <tr>
                                 <td><?= $index + 1 ?></td>
-                                <td><?= $this->e($item['receipt']->created_at) ?></td>
-                                <td><?= $this->e($item['receipt']->id_receipt) ?></td>
-                                <td><?= $this->e($item['createdBy']->username) ?></td>
-                                <td><?= $this->e($item['supplier']->name) ?></td>
-                                <td><?= $this->e($item['detail']->quantity) ?></td>
+                                <td><?= htmlspecialchars($item['receipt']->created_at) ?></td>
+                                <td><?= htmlspecialchars($item['receipt']->id_receipt) ?></td>
+                                <td><?= htmlspecialchars($item['createdBy']->username) ?></td>
+                                <td><?= htmlspecialchars($item['supplier']->name) ?></td>
+                                <td><?= htmlspecialchars($item['detail']->quantity) ?></td>
                                 <td><?= number_format($item['detail']->purchase_price) ?> đ</td>
                                 <td><?= number_format($item['detail']->selling_price) ?> đ</td>
                             </tr>

@@ -48,10 +48,14 @@ class Product
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->fillFromDbRow($row);
+            $newProduct = new Product($this->db);
+            $newProduct->fillFromDbRow($row);
+            return $newProduct;
         }
-        return $this;
+
+        return null;
     }
+
 
     //admin tìm kiếm
     public function searchadmin(string $column, string $value): array
@@ -98,7 +102,7 @@ class Product
         return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
-// lưu sản phẩm
+    // lưu sản phẩm
     public function save(): bool
     {
         if (!empty($this->id_product)) {
@@ -260,7 +264,7 @@ class Product
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-//tìm kiếm sản phẩm
+    //tìm kiếm sản phẩm
     public function searchProductsByKeyword(string $keyword): array
     {
         $likeKeyword = '%' . $keyword . '%';
@@ -350,9 +354,56 @@ class Product
             // Nếu bạn có thêm các thuộc tính phụ như:
             'images' => $this->images ?? [],
             'catalogs' => $this->catalogs ?? [],
-            
+
         ];
     }
+
+    //lấy danh sách sản phẩm hết hàng
+    public function getOutOfStockProducts(): array
+    {
+        $query = "
+        SELECT p.*, 
+               GROUP_CONCAT(ip.URL_image) AS images,
+               pr.name AS promotion_name, pr.description AS promotion_description, 
+               pr.start_day, pr.end_day, pr.discount_rate
+        FROM Products p
+        LEFT JOIN Image_Product ip ON p.id_product = ip.id_product
+        LEFT JOIN Promotions pr ON p.id_promotion = pr.id_promotion
+        WHERE p.quantity = 0
+        GROUP BY p.id_product
+    ";
+
+        $statement = $this->db->prepare($query);
+        $statement->execute();
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $products = [];
+
+        foreach ($rows as $row) {
+            $product = new Product($this->db);
+            $product->fillFromDbRow($row);
+            $products[] = $product;
+        }
+
+        return $products;
+    }
+
+    public function updateQuantityAndPrice(string $id_product, int $quantity, float $price): bool
+    {
+        $query = "
+        UPDATE Products 
+        SET quantity = :quantity, price = :price 
+        WHERE id_product = :id_product
+    ";
+
+        $statement = $this->db->prepare($query);
+        return $statement->execute([
+            'quantity' => $quantity,
+            'price' => $price,
+            'id_product' => $id_product
+        ]);
+    }
+
 
 
 }

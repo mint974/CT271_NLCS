@@ -38,11 +38,11 @@
 
             <div class="col-md-3">
                 <input type="text" class="form-control" name="id_order" placeholder="🔎 Theo ID đơn hàng..."
-                    value="<?= $this->e($_POST['id_order'] ?? '') ?>">
+                    value="<?= htmlspecialchars($_POST['id_order'] ?? '') ?>">
             </div>
             <div class="col-md-3">
                 <input type="number" min="2" class="form-control" name="id_account"
-                    placeholder="🔍 Theo ID tài khoản..." value="<?= $this->e($_POST['id_account'] ?? '') ?>">
+                    placeholder="🔍 Theo ID tài khoản..." value="<?= htmlspecialchars($_POST['id_account'] ?? '') ?>">
             </div>
             <div class="col-md-3">
                 <select name="status" class="form-select">
@@ -93,12 +93,12 @@
     <div class="card table-responsive mb-3">
         <?php if (isset($errors) && !empty($errors)): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <?= is_array($errors) ? implode('<br>', array_map('htmlspecialchars', $errors)) : $this->e($errors) ?>
+                <?= is_array($errors) ? implode('<br>', array_map('htmlspecialchars', $errors)) : htmlspecialchars($errors) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php elseif (isset($success) && !empty($success)): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= is_array($success) ? implode('<br>', array_map('htmlspecialchars', $success)) : $this->e($success) ?>
+                <?= is_array($success) ? implode('<br>', array_map('htmlspecialchars', $success)) : htmlspecialchars($success) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
@@ -125,10 +125,10 @@
                     <?php foreach ($orders as $index => $order): ?>
                         <tr>
                             <td><?= $index + 1 ?></td>
-                            <td><?= $this->e($order->id_order) ?></td>
-                            <td><?= $this->e($order->created_at) ?></td>
-                            <td><?= $this->e($order->id_account) ?></td>
-                            <td><?= $this->e($order->id_delivery ?? '—') ?></td>
+                            <td><?= htmlspecialchars($order->id_order) ?></td>
+                            <td><?= htmlspecialchars($order->created_at) ?></td>
+                            <td><?= htmlspecialchars($order->id_account) ?></td>
+                            <td><?= htmlspecialchars($order->id_delivery ?? '—') ?></td>
                             <td>
                                 <?php
                                 $status = $order->status;
@@ -140,19 +140,19 @@
                                 };
                                 ?>
                                 <span class="badge text-white" style="background-color: <?= $badgeColor ?>;">
-                                    <?= $this->e($status) ?>
+                                    <?= htmlspecialchars($status) ?>
                                 </span>
                             </td>
 
                             <td>
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="<?= '/orders/order_detail/' . $this->e($order->id_order) ?>"
+                                    <a href="<?= '/orders/order_detail/' . htmlspecialchars($order->id_order) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> Xem chi tiết
                                     </a>
 
                                     <?php if ($order->status !== 'Đơn hàng đã bị hủy' && $order->status !== 'Giao hàng thành công'): ?>
-                                        <a href="<?= '/orders/update/' . $this->e($order->id_order) ?>"
+                                        <a href="<?= '/orders/update/' . htmlspecialchars($order->id_order) ?>"
                                             class="btn btn-sm btn-primary">
                                             <i class="bi bi-pencil-square"></i> Cập nhật
                                         </a>

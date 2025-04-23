@@ -56,13 +56,13 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                     <h3 class="text-center"><i class="fa fa-truck"></i> Thông Tin Giao Hàng</h3>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Tên người nhận:</strong>
-                            <?php echo $this->e($orderInfo->receiver_name); ?>
+                            <?php echo htmlspecialchars($orderInfo->receiver_name); ?>
                         </li>
                         <li class="list-group-item"><strong>Số điện thoại:</strong>
-                            <?php echo $this->e($orderInfo->receiver_phone); ?>
+                            <?php echo htmlspecialchars($orderInfo->receiver_phone); ?>
                         </li>
                         <li class="list-group-item"><strong>Địa chỉ:</strong>
-                            <?php echo $this->e($orderInfo->house_number . ', ' . $orderInfo->ward . ', ' . $orderInfo->district . ', ' . $orderInfo->city); ?>
+                            <?php echo htmlspecialchars($orderInfo->house_number . ', ' . $orderInfo->ward . ', ' . $orderInfo->district . ', ' . $orderInfo->city); ?>
                         </li>
                         <li class="list-group-item"><strong>Phí giao hàng:</strong>
                             <?php echo number_format($orderInfo->shipping_fee, 0, ',', '.') . ' VND'; ?>
@@ -76,17 +76,17 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                         <h3 class="text-center"><i class="fa fa-credit-card"></i> Thông Tin Thanh Toán</h3>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>Mã thanh toán:</strong>
-                                <?php echo $this->e($payment->id_payment); ?>
+                                <?php echo htmlspecialchars($payment->id_payment); ?>
                             </li>
                             <li class="list-group-item"><strong>Phương thức:</strong>
-                                <?php echo $this->e($payment->payment_method); ?>
+                                <?php echo htmlspecialchars($payment->payment_method); ?>
                             </li>
                             <li class="list-group-item"><strong>Trạng thái:</strong>
                                 <span
-                                    class="text-success fw-bold"><?php echo $this->e($payment->payment_status); ?></span>
+                                    class="text-success fw-bold"><?php echo htmlspecialchars($payment->payment_status); ?></span>
                             </li>
                             <li class="list-group-item"><strong>Mã giao dịch:</strong>
-                                <?php echo $this->e($payment->transaction_code); ?>
+                                <?php echo htmlspecialchars($payment->transaction_code); ?>
                             </li>
                             <li class="list-group-item"><strong>Thời gian thanh toán:</strong>
                                 <?php echo date('H:i:s d/m/Y', strtotime($payment->payment_time)); ?>
@@ -103,7 +103,7 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                 <?php echo ($order->status === 'Giao hàng thành công') ? 'alert-success' :
                     (($order->status === 'Đơn hàng đã bị hủy') ? 'alert-danger' :
                         'alert-secondary'); ?>">
-                            <?php echo $this->e($order->status); ?>
+                            <?php echo htmlspecialchars($order->status); ?>
                         </div>
                     </div>
 
@@ -138,11 +138,11 @@ if (AUTHGUARD()->user()->role === 'khách hàng') {
                         <?php foreach ($orderProducts as $item): ?>
                             <tr>
                                 <td>
-                                    <img src="<?php echo $this->e($item['image'] ?? 'default.jpg'); ?>" width="50"
+                                    <img src="<?php echo htmlspecialchars($item['image'] ?? 'default.jpg'); ?>" width="50"
                                         height="50" class="rounded" alt="Sản phẩm">
                                 </td>
-                                <td><?php echo $this->e($item['product_name'] ?? 'Không xác định'); ?></td>
-                                <td class="text-center"><?php echo $this->e($item['quantity'] ?? 0); ?></td>
+                                <td><?php echo htmlspecialchars($item['product_name'] ?? 'Không xác định'); ?></td>
+                                <td class="text-center"><?php echo htmlspecialchars($item['quantity'] ?? 0); ?></td>
                                 <td class="text-end">
                                     <?php echo number_format((float) ($item['price'] ?? 0), 0, ',', '.') . ' VND'; ?>
                                 </td>

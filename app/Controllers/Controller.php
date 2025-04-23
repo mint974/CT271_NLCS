@@ -50,4 +50,18 @@ class Controller
         return true;
     }
 
+    public function checkroleadmin(){
+        if(AUTHGUARD()->user()->role === 'khách hàng'){
+            $this->sendNotFound();
+            exit();
+        }
+    }
+    
+  public function checkLogin()
+  {
+    if (!AUTHGUARD()->isUserLoggedIn()) {
+      redirect('/login');
+    }
+  }
+
 }

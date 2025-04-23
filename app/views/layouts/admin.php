@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><?= $this->e($title) ?></title>
+  <title><?= htmlspecialchars($title) ?></title>
   <link rel="icon" href="/assets/image/icon-logo.png" type="image/x-icon">
 
   <!-- Bootstrap & Icons -->
@@ -142,6 +142,10 @@
       width: 20px;
       text-align: center;
     }
+
+    .sidebar a {
+      text-decoration: none;
+    }
   </style>
 </head>
 
@@ -150,10 +154,12 @@
     <div class="row">
       <!-- Sidebar -->
       <div class="col-auto sidebar d-flex flex-column">
-        <div class="logo">
-          <img src="/assets/image/icon-logo.png" alt="Logo">
-          <h6>Mint Fresh <span style="color: var(--orange-color);">Fruit</span></h6>
-        </div>
+        <a href="/adminhome">
+          <div class="logo">
+            <img src="/assets/image/icon-logo.png" alt="Logo">
+            <h6>Mint Fresh <span style="color: var(--orange-color);">Fruit</span></h6>
+          </div>
+        </a>
 
         <div class="flex-grow-1 d-flex flex-column">
           <a href="/adminhome" class="nav-item"><i class="fas fa-home"></i> Tổng quan</a>
@@ -170,7 +176,7 @@
             <a href="/products/admin" class="nav-item">Danh sách sản phẩm</a>
             <a href="/suppliers/admin" class="nav-item">Nhà cung cấp</a>
             <a href="/catalogs/admin" class="nav-item">Danh mục sản phẩm</a>
-            <a href="/receipt" class="nav-item">Nhập hàng</a>
+            <a href="/receipt/index" class="nav-item">Nhập hàng</a>
           </div>
 
 
@@ -199,13 +205,13 @@
           </p>
 
 
-          <a href="<?= '/account/detail/' . $this->e(AUTHGUARD()->user()->id_account) ?>">
+          <a href="<?= '/account/detail/' . htmlspecialchars(AUTHGUARD()->user()->id_account) ?>">
             <div class="user-info d-flex align-items-center gap-2">
               <div class="text-end">
-                <strong class="fs-6"><?= $this->e(AUTHGUARD()->user()->username); ?></strong><br>
-                <small><?= $this->e(AUTHGUARD()->user()->role); ?></small>
+                <strong class="fs-6"><?= htmlspecialchars(AUTHGUARD()->user()->username); ?></strong><br>
+                <small><?= htmlspecialchars(AUTHGUARD()->user()->role); ?></small>
               </div>
-              <img src="/<?= $this->e(AUTHGUARD()->user()->url); ?>" alt="Avatar" class="rounded-circle"
+              <img src="/<?= htmlspecialchars(AUTHGUARD()->user()->url); ?>" alt="Avatar" class="rounded-circle"
                 style="width: 40px; height: 40px; object-fit: cover;">
 
             </div>

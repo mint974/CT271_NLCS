@@ -61,7 +61,7 @@
                     <form action="/account/activate" method="POST">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
-                        <input type="hidden" name="id_account" value="<?= $this->e($user['id_account']) ?>">
+                        <input type="hidden" name="id_account" value="<?= htmlspecialchars($user['id_account']) ?>">
 
                         <div class="mb-3">
                             <label class="form-label"><strong>ID tài khoản</strong></label>

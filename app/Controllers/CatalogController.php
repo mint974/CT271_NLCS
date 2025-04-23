@@ -9,6 +9,7 @@ class CatalogController extends Controller
     public function __construct()
     {
         parent::__construct();
+        $this->checkroleadmin();
     }
 
     public function index($error = null, $success = null)

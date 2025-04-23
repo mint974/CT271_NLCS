@@ -144,5 +144,16 @@ $router->POST('/catalogs/store', '\App\Controllers\CatalogController@store');
 $router->get('/catalogs/update/([\w-]+)', '\App\Controllers\catalogController@updatepage');
 $router->POST('/catalogs/update', '\App\Controllers\catalogController@update');
 
+
+//receipt 
+$router->get('/receipt/index', '\App\Controllers\ReceiptController@index');
+$router->post('/receipts/search', '\App\Controllers\ReceiptController@search');
+
+$router->get('/receipts/detail/([\w-]+)', '\App\Controllers\ReceiptController@ReceiptDetail');
+
+$router->get('/receipt/update', '\App\Controllers\ReceiptController@updatePage');
+$router->post('/receipts/update', '\App\Controllers\ReceiptController@update');
+
+
 $router->set404('\App\Controllers\Controller@sendNotFound');
 $router->run();

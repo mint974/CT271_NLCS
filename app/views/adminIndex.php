@@ -52,7 +52,7 @@
             <h5 class="mb-0"><i class="bi bi-tags me-2"></i>Khuyến mãi</h5>
           </div>
           <div class="card-body">
-            <p class="mb-0">Hiện có <strong><?= $this->e($totalpromotion) ?></strong> chương trình khuyến mãi đang diễn
+            <p class="mb-0">Hiện có <strong><?= htmlspecialchars($totalpromotion) ?></strong> chương trình khuyến mãi đang diễn
               ra.</p>
           </div>
         </div>
@@ -64,7 +64,7 @@
             <h5 class="mb-0"><i class="bi bi-people me-2"></i>Tổng số người dùng</h5>
           </div>
           <div class="card-body">
-            <p class="mb-0">Hệ thống hiện có <strong><?= $this->e($totaluser) ?></strong> người dùng đã đăng ký.</p>
+            <p class="mb-0">Hệ thống hiện có <strong><?= htmlspecialchars($totaluser) ?></strong> người dùng đã đăng ký.</p>
           </div>
         </div>
       </a>
@@ -79,11 +79,11 @@
         <div class="card-body" id="todayOrders">
           <?php if (!empty($orders)): ?>
             <?php foreach ($orders as $order): ?>
-              <a href="<?= '/orders/order_detail/' . $this->e($order->id_order) ?>" class="text-decoration-none text-dark">
+              <a href="<?= '/orders/order_detail/' . htmlspecialchars($order->id_order) ?>" class="text-decoration-none text-dark">
                 <div class="border rounded-3 p-3 mb-3 bg-light hover-shadow transition">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold text-primary">Mã đơn: <?= $this->e($order->id_order) ?></span>
-                    <span class="badge bg-secondary"><?= $this->e($order->status) ?></span>
+                    <span class="fw-semibold text-primary">Mã đơn: <?= htmlspecialchars($order->id_order) ?></span>
+                    <span class="badge bg-secondary"><?= htmlspecialchars($order->status) ?></span>
                   </div>
                   <p class="mb-1">
                     <i class="bi bi-calendar-event me-1 text-muted"></i>
@@ -91,12 +91,12 @@
                   </p>
                   <p class="mb-1">
                     <i class="bi bi-person-circle me-1 text-muted"></i>
-                    <small class="text-muted">Tài khoản ID:</small> <?= $this->e($order->id_account) ?>
+                    <small class="text-muted">Tài khoản ID:</small> <?= htmlspecialchars($order->id_account) ?>
                   </p>
                   <?php if (!empty($order->id_delivery)): ?>
                     <p class="mb-0">
                       <i class="bi bi-truck me-1 text-muted"></i>
-                      <small class="text-muted">Mã giao hàng:</small> <?= $this->e($order->id_delivery) ?>
+                      <small class="text-muted">Mã giao hàng:</small> <?= htmlspecialchars($order->id_delivery) ?>
                     </p>
                   <?php endif; ?>
                 </div>

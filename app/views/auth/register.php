@@ -119,10 +119,10 @@
         <div class="mb-3">
           <label for="username" class="form-label">Tên đăng nhập</label>
           <input id="username" type="text" class="form-control form-control-sm <?= isset($errors['username']) ? 'is-invalid' : '' ?>"
-            name="username" value="<?= isset($old['username']) ? $this->e($old['username']) : '' ?>" required autofocus>
+            name="username" value="<?= isset($old['username']) ? htmlspecialchars($old['username']) : '' ?>" required autofocus>
           <?php if (isset($errors['username'])): ?>
             <span class="invalid-feedback">
-              <strong><?= $this->e($errors['username']) ?></strong>
+              <strong><?= htmlspecialchars($errors['username']) ?></strong>
             </span>
           <?php endif ?>
         </div>
@@ -130,10 +130,10 @@
         <div class="mb-3">
           <label for="email" class="form-label">E-Mail</label>
           <input id="email" type="email" class="form-control form-control-sm  <?= isset($errors['email']) ? ' is-invalid' : '' ?>"
-            name="email" value="<?= isset($old['email']) ? $this->e($old['email']) : '' ?>" required>
+            name="email" value="<?= isset($old['email']) ? htmlspecialchars($old['email']) : '' ?>" required>
           <?php if (isset($errors['email'])): ?>
             <span class="invalid-feedback">
-              <strong><?= $this->e($errors['email']) ?></strong>
+              <strong><?= htmlspecialchars($errors['email']) ?></strong>
             </span>
           <?php endif ?>
         </div>
@@ -142,11 +142,11 @@
           <label for="receiver_phone" class="form-label">Số điện thoại</label>
           <input id="receiver_phone" type="text"
             class="form-control form-control-sm  <?= isset($errors['receiver_phone']) ? ' is-invalid' : '' ?>" name="receiver_phone"
-            value="<?= isset($old['receiver_phone']) ? $this->e($old['receiver_phone']) : '' ?>" required>
+            value="<?= isset($old['receiver_phone']) ? htmlspecialchars($old['receiver_phone']) : '' ?>" required>
 
           <?php if (isset($errors['receiver_phone'])): ?>
             <span class="invalid-feedback">
-              <strong><?= $this->e($errors['receiver_phone']) ?></strong>
+              <strong><?= htmlspecialchars($errors['receiver_phone']) ?></strong>
             </span>
           <?php endif ?>
         </div>
@@ -178,7 +178,7 @@
               class="form-control form-control-sm  <?= isset($errors['password']) ? ' is-invalid' : '' ?>" name="password" required>
             <?php if (isset($errors['password'])): ?>
               <span class="invalid-feedback">
-                <strong><?= $this->e($errors['password']) ?></strong>
+                <strong><?= htmlspecialchars($errors['password']) ?></strong>
               </span>
             <?php endif ?>
           </div>
@@ -190,7 +190,7 @@
 
             <?php if (isset($errors['password_confirm'])): ?>
               <span class="invalid-feedback">
-                <strong><?= $this->e($errors['password_confirm']) ?></strong>
+                <strong><?= htmlspecialchars($errors['password_confirm']) ?></strong>
               </span>
             <?php endif ?>
           </div>

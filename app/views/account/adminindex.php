@@ -110,15 +110,15 @@
                     </LI>
                     <li>
                         <span class="legend-dot" style="background-color: #08a045;"></span> Hoạt động:
-                        <strong><?= $this->e($activities['active']); ?></strong>
+                        <strong><?= htmlspecialchars($activities['active']); ?></strong>
                     </li>
                     <li>
                         <span class="legend-dot" style="background-color: #08bdbd;"></span> Chờ khôi phục:
-                        <strong><?= $this->e($activities['pending_activation']); ?></strong>
+                        <strong><?= htmlspecialchars($activities['pending_activation']); ?></strong>
                     </li>
                     <li>
                         <span class="legend-dot" style="background-color: #f21b3f;"></span> Vô hiệu hóa:
-                        <strong><?= $this->e($activities['suspend']); ?></strong>
+                        <strong><?= htmlspecialchars($activities['suspend']); ?></strong>
                     </li>
                 </ul>
             </div>
@@ -233,7 +233,7 @@
                         <td>
                             <div class="d-flex justify-content-center gap-2">
                                 <?php if (AUTHGUARD()->user()->role === 'quản lý'): ?>
-                                    <a href="<?= '/account/detail/' . $this->e($user['id_account']) ?>"
+                                    <a href="<?= '/account/detail/' . htmlspecialchars($user['id_account']) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> Xem chi tiết
                                     </a>
@@ -255,14 +255,14 @@
                                         </button>
                                     <?php else: ?>
                                         <!-- Nút mở modal -->
-                                        <a href="<?= '/account/activate/' . $this->e($user['id_account']) ?>"
+                                        <a href="<?= '/account/activate/' . htmlspecialchars($user['id_account']) ?>"
                                         class="btn btn-sm btn-primary">
                                         <i class="bi bi-arrow-clockwise"></i> Chờ khôi phục
                                     </a>
                                     <?php endif; ?>
 
                                 <?php else: ?>
-                                    <a href="<?= '/account/detail/' . $this->e($user['id_account']) ?>"
+                                    <a href="<?= '/account/detail/' . htmlspecialchars($user['id_account']) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> Xem chi tiết
                                     </a>
@@ -320,9 +320,9 @@
 
         //Dữ liệu biểu đồ
         const statusCounts = {
-            "Hoạt động": <?= $this->e($activities['active']) ?>,
-            "Chờ khôi phục": <?= $this->e($activities['pending_activation']) ?>,
-            "Vô hiệu hóa": <?= $this->e($activities['suspend']) ?>
+            "Hoạt động": <?= htmlspecialchars($activities['active']) ?>,
+            "Chờ khôi phục": <?= htmlspecialchars($activities['pending_activation']) ?>,
+            "Vô hiệu hóa": <?= htmlspecialchars($activities['suspend']) ?>
         };
 
 

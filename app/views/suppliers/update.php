@@ -60,11 +60,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e($error) ?></li>
+                                        <li><?= htmlspecialchars($error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php endif; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
@@ -72,24 +72,24 @@ if (empty($_SESSION['csrf_token'])) {
 
                     <?php if (isset($success) && !empty($success)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= $this->e($success) ?>
+                            <?= htmlspecialchars($success) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     <?php endif; ?>
 
                     <form action="/suppliers/update" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $this->e($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
                         <div class="mb-3">
                             <label for="id_supplier" class="form-label"><strong>Mã nhà cung cấp</strong></label>
                             <input type="text" class="form-control" id="id_supplier" name="id_supplier"
-                                value="<?= $this->e($old['id_supplier'] ?? $supplier->id_supplier) ?>" readonly>
+                                value="<?= htmlspecialchars($old['id_supplier'] ?? $supplier->id_supplier) ?>" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label"><strong>Tên nhà cung cấp</strong></label>
                             <input type="text" class="form-control" id="name" name="name"
-                                value="<?= $this->e($old['name'] ?? $supplier->name) ?>" required>
+                                value="<?= htmlspecialchars($old['name'] ?? $supplier->name) ?>" required>
                         </div>
 
 

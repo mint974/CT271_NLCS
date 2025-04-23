@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title><?= $this->e($title) ?></title>
+  <title><?= htmlspecialchars($title) ?></title>
   <link rel="icon" href="/assets/image/icon-logo.png" type="image/x-icon">
   <!-- Styles -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -72,9 +72,9 @@
               <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <!-- Avatar and Username -->
-                <img class="avatar rounded-circle me-2" src="/<?= $this->e(AUTHGUARD()->user()->url) ?>" alt="Avatar"
+                <img class="avatar rounded-circle me-2" src="/<?= htmlspecialchars(AUTHGUARD()->user()->url) ?>" alt="Avatar"
                   style="width: 30px; height: 30px;">
-                <span><?= $this->e(AUTHGUARD()->user()->username) ?></span>
+                <span><?= htmlspecialchars(AUTHGUARD()->user()->username) ?></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <!-- User management link -->
@@ -99,7 +99,7 @@
           <a href="/products/shoppingcard" class="border mx-2 rounded d-flex justify-content-center align-items-center">
             <i class="fas fa-shopping-cart position-relative">
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                <?= $this->e(AUTHGUARD()->isUserLoggedIn() ? AUTHGUARD()->showQuantity() : 0) ?>
+                <?= htmlspecialchars(AUTHGUARD()->isUserLoggedIn() ? AUTHGUARD()->showQuantity() : 0) ?>
               </span>
             </i>
             <p class="mx-2 my-auto">Giỏ Hàng</p>

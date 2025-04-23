@@ -15,6 +15,8 @@ class ContactsController extends Controller
 
   public function index()
   {
+    $this->checkroleadmin();
+    $this->checkLogin();
     $contactModel = new Contact(pdo());
     $contacts = $contactModel->getAll();
     

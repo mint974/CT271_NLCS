@@ -74,15 +74,15 @@
           </li>
           <li>
             <span class="legend-dot" style="background-color: #0d6efd;"></span> Góp ý chung:
-            <strong><?= $this->e($generalFeedback) ?></strong>
+            <strong><?= htmlspecialchars($generalFeedback) ?></strong>
           </li>
           <li>
             <span class="legend-dot" style="background-color: #dc3545;"></span> Báo lỗi:
-            <strong><?= $this->e($bugReport) ?></strong>
+            <strong><?= htmlspecialchars($bugReport) ?></strong>
           </li>
           <li>
             <span class="legend-dot" style="background-color: #ffc107;"></span> Đề xuất cải thiện:
-            <strong><?= $this->e($improvementSuggestions) ?></strong>
+            <strong><?= htmlspecialchars($improvementSuggestions) ?></strong>
           </li>
         </ul>
       </div>
@@ -100,7 +100,7 @@
 
       <div class="col-md-4">
         <input type="text" class="form-control" name="id_contact" placeholder="🔎 Theo ID liên hệ..."
-          value="<?= $this->e($_POST['id_contact'] ?? '') ?>">
+          value="<?= htmlspecialchars($_POST['id_contact'] ?? '') ?>">
       </div>
       <div class="col-md-4">
         <select name="subject" class="form-select">
@@ -122,13 +122,13 @@
     <?php if (isset($errors) && !empty($errors)): ?>
       <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <?php foreach ((array) $errors as $error): ?>
-          <li><?= $this->e($error) ?></li>
+          <li><?= htmlspecialchars($error) ?></li>
         <?php endforeach; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <?php elseif (isset($success)): ?>
       <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= $this->e($success) ?>
+        <?= htmlspecialchars($success) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <?php endif; ?>
@@ -156,15 +156,15 @@
           <?php foreach ($contacts as $index => $contact): ?>
             <tr>
               <td><?= $index + 1 ?></td>
-              <td><?= $this->e($contact->id_contact) ?></td>
-              <td><?= $this->e($contact->subject) ?></td>
-              <td class="text-start"><?= nl2br($this->e($contact->content)) ?></td>
-              <td><a href="<?= '/account/detail/' . $this->e($contact->id_account) ?>"
+              <td><?= htmlspecialchars($contact->id_contact) ?></td>
+              <td><?= htmlspecialchars($contact->subject) ?></td>
+              <td class="text-start"><?= nl2br(htmlspecialchars($contact->content)) ?></td>
+              <td><a href="<?= '/account/detail/' . htmlspecialchars($contact->id_account) ?>"
                   >
-                 <?= $this->e($contact->id_account) ?>
+                 <?= htmlspecialchars($contact->id_account) ?>
                 </a></td>
-              <td><?= $this->e($contact->phone) ?></td>
-              <td><?= $this->e($contact->created_at) ?></td>
+              <td><?= htmlspecialchars($contact->phone) ?></td>
+              <td><?= htmlspecialchars($contact->created_at) ?></td>
               <td>
                 <?php if ($contact->status === 'Đã phản hồi'): ?>
                   <span class="badge bg-success">Đã phản hồi</span>
@@ -173,7 +173,7 @@
                 <?php endif; ?>
               </td>
               <td>
-                <a href="/contacts/reply/<?= $this->e($contact->id_contact) ?>" class="btn btn-sm btn-outline-primary">
+                <a href="/contacts/reply/<?= htmlspecialchars($contact->id_contact) ?>" class="btn btn-sm btn-outline-primary">
                   <i class="bi bi-reply"></i> Phản hồi
                 </a>
               </td>

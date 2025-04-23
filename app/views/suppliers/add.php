@@ -51,11 +51,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php if (is_array($errors)): ?>
                                 <ul class="mb-0">
                                     <?php foreach ($errors as $error): ?>
-                                        <li><?= $this->e($error) ?></li>
+                                        <li><?= htmlspecialchars($error) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
-                                <?= $this->e($errors) ?>
+                                <?= htmlspecialchars($errors) ?>
                             <?php endif; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
@@ -63,20 +63,20 @@ if (empty($_SESSION['csrf_token'])) {
 
                     <?php if (isset($success) && !empty($success)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?= $this->e($success) ?>
+                            <?= htmlspecialchars($success) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
                         </div>
                     <?php endif; ?>
 
                     <form action="/suppliers/store" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $this->e($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
 
                         <!-- id_supplier được sinh tự động nên không cần nhập -->
 
                         <div class="mb-4">
                             <label for="name" class="form-label"><strong>Tên nhà cung cấp</strong></label>
                             <input type="text" class="form-control" id="name" name="name"
-                                value="<?= $this->e($old['name'] ?? '') ?>" required>
+                                value="<?= htmlspecialchars($old['name'] ?? '') ?>" required>
                         </div>
 
                         <button type="submit" class="btn btn-submit w-100 fw-bold mb-3">Thêm nhà cung cấp</button>
